@@ -9,7 +9,7 @@ function findFiles(directory, extensions) {
         const absolute = path.join(directory, file);
 
         if (fs.statSync(absolute).isDirectory()) {
-            files = files.concat(scan(absolute));
+            files = files.concat(findFiles(absolute, extensions));
         } else if (isTestFile(file, extensions)) {
             files.push(absolute);
         }

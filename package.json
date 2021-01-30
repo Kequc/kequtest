@@ -12,7 +12,7 @@
   "author": "Nathan Lunde-Berry",
   "license": "ISC",
   "bin": {
-    "kequtest": "src/index.js"
+    "kequtest": "./src/index.js"
   },
   "preferGlobal": true
 }

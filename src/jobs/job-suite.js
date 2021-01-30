@@ -19,6 +19,10 @@ class JobFile extends Job {
     constructor (file) {
         super(file.split('/').pop(), () => { require(file); }, 0)
     }
+
+    beforeStart () {
+        global.kequtest.current = this
+    }
 }
 
 module.exports = JobSuite;

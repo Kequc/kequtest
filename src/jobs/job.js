@@ -20,7 +20,7 @@ class Job {
         this.print();
 
         // Run in sequence
-        await this.buffer.reduce((acc, curr) => acc.then(curr.run), Promise.resolve());
+        await this.buffer.reduce((acc, curr) => acc.then(curr.run.bind(curr)), Promise.resolve());
     }
 
     beforeStart () {
@@ -31,7 +31,7 @@ class Job {
 
         if (this.error) {
             console.log('');
-            console.error(error);
+            console.error(this.error);
             console.log('');
         }
     }
@@ -41,7 +41,7 @@ class Job {
         for (let i = 0; i < this.depth; i++) {
             prefix += (i === this.depth - 1 ? ' \u00B7 ' : '   ');
         }
-        return prefix + description;
+        return prefix + this.description;
     }
 }
 

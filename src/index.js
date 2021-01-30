@@ -28,9 +28,10 @@ global.it = it;
 
 async function run () {
     console.log('STARTING');
+
     const files = findFiles(process.cwd(), ['.test.js']);
     suite.load(files);
-    console.log(`Found ${suite.buffer.length} test file(s)...`);
+    console.log(`Found ${suite.buffer.length} test files...`);
 
     await suite.run();
 

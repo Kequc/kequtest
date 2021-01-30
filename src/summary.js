@@ -2,7 +2,7 @@ const JobIt = require('./jobs/job-it.js');
 
 function summary (suite) {
     const data = getData(suite);
-    const passed = `${data.passed}/${data.passed + data.failed} passing, ${data.failed} failure(s)`;
+    const passed = `${data.passed}/${data.passed + data.failed} passing, ${data.failed} failures`;
 
     if (data.failed > 0) {
         console.log(`\x1b[31m${passed}\x1b[0m`);
@@ -11,7 +11,7 @@ function summary (suite) {
     }
 
     if (data.catastrophic > 0) {
-        console.log(`\x1b[31m${data.catastrophic} catastrophic error(s)\x1b[0m`);
+        console.log(`\x1b[31m${data.catastrophic} catastrophic errors\x1b[0m`);
     }
 }
 
