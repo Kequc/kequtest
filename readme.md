@@ -45,3 +45,18 @@ it('counts nearby offices', function () {
 ```
 
 Run to see the output.
+
+## Eslint
+
+Tip if you want to avoid no-undef errors add overrides to your eslint config.
+
+```json
+{
+  "overrides": [
+    {
+      "files": ["*.test.js"],
+      "globals": { "describe": "readonly", "it": "readonly" }
+    }
+  ]
+}
+```
