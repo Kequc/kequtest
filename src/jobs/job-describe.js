@@ -2,7 +2,7 @@ const Job = require('./job.js');
 
 class JobDescribe extends Job {
     beforeStart () {
-        global.kequtest.current = this
+        global.kequtest.current = this;
     }
 }
 

@@ -1,8 +1,8 @@
-const path = require("path");
-const fs = require("fs");
+const path = require('path');
+const fs = require('fs');
 
 // Finds all files with the given extension
-function findFiles(directory, extensions) {
+function findFiles (directory, extensions) {
     let files = [];
 
     for (const file of fs.readdirSync(directory)) {

@@ -8,8 +8,6 @@ const summary = require('./summary.js');
 
 process.env.NODE_ENV = process.env.NODE_ENV || 'test';
 
-const suite = new JobSuite();
-
 // GLOBAL
 function describe (description, cb) {
     const job = global.kequtest.current;
@@ -30,8 +28,7 @@ async function run () {
     console.log('STARTING');
 
     const files = findFiles(process.cwd(), ['.test.js']);
-    suite.load(files);
-    console.log(`Found ${suite.buffer.length} test files...`);
+    const suite = new JobSuite(files);
 
     await suite.run();
 
