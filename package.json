@@ -1,0 +1,18 @@
+{
+  "name": "kequtest",
+  "version": "0.0.1",
+  "description": "A very simple test utility",
+  "main": "src/index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "files": [
+    "src"
+  ],
+  "author": "Nathan Lunde-Berry",
+  "license": "ISC",
+  "bin": {
+    "kequtest": "src/index.js"
+  },
+  "preferGlobal": true
+}
