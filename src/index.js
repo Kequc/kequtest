@@ -25,6 +25,7 @@ global.it = it;
 // ****
 
 async function run () {
+    console.log('');
     console.log('STARTING');
 
     const files = findFiles(process.cwd(), ['.test.js']);
@@ -34,6 +35,7 @@ async function run () {
 
     console.log('FINISHED');
     summary(suite);
+    console.log('');
 }
 
 run();

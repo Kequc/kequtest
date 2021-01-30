@@ -1,8 +1,9 @@
 const JobIt = require('./jobs/job-it.js');
+const { pluralise } = require('./util.js');
 
 function summary (suite) {
     const data = getData(suite);
-    const passed = `${data.passed}/${data.passed + data.failed} passing, ${data.failed} failures`;
+    const passed = `${data.passed}/${data.passed + data.failed} passing, ${pluralise(data.failed, 'failure')}`;
 
     if (data.failed > 0) {
         console.log(`\x1b[31m${passed}\x1b[0m`);
@@ -11,7 +12,7 @@ function summary (suite) {
     }
 
     if (data.catastrophic > 0) {
-        console.log(`\x1b[31m${data.catastrophic} catastrophic errors\x1b[0m`);
+        console.log(`\x1b[31m${pluralise(data.catastrophic, 'catastrophic error')}\x1b[0m`);
     }
 }
 

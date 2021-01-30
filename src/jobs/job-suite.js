@@ -1,4 +1,5 @@
 const Job = require('./job.js');
+const { pluralise } = require('../util.js');
 
 function NOOP () {}
 
@@ -9,7 +10,7 @@ class JobSuite extends Job {
     }
 
     print () {
-        console.log(`Found ${this.buffer.length} test files...`);
+        console.log(`Found ${pluralise(this.buffer.length, 'test file')}...`);
     }
 }
 

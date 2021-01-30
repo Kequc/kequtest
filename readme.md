@@ -44,7 +44,20 @@ it('counts nearby offices', function () {
 });
 ```
 
-Run to see the output.
+Output looks like this.
+
+```
+kequc@kequ4k:~/my-project$ npm t
+
+STARTING
+Found 1 test file...
+my-lib.test.js
+ · counts nearby offices ✓
+FINISHED
+1/1 passing, 0 failures
+
+kequc@kequ4k:~/my-project$
+```
 
 ## Eslint
 
