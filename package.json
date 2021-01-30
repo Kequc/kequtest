@@ -9,10 +9,25 @@
   "files": [
     "src"
   ],
+  "bugs": {
+    "url": "https://github.com/Kequc/kequtest/issues"
+  },
+  "homepage": "https://github.com/Kequc/kequtest#readme",
+  "repository": {
+    "type": "git",
+    "url": "git+ssh://git@github.com/Kequc/kequtest.git"
+  },
   "author": "Nathan Lunde-Berry",
   "license": "ISC",
   "bin": {
     "kequtest": "./src/index.js"
   },
-  "preferGlobal": true
+  "preferGlobal": true,
+  "keywords": [
+    "test",
+    "unit",
+    "simple",
+    "basic",
+    "cli"
+  ]
 }
