@@ -1,21 +1,35 @@
 const path = require('path');
 const fs = require('fs');
 
-// Finds all files with the given extension
-function findFiles (directory, extensions) {
-    let files = [];
+function findFiles (directory, argv, extensions) {
+    const absolute = path.join(directory, argv || '.');
 
-    for (const file of fs.readdirSync(directory)) {
-        const absolute = path.join(directory, file);
-
-        if (fs.statSync(absolute).isDirectory()) {
-            files = files.concat(findFiles(absolute, extensions));
-        } else if (isTestFile(file, extensions)) {
-            files.push(absolute);
+    try {
+        if (!fs.existsSync(absolute)) {
+            throw new Error(`Specified location doesn't exist. ${absolute}`);
         }
+        if (!fs.statSync(absolute).isDirectory() && !isTestFile(absolute, extensions)) {
+            throw new Error(`Not a valid test file. ${absolute}`);
+        }
+    } catch (error) {
+        console.log('');
+        console.error(error);
+        console.log('');
+        return [];
     }
 
-    return files;
+    return scan(absolute, extensions);
+}
+
+function scan (absolute, extensions) {
+    if (fs.statSync(absolute).isDirectory()) {
+        const files = fs.readdirSync(absolute);
+        return files.reduce((acc, curr) => acc.concat(scan(path.join(absolute, curr), extensions)), []);
+    } else if (isTestFile(absolute, extensions)) {
+        return [absolute];
+    } else {
+        return [];
+    }
 }
 
 function isTestFile (file, extensions) {

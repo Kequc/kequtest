@@ -63,6 +63,14 @@ FINISHED
 kequc@kequ4k:~/my-project$
 ```
 
+## Advanced use
+
+You may specify a test file or directory as a parameter.
+
+```
+kequc@kequ4k:~/my-project$ kequtest somewhere/my-lib.test.js
+```
+
 ## Eslint
 
 Tip if you want to avoid no-undef errors add overrides to your eslint config.

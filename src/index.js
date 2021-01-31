@@ -38,7 +38,7 @@ hook('after');
 async function run () {
     console.log('STARTING');
 
-    const files = findFiles(process.cwd(), ['.test.js']);
+    const files = findFiles(process.cwd(), process.argv[2], ['.test.js']);
     const suite = new JobSuite(files);
 
     await suite.run();
