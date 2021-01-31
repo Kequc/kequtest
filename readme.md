@@ -33,7 +33,7 @@ The easiest way to throw errors is to use Node's built in `assert` library.
 
 ## Hooks
 
-You may use hooks to further organise your tests. Available hooks are `before` `beforeEach` `afterEach` `after`, they run in conjunction with the current block. So, at the top of the file `beforeEach` will run once for each `describe` or `it` which is a direct sibling to itself.
+You may use hooks to further organise your tests. Available hooks are `before` `beforeEach` `afterEach` `after`, they run in conjunction with the current block. So, at the top of the file `beforeEach` will run once for each `describe` or `it` which is a direct sibling.
 
 ## Example
 
