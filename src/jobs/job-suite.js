@@ -1,11 +1,12 @@
 const JobContainer = require('./job-container.js');
 const { pluralise } = require('../util.js');
 
-function NOOP () {}
-
 class JobSuite extends JobContainer {
     constructor (files) {
-        super('', NOOP, -1);
+        const description = 'Cannot spell bugs without u';
+        const cb = () => {};
+
+        super(description, cb, 0);
 
         this.buffer = files.map(file => new JobFile(file));
     }
@@ -17,7 +18,10 @@ class JobSuite extends JobContainer {
 
 class JobFile extends JobContainer {
     constructor (file) {
-        super(file.split('/').pop(), () => { require(file); }, 0);
+        const description = file.split('/').pop();
+        const cb = () => { require(file); };
+
+        super(description, cb, 0);
     }
 }
 

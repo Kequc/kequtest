@@ -1,5 +1,4 @@
 const Job = require('./job.js');
-const { sequence } = require('../util.js');
 
 class JobContainer extends Job {
     constructor (...params) {
@@ -40,6 +39,10 @@ class JobContainer extends Job {
             await sequence(this.hooks.afterEach);
         };
     }
+}
+
+async function sequence (promises) {
+    await promises.reduce((acc, curr) => acc.then(curr), Promise.resolve());
 }
 
 module.exports = JobContainer;
