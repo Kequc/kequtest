@@ -18,11 +18,14 @@ class JobContainer extends Job {
 
         await super.run();
 
-        if (this.error) return;
+        if (this.error) {
+            this.buffer = [];
+            return;
+        }
 
         try {
             await sequence(this.hooks.before);
-            await sequence(this.buffer.map(job => this.buildJob(job).bind(this)));
+            await sequence(this.buffer.map(job => this.buildJob(job)));
             await sequence(this.hooks.after);
         } catch (error) {
             this.error = error;
@@ -33,7 +36,7 @@ class JobContainer extends Job {
     }
 
     buildJob (job) {
-        return async function () {
+        return async () => {
             await sequence(this.hooks.beforeEach);
             await job.run();
             await sequence(this.hooks.afterEach);
