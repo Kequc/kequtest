@@ -13,7 +13,6 @@ function summary (suite) {
 
     if (data.catastrophic > 0) {
         console.log(`\x1b[31m${pluralise(data.catastrophic, 'catastrophic failure')}\x1b[0m`);
-        console.log('\x1b[31mThere is something wrong in your tests\x1b[0m');
     }
 }
 
