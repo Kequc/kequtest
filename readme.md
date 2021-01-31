@@ -1,6 +1,6 @@
 # kequtest
 
-A very simple lightning quick unit test runner using zero dependencies. Useful for testing small projects, plugins, things like that.
+A very simple lightweight unit test runner using zero dependencies. Useful for testing small projects, plugins, things like that.
 
 ## Install
 
@@ -31,6 +31,10 @@ By default kequtest will find all test files recursively throughout the entire p
 
 The easiest way to throw errors is to use Node's built in `assert` library.
 
+## Hooks
+
+You may use hooks to further organise your tests. Available hooks are `before` `beforeEach` `afterEach` `after`, they run in conjunction with the current block. So, at the top of the file `beforeEach` will run once for each `describe` or `it` which is a direct sibling to itself.
+
 ## Example
 
 ```javascript
@@ -52,7 +56,7 @@ kequc@kequ4k:~/my-project$ npm t
 STARTING
 Found 1 test file...
 my-lib.test.js
- · counts nearby offices ✓
+· counts nearby offices ✓
 FINISHED
 1/1 passing, 0 failures
 
@@ -68,7 +72,14 @@ Tip if you want to avoid no-undef errors add overrides to your eslint config.
   "overrides": [
     {
       "files": ["*.test.js"],
-      "globals": { "describe": "readonly", "it": "readonly" }
+      "globals": {
+        "describe": "readonly",
+        "it": "readonly",
+        "before": "readonly",
+        "beforeEach": "readonly",
+        "afterEach": "readonly",
+        "after": "readonly",
+      }
     }
   ]
 }

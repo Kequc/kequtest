@@ -4,4 +4,8 @@ function pluralise (count, singular, plural) {
     return `${count} ${singular}s`;
 }
 
-module.exports = { pluralise };
+async function sequence (promises) {
+    await promises.reduce((acc, curr) => acc.then(curr), Promise.resolve());
+}
+
+module.exports = { pluralise, sequence };

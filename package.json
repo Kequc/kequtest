@@ -29,5 +29,6 @@
     "simple",
     "basic",
     "cli"
-  ]
+  ],
+  "dependencies": {}
 }
