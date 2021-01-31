@@ -25,7 +25,8 @@ global.it = it;
 
 function hook (name) {
     global[name] = function (cb) {
-        global.kequtest.current.hooks[name].push(cb);
+        const job = global.kequtest.current;
+        job.hooks[name].push(cb);
     };
 }
 
