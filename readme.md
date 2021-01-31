@@ -73,7 +73,7 @@ kequc@kequ4k:~/my-project$ kequtest somewhere/my-lib.test.js
 
 ## Eslint
 
-Tip if you want to avoid no-undef errors add overrides to your eslint config.
+Tip if you want to avoid `no-undef` warnings add overrides to your eslint config.
 
 ```json
 {
