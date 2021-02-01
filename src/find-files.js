@@ -23,7 +23,7 @@ function findFiles (directory, argv, extensions) {
 
 function scan (absolute, extensions) {
     if (fs.statSync(absolute).isDirectory()) {
-        const files = fs.readdirSync(absolute);
+        const files = fs.readdirSync(absolute).filter(file => file !== 'node_modules');
         return files.reduce((acc, curr) => acc.concat(scan(path.join(absolute, curr), extensions)), []);
     } else if (isTestFile(absolute, extensions)) {
         return [absolute];
@@ -32,9 +32,9 @@ function scan (absolute, extensions) {
     }
 }
 
-function isTestFile (file, extensions) {
+function isTestFile (absolute, extensions) {
     for (const extension of extensions) {
-        if (file.endsWith(extension)) return true;
+        if (absolute.endsWith(extension)) return true;
     }
     return false;
 }
