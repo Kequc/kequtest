@@ -1,5 +1,5 @@
-const JobTest = require('./jobs/job-test.js');
-const { pluralise } = require('./util.js');
+const JobContainer = require('./jobs/job-container.js');
+const { pluralise } = require('./helpers.js');
 
 function summary (suite) {
     const data = getData(suite);
@@ -24,7 +24,7 @@ function getData (parent) {
     };
 
     for (const child of parent.buffer) {
-        if (child instanceof JobTest) {
+        if (!(child instanceof JobContainer)) {
             if (child.error) {
                 result.failed++;
             } else {

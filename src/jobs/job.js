@@ -6,16 +6,16 @@ class Job {
         this.error = null;
     }
 
-    async run () {
+    async run (log) {
         try {
             await this.cb();
-            console.log(this.message());
+            log.info(this.message());
         } catch (error) {
             this.error = error;
-            console.log(this.message());
-            console.log('');
-            console.error(error);
-            console.log('');
+            log.info(this.message());
+            log.info('');
+            log.error(error);
+            log.info('');
         }
     }
 

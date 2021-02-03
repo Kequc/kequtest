@@ -1,5 +1,5 @@
 const JobContainer = require('./job-container.js');
-const { pluralise } = require('../util.js');
+const { pluralise } = require('../helpers.js');
 
 class JobSuite extends JobContainer {
     constructor (files) {

@@ -3,7 +3,6 @@ const Job = require('./job.js');
 class JobContainer extends Job {
     constructor (...params) {
         super(...params);
-
         this.buffer = [];
         this.hooks = {
             before: [],
@@ -13,35 +12,45 @@ class JobContainer extends Job {
         };
     }
 
-    async run () {
+    async run (log, parentHooks) {
         global.kequtest.current = this;
 
-        await super.run();
+        await super.run(log);
 
         if (this.error) {
             this.buffer = [];
             return;
         }
 
+        // Looking at all the hooks up the tree
+        const hooks = {
+            beforeEach: parentHooks.beforeEach.concat(this.hooks.beforeEach),
+            afterEach: this.hooks.afterEach.concat(parentHooks.afterEach)
+        };
+
         try {
             await sequence(this.hooks.before);
-            await sequence(this.buffer.map(job => this.buildJob(job)));
+            await sequence(this.buffer.map(job => buildJob(job, log, hooks)));
             await sequence(this.hooks.after);
         } catch (error) {
             this.error = error;
-            console.log('');
-            console.error(error);
-            console.log('');
+            log.info('');
+            log.error(error);
+            log.info('');
         }
     }
+}
 
-    buildJob (job) {
-        return async () => {
-            await sequence(this.hooks.beforeEach);
-            await job.run();
-            await sequence(this.hooks.afterEach);
-        };
-    }
+function buildJob (job, log, hooks) {
+    return async () => {
+        if (job instanceof JobContainer) {
+            await job.run(log, hooks);
+        } else {
+            await sequence(hooks.beforeEach);
+            await job.run(log);
+            await sequence(hooks.afterEach);
+        }
+    };
 }
 
 async function sequence (promises) {

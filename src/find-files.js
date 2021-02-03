@@ -1,20 +1,22 @@
 const path = require('path');
 const fs = require('fs');
 
-function findFiles (directory, argv, extensions) {
-    const absolute = path.join(directory, argv || '.');
+const IGNORE = ['node_modules'];
+
+function findFiles (cwd, arg, extensions, log = console) {
+    const absolute = path.join(cwd, arg || '.');
 
     try {
         if (!fs.existsSync(absolute)) {
             throw new Error(`Specified location doesn't exist. ${absolute}`);
         }
-        if (!fs.statSync(absolute).isDirectory() && !isTestFile(absolute, extensions)) {
+        if (!isDirectory(absolute) && !isTestFile(absolute, extensions)) {
             throw new Error(`Not a valid test file. ${absolute}`);
         }
     } catch (error) {
-        console.log('');
-        console.error(error);
-        console.log('');
+        log.info('');
+        log.error(error);
+        log.info('');
         return [];
     }
 
@@ -22,14 +24,19 @@ function findFiles (directory, argv, extensions) {
 }
 
 function scan (absolute, extensions) {
-    if (fs.statSync(absolute).isDirectory()) {
-        const files = fs.readdirSync(absolute).filter(file => file !== 'node_modules');
+    if (isDirectory(absolute)) {
+        const files = fs.readdirSync(absolute);
         return files.reduce((acc, curr) => acc.concat(scan(path.join(absolute, curr), extensions)), []);
     } else if (isTestFile(absolute, extensions)) {
         return [absolute];
     } else {
         return [];
     }
+}
+
+function isDirectory (absolute) {
+    if (!fs.statSync(absolute).isDirectory()) return false;
+    return !IGNORE.includes(absolute.split('/').pop());
 }
 
 function isTestFile (absolute, extensions) {

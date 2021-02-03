@@ -31,10 +31,6 @@ By default kequtest will find all test files recursively throughout the entire p
 
 The easiest way to throw errors is to use Node's built in `assert` library.
 
-## Hooks
-
-You may use hooks to further organise your tests. Available hooks are `before` `beforeEach` `afterEach` `after`, they run in conjunction with the current block. So, at the top of the file `beforeEach` will run once for each `describe` or `it` which is a direct sibling.
-
 ## Example
 
 ```javascript
@@ -71,24 +67,40 @@ You may specify a test file or directory as a parameter.
 kequc@kequ4k:~/my-project$ kequtest somewhere/my-lib.test.js
 ```
 
+## Hooks
+
+Available hooks are `hook.before`, `hook.beforeEach`, `hook.afterEach`, and `hook.after`. They run in conjunction with the current block. So, at the top of a `describe` block, `hook.beforeEach` will run once for each `it` inside.
+
+## Spies
+
+Rudimentary spy can be found at `util.spy` where the parameter given is a function to spy on, if you want to know what your spy was called with use `mySpy.calls`.
+
+```javascript
+const mySpy = util.spy(() => 'hi there');
+const result = mySpy('hello?', 1);
+
+// mySpy.calls ~= [['hello?', 1]]
+// result ~= 'hi there'
+```
+
+There is a simple `util.log` method which just generates a pseudo `console` object where every method `info`, `log`, `warn`, and `error` is a spy.
+
 ## Eslint
 
 Tip if you want to avoid `no-undef` warnings add overrides to your eslint config.
 
 ```json
 {
-  "overrides": [
-    {
-      "files": ["*.test.js"],
-      "globals": {
-        "describe": "readonly",
-        "it": "readonly",
-        "before": "readonly",
-        "beforeEach": "readonly",
-        "afterEach": "readonly",
-        "after": "readonly",
-      }
-    }
-  ]
+    "overrides": [
+        {
+            "files": ["*.test.js"],
+            "globals": {
+                "describe": "readonly",
+                "it": "readonly",
+                "hook": "readonly",
+                "util": "readonly"
+            }
+        }
+    ]
 }
 ```

@@ -2,12 +2,13 @@
   "name": "kequtest",
   "version": "0.0.11",
   "description": "A very simple test utility",
-  "main": "src/index.js",
+  "main": "index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "node index.js"
   },
   "files": [
-    "src"
+    "src",
+    "index.js"
   ],
   "bugs": {
     "url": "https://github.com/Kequc/kequtest/issues"

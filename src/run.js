@@ -1,10 +1,10 @@
-#!/usr/bin/env node
 const JobSuite = require('./jobs/job-suite.js');
 const JobContainer = require('./jobs/job-container.js');
 const JobTest = require('./jobs/job-test.js');
 
 const findFiles = require('./find-files.js');
 const summary = require('./summary.js');
+const util = require('./util.js');
 
 process.env.NODE_ENV = process.env.NODE_ENV || 'test';
 
@@ -22,9 +22,11 @@ function it (description, cb) {
 global.kequtest = { current: null };
 global.describe = describe;
 global.it = it;
+global.hook = {};
+global.util = util;
 
 function hook (name) {
-    global[name] = function (cb) {
+    global.hook[name] = function (cb) {
         const job = global.kequtest.current;
         job.hooks[name].push(cb);
     };
@@ -36,17 +38,17 @@ hook('afterEach');
 hook('after');
 // ****
 
-async function run () {
-    console.log('STARTING');
+async function run (log = console) {
+    log.info('STARTING');
 
-    const files = findFiles(process.cwd(), process.argv[2], ['.test.js']);
+    const files = findFiles(process.cwd(), process.argv[2], ['.test.js'], log);
     const suite = new JobSuite(files);
 
-    await suite.run();
+    await suite.run(log, { beforeEach: [], afterEach : [] });
 
-    console.log('FINISHED');
+    log.info('FINISHED');
     summary(suite);
-    console.log('');
+    log.info('');
 }
 
-run();
+module.exports = run;
