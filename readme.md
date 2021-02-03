@@ -50,6 +50,7 @@ Output looks like this.
 kequc@kequ4k:~/my-project$ npm t
 
 STARTING
+> /home/kequc/my-project
 Found 1 test file...
 my-lib.test.js
 · counts nearby offices ✓

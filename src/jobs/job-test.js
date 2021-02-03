@@ -3,8 +3,9 @@ const { red, green } = require('../helpers.js');
 
 class JobTest extends Job {
     message () {
+        const text = addDot(super.message(), this.depth);
         const postfix = (this.error ? red(' \u2717') : green(' \u2713'));
-        return addDot(super.message(), this.depth) + postfix;
+        return text + postfix;
     }
 }
 
