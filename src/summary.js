@@ -1,18 +1,18 @@
 const JobContainer = require('./jobs/job-container.js');
-const { pluralise } = require('./helpers.js');
+const { pluralise, red } = require('./helpers.js');
 
 function summary (log, suite) {
     const data = getData(suite);
     const passed = `${data.passed}/${data.passed + data.failed} passing, ${pluralise(data.failed, 'failure')}`;
 
     if (data.failed > 0) {
-        log.info(`\x1b[31m${passed}\x1b[0m`);
+        log.info(red(passed));
     } else {
         log.info(passed);
     }
 
     if (data.catastrophic > 0) {
-        log.info(`\x1b[31m${pluralise(data.catastrophic, 'catastrophic failure')}\x1b[0m`);
+        log.info(red(pluralise(data.catastrophic, 'catastrophic failure')));
     }
 }
 

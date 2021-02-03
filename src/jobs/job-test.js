@@ -1,8 +1,9 @@
 const Job = require('./job.js');
+const { red, green } = require('../helpers.js');
 
 class JobTest extends Job {
     message () {
-        const postfix = (this.error ? ' \x1b[31m\u2717\x1b[0m' : ' \x1b[32m\u2713\x1b[0m');
+        const postfix = (this.error ? red(' \u2717') : green(' \u2713'));
         return addDot(super.message(), this.depth) + postfix;
     }
 }
