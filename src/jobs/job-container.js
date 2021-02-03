@@ -13,7 +13,7 @@ class JobContainer extends Job {
     }
 
     async run (log, parentHooks) {
-        global.kequtest.current = this;
+        global.kequtest.container = this;
 
         await super.run(log);
 

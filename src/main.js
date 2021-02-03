@@ -1,3 +1,5 @@
+const path = require('path');
+
 const JobSuite = require('./jobs/job-suite.js');
 const JobContainer = require('./jobs/job-container.js');
 const JobTest = require('./jobs/job-test.js');
@@ -10,25 +12,24 @@ process.env.NODE_ENV = process.env.NODE_ENV || 'test';
 
 // GLOBAL
 function describe (description, cb) {
-    const job = global.kequtest.current;
-    job.buffer.push(new JobContainer(description, cb, job.depth + 1));
+    const container = global.kequtest.container;
+    container.buffer.push(new JobContainer(description, cb, container.depth + 1));
 }
 
 function it (description, cb) {
-    const job = global.kequtest.current;
-    job.buffer.push(new JobTest(description, cb, job.depth + 1));
+    const container = global.kequtest.container;
+    container.buffer.push(new JobTest(description, cb, container.depth + 1));
 }
 
-global.kequtest = { current: null };
+global.kequtest = { container: null };
 global.describe = describe;
 global.it = it;
-global.hook = {};
 global.util = util;
 
 function hook (name) {
-    global.hook[name] = function (cb) {
-        const job = global.kequtest.current;
-        job.hooks[name].push(cb);
+    global[name] = function (cb) {
+        const container = global.kequtest.container;
+        container.hooks[name].push(cb);
     };
 }
 
@@ -39,15 +40,18 @@ hook('after');
 // ****
 
 async function run (log = console) {
-    log.info('STARTING');
+    const directory = path.join(process.cwd(), process.argv[2] || '.');
 
-    const files = findFiles(process.cwd(), process.argv[2], ['.test.js'], log);
-    const suite = new JobSuite(files);
+    log.info('STARTING');
+    log.info('> ' + directory);
+
+    const files = findFiles(log, directory, ['.test.js']);
+    const suite = new JobSuite(directory, files);
 
     await suite.run(log, { beforeEach: [], afterEach : [] });
 
     log.info('FINISHED');
-    summary(suite);
+    summary(log, suite);
     log.info('');
 }
 

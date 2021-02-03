@@ -3,9 +3,7 @@ const fs = require('fs');
 
 const IGNORE = ['node_modules'];
 
-function findFiles (cwd, arg, extensions, log = console) {
-    const absolute = path.join(cwd, arg || '.');
-
+function findFiles (log, absolute, extensions) {
     try {
         if (!fs.existsSync(absolute)) {
             throw new Error(`Specified location doesn't exist. ${absolute}`);

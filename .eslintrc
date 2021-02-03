@@ -21,8 +21,11 @@
             "globals": {
                 "describe": "readonly",
                 "it": "readonly",
-                "hook": "readonly",
-                "util": "readonly"
+                "util": "readonly",
+                "before": "readonly",
+                "beforeEach": "readonly",
+                "afterEach": "readonly",
+                "after": "readonly"
             }
         }
     ]

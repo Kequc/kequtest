@@ -20,18 +20,8 @@ class Job {
     }
 
     message () {
-        return prefix(this.depth) + this.description;
+        return this.description.padStart(this.description.length + (this.depth * 2));
     }
-}
-
-function prefix (depth) {
-    let result = '';
-
-    for (let i = 0; i < depth; i++) {
-        result += (i === depth - 1 ? '\u00B7 ' : '  ');
-    }
-
-    return result;
 }
 
 module.exports = Job;

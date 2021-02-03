@@ -69,7 +69,7 @@ kequc@kequ4k:~/my-project$ kequtest somewhere/my-lib.test.js
 
 ## Hooks
 
-Available hooks are `hook.before`, `hook.beforeEach`, `hook.afterEach`, and `hook.after`. They run in conjunction with the current block. So, at the top of a `describe` block, `hook.beforeEach` will run once for each `it` inside the block.
+Available hooks are `before`, `beforeEach`, `afterEach`, and `after`. They run in conjunction with the current block. So, at the top of a `describe` block, `beforeEach` will run once for each `it` inside the block.
 
 ## Spies
 
@@ -83,7 +83,7 @@ const result = mySpy('hello?', 1);
 // result ~= 'hi there'
 ```
 
-There is a simple `util.log` method which just generates a pseudo `console` object where every method `info`, `log`, `warn`, and `error` is a spy.
+There is a simple `util.log` method which just generates a pseudo `console` object where every method `debug`, `info`, `log`, `warn`, and `error` is a spy.
 
 ## Eslint
 
@@ -97,8 +97,11 @@ Tip if you want to avoid `no-undef` warnings add overrides to your eslint config
             "globals": {
                 "describe": "readonly",
                 "it": "readonly",
-                "hook": "readonly",
-                "util": "readonly"
+                "util": "readonly",
+                "before": "readonly",
+                "beforeEach": "readonly",
+                "afterEach": "readonly",
+                "after": "readonly"
             }
         }
     ]
