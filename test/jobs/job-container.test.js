@@ -106,3 +106,20 @@ it('skips beforeEach afterEach if buffer is a container', async function () {
     assert.strictEqual(result.hooks.afterEach[0].calls.length, 0);
     assert.strictEqual(result.hooks.after[0].calls.length, 1);
 });
+
+it('merges parentHooks', async function () {
+    const result = new JobContainer(DESCRIPTION, () => {}, 0);
+    parentHooks = { beforeEach: [util.spy()], afterEach: [util.spy()] };
+    result.hooks.before = [util.spy()];
+    result.hooks.beforeEach = [util.spy()];
+    result.hooks.afterEach = [util.spy()];
+    result.hooks.after = [util.spy()];
+    result.buffer = [{ run: util.spy() }, { run: util.spy() }];
+    await result.run(util.log(), parentHooks);
+    assert.strictEqual(result.hooks.before[0].calls.length, 1);
+    assert.strictEqual(parentHooks.beforeEach[0].calls.length, 2);
+    assert.strictEqual(result.hooks.beforeEach[0].calls.length, 2);
+    assert.strictEqual(result.hooks.afterEach[0].calls.length, 2);
+    assert.strictEqual(parentHooks.afterEach[0].calls.length, 2);
+    assert.strictEqual(result.hooks.after[0].calls.length, 1);
+});

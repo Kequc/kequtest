@@ -69,7 +69,7 @@ kequc@kequ4k:~/my-project$ kequtest somewhere/my-lib.test.js
 
 ## Hooks
 
-Available hooks are `hook.before`, `hook.beforeEach`, `hook.afterEach`, and `hook.after`. They run in conjunction with the current block. So, at the top of a `describe` block, `hook.beforeEach` will run once for each `it` inside.
+Available hooks are `hook.before`, `hook.beforeEach`, `hook.afterEach`, and `hook.after`. They run in conjunction with the current block. So, at the top of a `describe` block, `hook.beforeEach` will run once for each `it` inside the block.
 
 ## Spies
 
