@@ -3,6 +3,7 @@ const Job = require('./job.js');
 class JobContainer extends Job {
     constructor (...params) {
         super(...params);
+
         this.buffer = [];
         this.hooks = {
             before: [],
