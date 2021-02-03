@@ -30,7 +30,7 @@ class JobContainer extends Job {
 
         try {
             await sequence(this.hooks.before);
-            await sequence(this.buffer.map(job => buildJob(job, log, hooks)));
+            await sequence(this.buffer.map(job => buildJob(log, job, hooks)));
             await sequence(this.hooks.after);
         } catch (error) {
             this.error = error;
@@ -41,7 +41,7 @@ class JobContainer extends Job {
     }
 }
 
-function buildJob (job, log, hooks) {
+function buildJob (log, job, hooks) {
     return async () => {
         if (job instanceof JobContainer) {
             await job.run(log, hooks);
