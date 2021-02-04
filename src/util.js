@@ -1,3 +1,5 @@
+const mock = require('./mock.js');
+
 function log () {
     return {
         debug: spy(),
@@ -17,9 +19,10 @@ function spy (method = () => {}) {
         result.calls.push(params);
         return method(...params);
     }
+
     result.calls = [];
 
     return result;
 }
 
-module.exports = { log, spy };
+module.exports = { mock, log, spy };

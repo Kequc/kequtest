@@ -1,37 +1,36 @@
 const assert = require('assert');
-const mock = require('../src/mock.js');
 
 it('is available globally', function () {
-    assert.strictEqual(mock, require('../src/mock.js'));
-    assert.strictEqual(typeof mock, 'function');
-    assert.strictEqual(typeof mock.stop, 'function');
-    assert.strictEqual(typeof mock.stopAll, 'function');
+    assert.strictEqual(util.mock, require('../src/mock.js'));
+    assert.strictEqual(typeof util.mock, 'function');
+    assert.strictEqual(typeof util.mock.stop, 'function');
+    assert.strictEqual(typeof util.mock.stopAll, 'function');
 });
 
-mock('./deep/other.js', {
+util.mock('./deep/other.js', {
     getData: () => ({ id: 'fake-id', name: 'Paul' })
 });
 
 it('mocks', function () {
-    const myLib = require('./fake-src/index.js');
+    const result = require('./fake-src/index.js');
 
-    assert.strictEqual(myLib().id, 'fake-id');
+    assert.strictEqual(result.getData().id, 'fake-id');
 });
 
 describe('inside a block', function () {
-    mock('./fake-src/deep/other.js', {
-        getData: () => ({ id: 'fake-id', name: 'Paul' })
+    util.mock('./fake-src/deep/other.js', {
+        getData: () => ({ id: 'fake-id', name: 'paul' })
     });
     
     it('mocks', function () {
-        const myLib = require('./fake-src/deep/other.js');
+        const result = require('./fake-src/deep/other.js');
     
-        assert.strictEqual(myLib.getData().id, 'fake-id');
+        assert.strictEqual(result.getData().id, 'fake-id');
     });
 });
 
 it('stops mocking at end of blocks', function () {
-    const myLib = require('./fake-src/deep/other.js');
+    const result = require('./fake-src/deep/other.js');
 
-    assert.strictEqual(myLib.getData().id, 'real-id');
+    assert.strictEqual(result.getData().id, 'real-id');
 });

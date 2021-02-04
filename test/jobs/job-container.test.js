@@ -86,17 +86,17 @@ it('runs buffer', async function () {
 });
 
 it('stops all mocks', async function () {
-    const originalMockStop =  global.mock.stop;
-    global.mock.stop = util.spy();
+    const originalMockStop =  global.util.mock.stop;
+    global.util.mock.stop = util.spy();
 
     const result = new JobContainer(DESCRIPTION, () => {}, 0);
     result.mocks = ['test1', 'test2'];
 
     await result.run(util.log(), parentHooks);
 
-    assert.deepStrictEqual(global.mock.stop.calls, [['test1'], ['test2']]);
+    assert.deepStrictEqual(global.util.mock.stop.calls, [['test1'], ['test2']]);
 
-    global.mock.stop = originalMockStop;
+    global.util.mock.stop = originalMockStop;
 });
 
 it('runs beforeEach hooks', async function () {

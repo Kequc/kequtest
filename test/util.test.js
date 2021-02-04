@@ -2,6 +2,7 @@ const assert = require('assert');
 
 it('is available globally', function () {
     assert.strictEqual(util, require('../src/util.js'));
+    assert.strictEqual(typeof util.mock, 'function');
     assert.strictEqual(typeof util.log, 'function');
     assert.strictEqual(typeof util.spy, 'function');
 });

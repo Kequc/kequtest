@@ -21,7 +21,6 @@
             "globals": {
                 "describe": "readonly",
                 "it": "readonly",
-                "mock": "readonly",
                 "util": "readonly",
                 "before": "readonly",
                 "beforeEach": "readonly",

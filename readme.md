@@ -88,30 +88,28 @@ There is a simple `util.log` method which just generates a pseudo `console` obje
 
 ## Mocks
 
-Rudimentary mocking can be accomplished by calling `mock` before `require`, it takes the target and a return value.
+Rudimentary mocking can be accomplished by calling `util.mock` before `require`, it takes the target and a return value.
 
 ```javascript
 // /my-project/main-lib.test.js
-mock('./my-data.js', {
+util.mock('./my-data.js', {
     getUser: () => ({ id: 'fake-id', name: 'peter' })
 });
 
 const assert = require('assert');
 const mainLib = require('./main-lib.js');
 
-it('mocks ./my-data.js', function () {
+it('uses mock', function () {
     const result = mainLib();
     assert.strictEqual(result.id, 'fake-id');
 });
 ```
 ```javascript
 // /my-project/main-lib.js
-const myData = require('./my-data.js');
-
-module.exports = myData.getUser();
+module.exports = require('./my-data.js').getUser;
 ```
 
-To stop use `mock.stop(target)` or `mock.stopAll()`. Mocks are automatically stopped at the end of the current block.
+To stop use `util.mock.stop(target)` or `util.mock.stopAll()`. Mocks are automatically stopped at the end of the current block.
 
 ## Eslint
 
@@ -125,7 +123,6 @@ Tip if you want to avoid `no-undef` warnings add overrides to your eslint config
             "globals": {
                 "describe": "readonly",
                 "it": "readonly",
-                "mock": "readonly",
                 "util": "readonly",
                 "before": "readonly",
                 "beforeEach": "readonly",

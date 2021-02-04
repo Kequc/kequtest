@@ -21,7 +21,6 @@ function it (description, cb) {
 global.kequtest = { container: null };
 global.describe = describe;
 global.it = it;
-global.mock = require('./mock.js');
 global.util = require('./util.js');
 
 function hook (name) {
@@ -37,11 +36,11 @@ hook('afterEach');
 hook('after');
 // ****
 
-async function run (log, directory, extensions) {
+async function main (log, directory, exts) {
     log.info('STARTING');
     log.info('> ' + directory);
 
-    const files = findFiles(log, directory, extensions);
+    const files = findFiles(log, directory, exts);
     const suite = new JobSuite(directory, files);
 
     await suite.run(log);
@@ -51,4 +50,4 @@ async function run (log, directory, extensions) {
     log.info('');
 }
 
-module.exports = run;
+module.exports = main;

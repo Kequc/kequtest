@@ -42,7 +42,7 @@ class JobContainer extends Job {
         }
 
         for (const request of this.mocks) {
-            global.mock.stop(request);
+            global.util.mock.stop(request);
         }
     }
 }

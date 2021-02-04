@@ -2,7 +2,7 @@ const assert = require('assert');
 const main = require('../src/main.js');
 
 const DIRECTORY = __dirname + '/fake-src';
-const EXTENSIONS = ['.fake-test.js'];
+const EXTS = ['.fake-test.js'];
 
 it('sets up test environment', function () {
     assert.strictEqual(process.env.NODE_ENV, 'test');
@@ -16,7 +16,7 @@ it('sets up test environment', function () {
 
 it('builds and runs an entire test suite', async function () {
     const log = util.log();
-    await main(log, DIRECTORY, EXTENSIONS);
+    await main(log, DIRECTORY, EXTS);
     assert.deepStrictEqual(log.info.calls, [
         ['STARTING'],
         ['> ' + DIRECTORY],
