@@ -32,6 +32,7 @@ it('creates an instance', function () {
         afterEach: [],
         after: []
     });
+    assert.deepStrictEqual(result.mocks, []);
 });
 
 it('runs the callback sets container and displays output', async function () {
@@ -82,6 +83,20 @@ it('runs buffer', async function () {
     assert.strictEqual(result.buffer[0].run.calls.length, 1);
     assert.strictEqual(result.buffer[1].run.calls.length, 1);
     assert.strictEqual(result.hooks.after[0].calls.length, 1);
+});
+
+it('stops all mocks', async function () {
+    const originalMockStop =  global.mock.stop;
+    global.mock.stop = util.spy();
+
+    const result = new JobContainer(DESCRIPTION, () => {}, 0);
+    result.mocks = ['test1', 'test2'];
+
+    await result.run(util.log(), parentHooks);
+
+    assert.deepStrictEqual(global.mock.stop.calls, [['test1'], ['test2']]);
+
+    global.mock.stop = originalMockStop;
 });
 
 it('runs beforeEach hooks', async function () {

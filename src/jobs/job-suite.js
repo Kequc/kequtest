@@ -10,6 +10,10 @@ class JobSuite extends JobContainer {
 
         this.buffer = files.map(file => new JobFile(directory, file));
     }
+
+    async run (log) {
+        await super.run(log, { beforeEach: [], afterEach : [] });
+    }
 }
 
 class JobFile extends JobContainer {

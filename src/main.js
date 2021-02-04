@@ -1,12 +1,9 @@
-const path = require('path');
-
 const JobSuite = require('./jobs/job-suite.js');
 const JobContainer = require('./jobs/job-container.js');
 const JobTest = require('./jobs/job-test.js');
 
 const findFiles = require('./find-files.js');
 const summary = require('./summary.js');
-const util = require('./util.js');
 
 process.env.NODE_ENV = process.env.NODE_ENV || 'test';
 
@@ -24,7 +21,8 @@ function it (description, cb) {
 global.kequtest = { container: null };
 global.describe = describe;
 global.it = it;
-global.util = util;
+global.mock = require('./mock.js');
+global.util = require('./util.js');
 
 function hook (name) {
     global[name] = function (cb) {
@@ -39,16 +37,14 @@ hook('afterEach');
 hook('after');
 // ****
 
-async function run (log = console) {
-    const directory = path.join(process.cwd(), process.argv[2] || '.');
-
+async function run (log, directory, extensions) {
     log.info('STARTING');
     log.info('> ' + directory);
 
-    const files = findFiles(log, directory, ['.test.js']);
+    const files = findFiles(log, directory, extensions);
     const suite = new JobSuite(directory, files);
 
-    await suite.run(log, { beforeEach: [], afterEach : [] });
+    await suite.run(log);
 
     log.info('FINISHED');
     summary(log, suite);

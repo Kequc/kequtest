@@ -11,6 +11,7 @@ class JobContainer extends Job {
             afterEach: [],
             after: []
         };
+        this.mocks = [];
     }
 
     async run (log, parentHooks) {
@@ -38,6 +39,10 @@ class JobContainer extends Job {
             log.info('');
             log.error(error);
             log.info('');
+        }
+
+        for (const request of this.mocks) {
+            global.mock.stop(request);
         }
     }
 }

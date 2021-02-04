@@ -1,5 +1,10 @@
 const assert = require('assert');
-const util = require('../src/util.js');
+
+it('is available globally', function () {
+    assert.strictEqual(util, require('../src/util.js'));
+    assert.strictEqual(typeof util.log, 'function');
+    assert.strictEqual(typeof util.spy, 'function');
+});
 
 describe('log', function () {
     it('returns a mock console', function () {

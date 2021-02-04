@@ -1,6 +1,6 @@
 {
   "name": "kequtest",
-  "version": "0.1.2",
+  "version": "0.1.3",
   "description": "A very simple test utility",
   "main": "index.js",
   "scripts": {
@@ -21,7 +21,7 @@
   "author": "Nathan Lunde-Berry",
   "license": "ISC",
   "bin": {
-    "kequtest": "./index.js"
+    "kequtest": "index.js"
   },
   "preferGlobal": true,
   "keywords": [

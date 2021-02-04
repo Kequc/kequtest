@@ -33,8 +33,10 @@ function scan (absolute, extensions) {
 }
 
 function isDirectory (absolute) {
-    if (!fs.statSync(absolute).isDirectory()) return false;
-    return !IGNORE.includes(absolute.split('/').pop());
+    if (fs.statSync(absolute).isDirectory()) {
+        return !IGNORE.includes(absolute.split('/').pop());
+    }
+    return false;
 }
 
 function isTestFile (absolute, extensions) {

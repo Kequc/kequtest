@@ -40,7 +40,7 @@ const myLib = require('./my-lib.js');
 
 it('counts nearby offices', function () {
     const result = myLib();
-    assert.equal(result, 42);
+    assert.strictEqual(result, 42);
 });
 ```
 
@@ -52,7 +52,7 @@ kequc@kequ4k:~/my-project$ npm t
 STARTING
 > /home/kequc/my-project
 Found 1 test file...
-my-lib.test.js
+somewhere/my-lib.test.js
 · counts nearby offices ✓
 FINISHED
 1/1 passing, 0 failures
@@ -74,7 +74,7 @@ Available hooks are `before`, `beforeEach`, `afterEach`, and `after`. They run i
 
 ## Spies
 
-Rudimentary spy can be found at `util.spy` where the parameter given is a function to spy on, if you want to know what your spy was called with use `mySpy.calls`.
+Rudimentary spying can be found at `util.spy` where the parameter given is a function to spy on, if you want to know what your spy was called with use `calls`.
 
 ```javascript
 const mySpy = util.spy(() => 'hi there');
@@ -85,6 +85,33 @@ const result = mySpy('hello?', 1);
 ```
 
 There is a simple `util.log` method which just generates a pseudo `console` object where every method `debug`, `info`, `log`, `warn`, and `error` is a spy.
+
+## Mocks
+
+Rudimentary mocking can be accomplished by calling `mock` before `require`, it takes the target and a return value.
+
+```javascript
+// /my-project/main-lib.test.js
+mock('./my-data.js', {
+    getUser: () => ({ id: 'fake-id', name: 'peter' })
+});
+
+const assert = require('assert');
+const mainLib = require('./main-lib.js');
+
+it('mocks ./my-data.js', function () {
+    const result = mainLib();
+    assert.strictEqual(result.id, 'fake-id');
+});
+```
+```javascript
+// /my-project/main-lib.js
+const myData = require('./my-data.js');
+
+module.exports = myData.getUser();
+```
+
+To stop use `mock.stop(target)` or `mock.stopAll()`. Mocks are automatically stopped at the end of the current block.
 
 ## Eslint
 
@@ -98,6 +125,7 @@ Tip if you want to avoid `no-undef` warnings add overrides to your eslint config
             "globals": {
                 "describe": "readonly",
                 "it": "readonly",
+                "mock": "readonly",
                 "util": "readonly",
                 "before": "readonly",
                 "beforeEach": "readonly",
