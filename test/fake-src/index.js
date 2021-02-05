@@ -1,3 +1,1 @@
-const other = require('./deep/other.js');
-
-module.exports = other;
+module.exports = require('./deep/other.js');

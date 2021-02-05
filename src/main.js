@@ -21,7 +21,7 @@ function it (description, cb) {
 global.kequtest = { container: null };
 global.describe = describe;
 global.it = it;
-global.util = require('./util.js');
+global.util = require('./utils/util.js');
 
 function hook (name) {
     global[name] = function (cb) {
@@ -36,12 +36,12 @@ hook('afterEach');
 hook('after');
 // ****
 
-async function main (log, directory, exts) {
-    log.info('STARTING');
-    log.info('> ' + directory);
+async function main (log, absolute, exts) {
+    const files = findFiles(log, absolute, exts);
+    const suite = new JobSuite(absolute, files);
 
-    const files = findFiles(log, directory, exts);
-    const suite = new JobSuite(directory, files);
+    log.info('STARTING');
+    log.info('> ' + absolute);
 
     await suite.run(log);
 

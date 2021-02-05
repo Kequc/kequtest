@@ -85,18 +85,42 @@ it('runs buffer', async function () {
     assert.strictEqual(result.hooks.after[0].calls.length, 1);
 });
 
-it('stops all mocks', async function () {
-    const originalMockStop =  global.util.mock.stop;
-    global.util.mock.stop = util.spy();
+describe('using mocks', function () {
+    let originalMockStop;
 
-    const result = new JobContainer(DESCRIPTION, () => {}, 0);
-    result.mocks = ['test1', 'test2'];
+    beforeEach(function () {
+        originalMockStop =  global.util.mock.stop;
+        global.util.mock.stop = util.spy();
+    });
 
-    await result.run(util.log(), parentHooks);
+    afterEach(function () {
+        global.util.mock.stop = originalMockStop;
+    });
 
-    assert.deepStrictEqual(global.util.mock.stop.calls, [['test1'], ['test2']]);
-
-    global.util.mock.stop = originalMockStop;
+    it('stops all mocks', async function () {
+        const result = new JobContainer(DESCRIPTION, () => {}, 0);
+        result.mocks = ['test1', 'test2'];
+        result.buffer = [{ run: util.spy() }, { run: util.spy() }];
+    
+        await result.run(util.log(), parentHooks);
+    
+        assert.strictEqual(result.error, null);
+        assert.strictEqual(result.buffer.length, 2);
+        assert.deepStrictEqual(global.util.mock.stop.calls, [['test1'], ['test2']]);
+    });
+    
+    it('bails early if catastrophic error is encountered', async function () {
+        const log = util.log();
+        const error = new Error('container error');
+        const result = new JobContainer(DESCRIPTION, () => { throw error; }, 2);
+        result.mocks = ['test1', 'test2'];
+    
+        await result.run(log, parentHooks);
+    
+        assert.strictEqual(result.error, error);
+        assert.strictEqual(result.buffer.length, 0);
+        assert.deepStrictEqual(global.util.mock.stop.calls, [['test1'], ['test2']]);
+    });
 });
 
 it('runs beforeEach hooks', async function () {

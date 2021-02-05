@@ -91,6 +91,10 @@ There is a simple `util.log` method which just generates a pseudo `console` obje
 Rudimentary mocking can be accomplished by calling `util.mock` before `require`, it takes the target and a return value.
 
 ```javascript
+// /my-project/main-lib.js
+module.exports = require('./my-data.js').getUser;
+```
+```javascript
 // /my-project/main-lib.test.js
 util.mock('./my-data.js', {
     getUser: () => ({ id: 'fake-id', name: 'peter' })
@@ -103,10 +107,6 @@ it('uses mock', function () {
     const result = mainLib();
     assert.strictEqual(result.id, 'fake-id');
 });
-```
-```javascript
-// /my-project/main-lib.js
-module.exports = require('./my-data.js').getUser;
 ```
 
 To stop use `util.mock.stop(target)` or `util.mock.stopAll()`. Mocks are automatically stopped at the end of the current block.

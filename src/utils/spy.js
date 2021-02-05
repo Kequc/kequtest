@@ -1,15 +1,3 @@
-const mock = require('./mock.js');
-
-function log () {
-    return {
-        debug: spy(),
-        info: spy(),
-        log: spy(),
-        warn: spy(),
-        error: spy()
-    };
-}
-
 function spy (method = () => {}) {
     if (typeof method !== 'function') {
         throw new Error(`Spy must be a function got ${typeof method} instead.`);
@@ -25,4 +13,4 @@ function spy (method = () => {}) {
     return result;
 }
 
-module.exports = { mock, log, spy };
+module.exports = spy;
