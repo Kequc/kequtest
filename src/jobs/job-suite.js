@@ -2,13 +2,13 @@ const JobContainer = require('./job-container.js');
 const { pluralise } = require('../helpers.js');
 
 class JobSuite extends JobContainer {
-    constructor (directory, files) {
+    constructor (absolute, files) {
         const description = `Found ${pluralise(files.length, 'test file')}...`;
         const cb = () => {};
 
         super(description, cb, 0);
 
-        this.buffer = files.map(file => new JobFile(directory, file));
+        this.buffer = files.map(file => new JobFile(absolute, file));
     }
 
     async run (log) {
@@ -17,8 +17,8 @@ class JobSuite extends JobContainer {
 }
 
 class JobFile extends JobContainer {
-    constructor (directory, file) {
-        const description = file.replace(directory + '/', '');
+    constructor (absolute, file) {
+        const description = file.replace(absolute + '/', '');
         const cb = () => { require(file); };
 
         super(description, cb, 0);

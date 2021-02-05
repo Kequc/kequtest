@@ -1,5 +1,6 @@
 function pluralise (count, singular, plural = `${singular}s`) {
-    return `${count} ${(count === 1 ? singular : plural)}`;
+    const text = (count === 1 ? singular : plural);
+    return `${count} ${text}`;
 }
 
 function red (text) {

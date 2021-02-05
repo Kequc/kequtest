@@ -5,13 +5,13 @@ class JobContainer extends Job {
         super(...params);
 
         this.buffer = [];
-        this.mocks = [];
         this.hooks = {
             before: [],
             beforeEach: [],
             afterEach: [],
             after: []
         };
+        this.mocks = [];
     }
 
     async run (log, parentHooks) {

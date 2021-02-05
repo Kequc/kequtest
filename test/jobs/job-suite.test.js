@@ -1,10 +1,10 @@
 const assert = require('assert');
 const JobSuite = require('../../src/jobs/job-suite.js');
 
-const DIRECTORY = __dirname + '/fake-src';
+const ABSOLUTE = __dirname + '/fake-src';
 const FILES = [
-    DIRECTORY + '/deep/other.fake-test.js',
-    DIRECTORY + '/index.fake-test.js'
+    ABSOLUTE + '/deep/other.fake-test.js',
+    ABSOLUTE + '/index.fake-test.js'
 ];
 
 let parentHooks;
@@ -22,7 +22,7 @@ afterEach(function () {
 });
 
 it('creates a buffer', async function () {
-    const result = new JobSuite(DIRECTORY, FILES);
+    const result = new JobSuite(ABSOLUTE, FILES);
 
     assert.strictEqual(result.buffer.length, 2);
     assert.strictEqual(result.buffer[0].description, 'deep/other.fake-test.js');
@@ -30,7 +30,7 @@ it('creates a buffer', async function () {
 });
 
 it('displays output', async function () {
-    const result = new JobSuite(DIRECTORY, FILES);
+    const result = new JobSuite(ABSOLUTE, FILES);
     const log = util.log();
 
     await result.run(log, parentHooks);

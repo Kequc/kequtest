@@ -20,7 +20,8 @@ class Job {
     }
 
     message () {
-        return this.description.padStart(this.description.length + (this.depth * 2));
+        const padding = (this.depth) * 2;
+        return this.description.padStart(this.description.length + padding);
     }
 }
 
