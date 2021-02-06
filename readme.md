@@ -1,4 +1,4 @@
-# <img alt="kequtest" src="https://github.com/Kequc/kequtest/raw/main/logo.png" width="126" height="57" />
+# <img alt="kequtest" src="https://github.com/Kequc/kequtest/raw/main/logo.png" width="190" height="85" />
 
 A very lightweight unit test runner using zero dependencies. Useful for testing small projects, plugins, things like that.
 
