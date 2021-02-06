@@ -1,6 +1,6 @@
 # kequtest
 
-A very simple lightweight unit test runner using zero dependencies. Useful for testing small projects, plugins, things like that.
+A very lightweight unit test runner using zero dependencies. Useful for testing small projects, plugins, things like that.
 
 ## Install
 
@@ -88,7 +88,7 @@ There is a simple `util.log` method which just generates a pseudo `console` obje
 
 ## Mocks
 
-Mocking can be created calling `util.mock` before `require`, it takes a target and a return value. Targets are relative to your test.
+Mocks can be created using `util.mock` before `require`, it takes a target and return value. Targets are relative to your test.
 
 ```javascript
 // /my-project/src/main-lib.js
