@@ -2,7 +2,7 @@
 
 A very lightweight unit test runner using zero dependencies. Useful for testing small projects, plugins, things like that.
 
-[](./logo.png)
+[](https://github.com/Kequc/kequtest/raw/main/logo.png)
 
 ## Install
 
