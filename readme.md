@@ -2,6 +2,8 @@
 
 A very lightweight unit test runner using zero dependencies. Useful for testing small projects, plugins, things like that.
 
+[](./logo.png)
+
 ## Install
 
 ```
