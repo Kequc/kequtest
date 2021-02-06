@@ -1,8 +1,6 @@
-# kequtest
+# <img alt="kequtest" src="https://github.com/Kequc/kequtest/raw/main/logo.png" width="126" height="57" />
 
 A very lightweight unit test runner using zero dependencies. Useful for testing small projects, plugins, things like that.
-
-<img src="https://github.com/Kequc/kequtest/raw/main/logo.png" width="84" height="38" />
 
 ## Install
 
