@@ -13,4 +13,14 @@ function spy (method = () => {}) {
     return result;
 }
 
-module.exports = spy;
+function log () {
+    return {
+        debug: spy(),
+        info: spy(),
+        log: spy(),
+        warn: spy(),
+        error: spy()
+    };
+}
+
+module.exports = { spy, log };

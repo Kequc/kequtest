@@ -1,14 +1,4 @@
-const mock = require('./mock.js');
-const spy = require('./spy.js');
+const { mock, uncache } = require('./mock.js');
+const { spy, log } = require('./spy.js');
 
-function log () {
-    return {
-        debug: spy(),
-        info: spy(),
-        log: spy(),
-        warn: spy(),
-        error: spy()
-    };
-}
-
-module.exports = { mock, spy, log };
+module.exports = { mock, uncache, spy, log };

@@ -97,7 +97,7 @@ describe('using mocks', function () {
         global.util.mock.stop = originalMockStop;
     });
 
-    it('stops all mocks', async function () {
+    it('stops mocks', async function () {
         const result = new JobContainer(DESCRIPTION, () => {}, 0);
         result.mocks = ['test1', 'test2'];
         result.buffer = [{ run: util.spy() }, { run: util.spy() }];

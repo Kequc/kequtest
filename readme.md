@@ -88,20 +88,20 @@ There is a simple `util.log` method which just generates a pseudo `console` obje
 
 ## Mocks
 
-Rudimentary mocking can be accomplished by calling `util.mock` before `require`, it takes the target and a return value.
+Mocking can be created calling `util.mock` before `require`, it takes a target and a return value. Targets are relative to your test.
 
 ```javascript
-// /my-project/main-lib.js
+// /my-project/src/main-lib.js
 module.exports = require('./my-data.js').getUser;
 ```
 ```javascript
-// /my-project/main-lib.test.js
-util.mock('./my-data.js', {
+// /my-project/test/main-lib.test.js
+util.mock('../src/my-data.js', {
     getUser: () => ({ id: 'fake-id', name: 'peter' })
 });
 
 const assert = require('assert');
-const mainLib = require('./main-lib.js');
+const mainLib = require('../src/main-lib.js');
 
 it('uses mock', function () {
     const result = mainLib();
@@ -109,7 +109,11 @@ it('uses mock', function () {
 });
 ```
 
-To stop use `util.mock.stop(target)` or `util.mock.stopAll()`. Mocks are automatically stopped at the end of the current block.
+To stop mocking use `util.mock.stop(target)` or `util.mock.stopAll()`. Mocks are automatically stopped at the end of the current block. 
+
+## Uncache
+
+If you want to expire the cache there is `util.uncache(target)` which will clear your module and cause it to be loaded again next time.
 
 ## Eslint
 
