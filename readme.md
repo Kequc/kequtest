@@ -1,6 +1,6 @@
 # <img alt="kequtest" src="https://github.com/Kequc/kequtest/raw/main/logo.png" width="190" height="85" />
 
-A very lightweight unit test runner using no dependencies. Useful for testing small projects, plugins, things like that. The goal is keep it simple.
+A very lightweight unit test runner using no dependencies. Useful for testing small projects, plugins, things like that. The goal is to be simple.
 
 ## Install
 
