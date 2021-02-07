@@ -27,13 +27,13 @@ Add the following script to `package.json` for easier access:
 
 ## Use
 
+Kequtest finds all `.test.js` files recursively throughout the current directory.
+
 `describe`
 
 `it`
 
-Kequtest finds all `.test.js` files recursively throughout the current directory. Tests are defined using `it` blocks, and sometimes those are contained inside `describe` blocks. A test is written so that when an error is thrown it fails.
-
-Easy way to throw an error is by using Node's [`assert`](https://nodejs.org/api/assert.html) library.
+Containers are defined using `describe` and tests are defined with `it`, a test will fail if an error is thrown. Easy way to throw an error is by using [`assert`](https://nodejs.org/api/assert.html).
 
 ## Example
 
