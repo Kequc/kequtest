@@ -1,14 +1,14 @@
 # <img alt="kequtest" src="https://github.com/Kequc/kequtest/raw/main/logo.png" width="190" height="85" />
 
-A very lightweight unit test runner using zero dependencies. Useful for testing small projects, plugins, things like that.
+A very lightweight unit test runner using no dependencies. Useful for testing small projects, plugins, things like that.
 
 ## Install
 
 ```
-npm i -g kequtest
+npm i -D kequtest
 ```
 
-Add the following script to `package.json` for easy access:
+Add the following script to `package.json` for easier access:
 
 ```javascript
 {
@@ -27,9 +27,9 @@ Add the following script to `package.json` for easy access:
 
 ## Use
 
-By default kequtest will find all test files recursively throughout the entire project and run them. Test files should have `.test.js` as their extension, and use `it()` and `describe()` blocks to organise. If an error is thrown the test fails.
+By default kequtest will find all test files recursively throughout the entire project and run them. Test files should have `.test.js` as their extension, using `describe()` and `it()` blocks to organise. If an error is thrown the test fails.
 
-The easiest way to throw errors is to use Node's built in `assert` library.
+The easiest way to throw errors is to use Node's [built in assert library](https://nodejs.org/api/assert.html).
 
 ## Example
 
@@ -95,7 +95,7 @@ Mocks can be created using `util.mock` before `require`, it takes a target and r
 module.exports = require('./my-data.js').getUser;
 ```
 ```javascript
-// /my-project/test/main-lib.test.js
+// /my-project/tests/main-lib.test.js
 util.mock('../src/my-data.js', {
     getUser: () => ({ id: 'fake-id', name: 'peter' })
 });
@@ -113,7 +113,7 @@ To stop mocking use `util.mock.stop(target)` or `util.mock.stopAll()`. Mocks are
 
 ## Uncache
 
-Clear a module from node's cache using `util.uncache(target)` causing it to load next time it's required.
+Clear a module from Node's cache using `util.uncache(target)` causing it to load next time it's required.
 
 ## Eslint
 
