@@ -84,11 +84,11 @@ They run in conjunction with the current block. So, at the top of a `describe` b
 
 `util.log`
 
-Generates a pseudo `console` object where every method `debug`, `info`, `log`, `warn`, and `error` is a spy.
+Generates a pseudo `console` object where every method `debug`, `info`, `log`, `warn`, and `error` are a spy.
 
 `util.spy`
 
-Takes a function to spy on as a parameter. Values passed through your spy are available at the `calls` attribute.
+Takes a function to spy on as a parameter. Values that passed through it are available as an array on the `calls` attribute.
 
 ```javascript
 const mySpy = util.spy(() => 'hi there');
@@ -102,7 +102,7 @@ const result = mySpy('hello?', 1);
 
 `util.mock`
 
-Called with a target and desired return value, mocks must be defined before `require` is used. Targets are relative to your test.
+Called with a target and desired return value, mocks must be defined before `require`. Targets are relative to your test.
 
 ```javascript
 // /my-project/src/main-lib.js
@@ -135,7 +135,7 @@ Stops mocking all modules.
 
 `util.uncache`
 
-Clear a module at a target from the cache, this will force the module to be loaded again when needed.
+Clear a module from the cache at a given target, this will force the module to be loaded again when needed.
 
 ## Eslint
 
