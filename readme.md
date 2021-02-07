@@ -27,9 +27,9 @@ Add the following script to `package.json` for easier access:
 
 ## Use
 
-By default kequtest finds all test files recursively throughout the current directory and runs them. Test files should have `.test.js` as their extension, using `describe()` and `it()` blocks inside of them to organise. If an error is thrown the test fails.
+By default kequtest finds all `.test.js` files recursively throughout the current directory. Test files use `describe` and `it` blocks inside them to organise. Tests are written so that an error is thrown if it fails otherwise it passes.
 
-The easiest way to throw errors is Node's [`assert`](https://nodejs.org/api/assert.html) library.
+The easiest way to throw errors is using Node's [`assert`](https://nodejs.org/api/assert.html) library.
 
 ## Example
 
@@ -63,7 +63,7 @@ kequc@kequ4k:~/my-project$
 
 ## Advanced use
 
-You may specify a test or directory as a parameter.
+You may specify a file or directory as a parameter.
 
 ```
 kequc@kequ4k:~/my-project$ kequtest somewhere/my-lib.test.js
@@ -89,7 +89,7 @@ Generates a pseudo `console` object where every method `debug`, `info`, `log`, `
 
 `util.spy`
 
-Takes a function to spy on as a parameter. Values that passed through it are available as an array on the `calls` attribute.
+Takes a function to spy on as a parameter. Values that pass through it are available as an array on the `calls` attribute.
 
 ```javascript
 const mySpy = util.spy(() => 'hi there');
@@ -138,7 +138,7 @@ Stops mocking all modules.
 
 `util.uncache`
 
-Clear a module from the cache at a given target, this will force the module to be loaded again when it is needed.
+Clear a module from the cache at a specific target, this will force the module to be loaded again when it is imported next.
 
 ## Eslint
 
