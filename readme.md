@@ -88,7 +88,7 @@ Generates a pseudo `console` object where every method `debug`, `info`, `log`, `
 
 `util.spy`
 
-Takes a function to spy on as a parameter, values your spy was called with are available at the attribute named `calls`.
+Takes a function to spy on as a parameter. Values passed through your spy are available at the `calls` attribute.
 
 ```javascript
 const mySpy = util.spy(() => 'hi there');
@@ -102,7 +102,7 @@ const result = mySpy('hello?', 1);
 
 `util.mock`
 
-Called with a target and desired return value. Mocks must be defined before `require` is used, and all targets are relative to your test.
+Called with a target and desired return value, mocks must be defined before `require` is used. Targets are relative to your test.
 
 ```javascript
 // /my-project/src/main-lib.js
@@ -125,17 +125,17 @@ it('uses mock', function () {
 
 `util.mock.stop`
 
-Target to stop mocking. Mocks are automatically stopped at the end of the current block. 
+Stops mocking a specific target. Mocks are automatically stopped at the end of the current block. 
 
 `util.mock.stopAll`
 
-Stops all module mocking.
+Stops mocking all modules.
 
 ## Uncache
 
 `util.uncache`
 
-Clear a module from cache at the given target, this will cause it to be loaded again the next time.
+Clear a module at a target from the cache, this will force the module to be loaded again when needed.
 
 ## Eslint
 
