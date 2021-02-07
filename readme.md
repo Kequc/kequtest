@@ -27,9 +27,13 @@ Add the following script to `package.json` for easier access:
 
 ## Use
 
-By default kequtest finds all `.test.js` files recursively throughout the current directory. Test files use `describe` and `it` blocks inside them to organise. Tests are written so that an error is thrown if it fails otherwise it passes.
+`describe`
 
-The easiest way to throw errors is using Node's [`assert`](https://nodejs.org/api/assert.html) library.
+`it`
+
+By default kequtest finds all `.test.js` files recursively throughout the current directory. Tests are defined using `it`, or if you want to make a container use `describe`. A test is written so that when an error is thrown it fails.
+
+The easiest way to throw an error is using Node's [`assert`](https://nodejs.org/api/assert.html) library.
 
 ## Example
 
@@ -79,17 +83,17 @@ kequc@kequ4k:~/my-project$ kequtest somewhere/my-lib.test.js
 
 `after`
 
-They run in conjunction with the current block. So, at the top of a `describe` block, `beforeEach` will run once for each `it` inside the block.
+They run in conjunction with the current block. So, putting `beforeEach` inside of a `describe` block your hook will run once for each `it` inside.
 
 ## Spies
 
 `util.log`
 
-Generates a pseudo `console` object where every method `debug`, `info`, `log`, `warn`, and `error` are a spy.
+Generates a pseudo `console` object where each method `debug`, `info`, `log`, `warn`, and `error` is a spy.
 
 `util.spy`
 
-Takes a function to spy on as a parameter. Values that pass through it are available as an array on the `calls` attribute.
+Takes a function to spy on as a parameter. Values that pass through are available as an array on the `calls` attribute.
 
 ```javascript
 const mySpy = util.spy(() => 'hi there');
