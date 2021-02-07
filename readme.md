@@ -27,7 +27,7 @@ Add the following script to `package.json` for easier access:
 
 ## Use
 
-By default will find all test files recursively throughout the current directory and run them. Test files should have `.test.js` as their extension, using `describe()` and `it()` blocks to organise. If an error is thrown the test fails.
+By default kequtest finds all test files recursively throughout the current directory and runs them. Test files should have `.test.js` as their extension, using `describe()` and `it()` blocks inside of them to organise. If an error is thrown the test fails.
 
 The easiest way to throw errors is Node's [`assert`](https://nodejs.org/api/assert.html) library.
 
@@ -35,6 +35,7 @@ The easiest way to throw errors is Node's [`assert`](https://nodejs.org/api/asse
 
 ```javascript
 // /my-project/somewhere/my-lib.test.js
+
 const assert = require('assert');
 const myLib = require('./my-lib.js');
 
@@ -102,14 +103,16 @@ const result = mySpy('hello?', 1);
 
 `util.mock`
 
-Called with a target and desired return value, mocks must be defined before `require`. Targets are relative to your test.
+Called with a target and desired return value, mocks must be defined before their targets are used. Targets are relative to your test.
 
 ```javascript
 // /my-project/src/main-lib.js
+
 module.exports = require('./my-data.js').getUser;
 ```
 ```javascript
 // /my-project/tests/main-lib.test.js
+
 util.mock('../src/my-data.js', {
     getUser: () => ({ id: 'fake-id', name: 'peter' })
 });
