@@ -1,11 +1,11 @@
 # <img alt="kequtest" src="https://github.com/Kequc/kequtest/raw/main/logo.png" width="190" height="85" />
 
-A very lightweight unit test runner using no dependencies. Useful for testing small projects, plugins, things like that.
+A very lightweight unit test runner using no dependencies. Useful for testing small projects, plugins, things like that. The goal is to keep it simple.
 
 ## Install
 
 ```
-npm i -D kequtest
+npm i -g kequtest
 ```
 
 Add the following script to `package.json` for easier access:
@@ -29,7 +29,7 @@ Add the following script to `package.json` for easier access:
 
 By default kequtest will find all test files recursively throughout the entire project and run them. Test files should have `.test.js` as their extension, using `describe()` and `it()` blocks to organise. If an error is thrown the test fails.
 
-The easiest way to throw errors is to use Node's [built in assert library](https://nodejs.org/api/assert.html).
+The easiest way to throw errors is to use Node's [assert library](https://nodejs.org/api/assert.html).
 
 ## Example
 
@@ -113,7 +113,7 @@ To stop mocking use `util.mock.stop(target)` or `util.mock.stopAll()`. Mocks are
 
 ## Uncache
 
-Clear a module from Node's cache using `util.uncache(target)` causing it to load next time it's required.
+Clear a module from cache using `util.uncache(target)` this will cause it to reload the next time it's required.
 
 ## Eslint
 
