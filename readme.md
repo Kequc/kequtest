@@ -1,6 +1,6 @@
 # <img alt="kequtest" src="https://github.com/Kequc/kequtest/raw/main/logo.png" width="190" height="85" />
 
-A very lightweight unit test runner using no dependencies. Useful for testing small projects, plugins, things like that. The goal is to keep it simple.
+A very lightweight unit test runner using no dependencies. Useful for testing small projects, plugins, things like that. The goal is keep it simple.
 
 ## Install
 
@@ -27,9 +27,9 @@ Add the following script to `package.json` for easier access:
 
 ## Use
 
-By default kequtest will find all test files recursively throughout the entire project and run them. Test files should have `.test.js` as their extension, using `describe()` and `it()` blocks to organise. If an error is thrown the test fails.
+By default will find all test files recursively throughout the current directory and run them. Test files should have `.test.js` as their extension, using `describe()` and `it()` blocks to organise. If an error is thrown the test fails.
 
-The easiest way to throw errors is to use Node's [assert library](https://nodejs.org/api/assert.html).
+The easiest way to throw errors is Node's [`assert`](https://nodejs.org/api/assert.html) library.
 
 ## Example
 
@@ -62,7 +62,7 @@ kequc@kequ4k:~/my-project$
 
 ## Advanced use
 
-You may specify a test file or directory as a parameter.
+You may specify a test or directory as a parameter.
 
 ```
 kequc@kequ4k:~/my-project$ kequtest somewhere/my-lib.test.js
@@ -70,11 +70,25 @@ kequc@kequ4k:~/my-project$ kequtest somewhere/my-lib.test.js
 
 ## Hooks
 
-Available hooks are `before`, `beforeEach`, `afterEach`, and `after`. They run in conjunction with the current block. So, at the top of a `describe` block, `beforeEach` will run once for each `it` inside the block.
+`before`
+
+`beforeEach`
+
+`afterEach`
+
+`after`
+
+They run in conjunction with the current block. So, at the top of a `describe` block, `beforeEach` will run once for each `it` inside the block.
 
 ## Spies
 
-Rudimentary spying can be found at `util.spy` where the parameter given is a function to spy on, if you want to know what your spy was called with use `calls`.
+`util.log`
+
+Generates a pseudo `console` object where every method `debug`, `info`, `log`, `warn`, and `error` is a spy.
+
+`util.spy`
+
+Takes a function to spy on as a parameter, values your spy was called with are available at the attribute named `calls`.
 
 ```javascript
 const mySpy = util.spy(() => 'hi there');
@@ -84,11 +98,11 @@ const result = mySpy('hello?', 1);
 // result ~= 'hi there'
 ```
 
-There is a simple `util.log` method which just generates a pseudo `console` object where every method `debug`, `info`, `log`, `warn`, and `error` is a spy.
-
 ## Mocks
 
-Mocks can be created using `util.mock` before `require`, it takes a target and return value. Targets are relative to your test.
+`util.mock`
+
+Called with a target and desired return value. Mocks must be defined before `require` is used, and all targets are relative to your test.
 
 ```javascript
 // /my-project/src/main-lib.js
@@ -109,11 +123,19 @@ it('uses mock', function () {
 });
 ```
 
-To stop mocking use `util.mock.stop(target)` or `util.mock.stopAll()`. Mocks are automatically stopped at the end of the current block. 
+`util.mock.stop`
+
+Target to stop mocking. Mocks are automatically stopped at the end of the current block. 
+
+`util.mock.stopAll`
+
+Stops all module mocking.
 
 ## Uncache
 
-Clear a module from cache using `util.uncache(target)` this will cause it to reload the next time it's required.
+`util.uncache`
+
+Clear a module from cache at the given target, this will cause it to be loaded again the next time.
 
 ## Eslint
 
