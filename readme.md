@@ -136,7 +136,7 @@ Stops mocking a specific target. Mocks are automatically stopped at the end of t
 
 `util.mock.stopAll`
 
-Stops mocking all modules.
+Stops mocking all targets.
 
 ## Uncache
 
