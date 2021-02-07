@@ -1,4 +1,4 @@
 const { mock, uncache } = require('./mock.js');
-const { spy, log } = require('./spy.js');
+const { log, spy } = require('./spy.js');
 
-module.exports = { mock, uncache, spy, log };
+module.exports = { mock, uncache, log, spy };

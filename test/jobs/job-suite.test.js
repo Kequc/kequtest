@@ -8,17 +8,17 @@ const FILES = [
 ];
 
 let parentHooks;
-let originalKequtestContainer;
+let originalKequtest;
 
 beforeEach(function () {
     parentHooks = { beforeEach: [], afterEach: [] };
-    originalKequtestContainer = global.kequtest.container;
-    global.kequtest.container = null;
+    originalKequtest = Object.assign({}, global.kequtest);
+    global.kequtest = { filename: null, container: null };
 });
 
 afterEach(function () {
     // Make sure we're unsetting this again
-    global.kequtest.container = originalKequtestContainer;
+    Object.assign(global.kequtest, originalKequtest);
 });
 
 it('creates a buffer', async function () {
@@ -29,12 +29,13 @@ it('creates a buffer', async function () {
     assert.strictEqual(result.buffer[1].description, 'index.fake-test.js');
 });
 
-it('displays output', async function () {
+it('sets filename and displays output', async function () {
     const result = new JobSuite(ABSOLUTE, FILES);
     const log = util.log();
 
     await result.run(log, parentHooks);
 
     assert.strictEqual(result.error, null);
+    assert.strictEqual(global.kequtest.filename, FILES[FILES.length - 1]);
     assert.strictEqual(log.info.calls[0][0], 'Found 2 test files...');
 });

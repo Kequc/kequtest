@@ -1,3 +1,13 @@
+function log () {
+    return {
+        debug: spy(),
+        info: spy(),
+        log: spy(),
+        warn: spy(),
+        error: spy()
+    };
+}
+
 function spy (method = () => {}) {
     if (typeof method !== 'function') {
         throw new Error(`Spy must be a function got ${typeof method} instead.`);
@@ -13,14 +23,4 @@ function spy (method = () => {}) {
     return result;
 }
 
-function log () {
-    return {
-        debug: spy(),
-        info: spy(),
-        log: spy(),
-        warn: spy(),
-        error: spy()
-    };
-}
-
-module.exports = { spy, log };
+module.exports = { log, spy };

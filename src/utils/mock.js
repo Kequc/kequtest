@@ -16,14 +16,15 @@ Module._load = function (request, parent) {
 };
 
 function mock (request, override) {
-    const absolute = calcAbsolute(request, callerFilename());
-    const container = global.kequtest.container;
+    const { filename, container } = global.kequtest;
+    const absolute = calcAbsolute(request, filename);
     container.mocks.push(absolute);
     overrides[absolute] = override;
 }
 
 function stop (request) {
-    const absolute = calcAbsolute(request, callerFilename());
+    const { filename } = global.kequtest;
+    const absolute = calcAbsolute(request, filename);
     delete overrides[absolute];
 }
 
@@ -34,7 +35,8 @@ function stopAll () {
 }
 
 function uncache (request) {
-    const absolute = calcAbsolute(request, callerFilename());
+    const { filename } = global.kequtest;
+    const absolute = calcAbsolute(request, filename);
     delete require.cache[absolute];
 }
 
@@ -49,10 +51,4 @@ function calcAbsolute (request, parentFilename) {
         return path.join(path.dirname(parentFilename), request);
     }
     return request;
-}
-
-// Inspects the stack looking for caller of this method
-function callerFilename () {
-    const line = new Error().stack.split('\n')[3];
-    return line.slice(line.lastIndexOf('(') + 1, line.lastIndexOf(')'));
 }

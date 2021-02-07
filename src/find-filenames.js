@@ -3,7 +3,7 @@ const fs = require('fs');
 
 const IGNORE = ['node_modules'];
 
-function findFiles (log, absolute, exts) {
+function findFilenames (log, absolute, exts) {
     try {
         if (!fs.existsSync(absolute)) {
             throw new Error(`Specified location doesn't exist. ${absolute}`);
@@ -23,8 +23,8 @@ function findFiles (log, absolute, exts) {
 
 function scan (absolute, exts) {
     if (isDirectory(absolute)) {
-        const files = fs.readdirSync(absolute);
-        return files.reduce((acc, curr) => acc.concat(scan(path.join(absolute, curr), exts)), []);
+        const filenames = fs.readdirSync(absolute);
+        return filenames.reduce((acc, curr) => acc.concat(scan(path.join(absolute, curr), exts)), []);
     } else if (isTestFile(absolute, exts)) {
         return [absolute];
     } else {
@@ -46,4 +46,4 @@ function isTestFile (absolute, exts) {
     return false;
 }
 
-module.exports = findFiles;
+module.exports = findFilenames;

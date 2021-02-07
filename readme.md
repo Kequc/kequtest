@@ -113,7 +113,7 @@ To stop mocking use `util.mock.stop(target)` or `util.mock.stopAll()`. Mocks are
 
 ## Uncache
 
-If you want to expire the cache there is `util.uncache(target)` which will clear your module and cause it to be loaded again next time.
+Clear a module from node's cache using `util.uncache(target)` causing it to load next time it's required.
 
 ## Eslint
 

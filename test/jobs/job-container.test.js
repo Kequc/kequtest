@@ -4,17 +4,17 @@ const JobContainer = require('../../src/jobs/job-container.js');
 const DESCRIPTION = 'fake description';
 
 let parentHooks;
-let originalKequtestContainer;
+let originalKequtest;
 
 beforeEach(function () {
     parentHooks = { beforeEach: [], afterEach: [] };
-    originalKequtestContainer = global.kequtest.container;
-    global.kequtest.container = null;
+    originalKequtest = Object.assign({}, global.kequtest);
+    global.kequtest = { filename: null, container: null };
 });
 
 afterEach(function () {
     // Make sure we're unsetting this again
-    global.kequtest.container = originalKequtestContainer;
+    Object.assign(global.kequtest, originalKequtest);
 });
 
 it('creates an instance', function () {
