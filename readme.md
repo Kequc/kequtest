@@ -103,7 +103,7 @@ const result = mySpy('hello?', 1);
 
 `util.mock`
 
-Called with a target and desired return value, mocks must be defined before their targets are used. Targets are relative to your test.
+Called with a target and desired return value, mocks must be defined before their targets are imported. Targets are relative to your test.
 
 ```javascript
 // /my-project/src/main-lib.js
@@ -138,7 +138,7 @@ Stops mocking all modules.
 
 `util.uncache`
 
-Clear a module from the cache at a given target, this will force the module to be loaded again when needed.
+Clear a module from the cache at a given target, this will force the module to be loaded again when it is needed.
 
 ## Eslint
 
