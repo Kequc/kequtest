@@ -9,7 +9,7 @@ class JobTest extends Job {
 
     postfix () {
         if (this.error) return red(' \u2717');
-        if (typeof this.cb !== 'function') return red(' - missing -');
+        if (typeof this.cb !== 'function') return green(' -- missing --');
         return green(' \u2713');
     }
 }

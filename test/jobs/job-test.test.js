@@ -41,6 +41,6 @@ it('displays output when cb is undefined', async function () {
 
     assert.strictEqual(result.error, null);
     assert.deepStrictEqual(log.info.calls, [
-        ['  \u00B7 ' + DESCRIPTION + '\x1b[31m - missing -\x1b[0m']
+        ['  \u00B7 ' + DESCRIPTION + '\x1b[32m -- missing --\x1b[0m']
     ]);
 });

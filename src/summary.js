@@ -3,20 +3,23 @@ const { pluralise, red } = require('./helpers.js');
 
 function summary (log, suite) {
     const data = getData(suite);
-    const passed = `${data.passed}/${data.passed + data.failed} passing, ${pluralise(data.failed, 'failure')}`;
 
-    if (data.failed > 0) {
-        log.info(red(passed));
-    } else {
-        log.info(passed);
-    }
+    let result = `${data.passed}/${data.passed + data.failed} passing`;
 
     if (data.missing > 0) {
-        log.info(red(pluralise(data.missing, 'missing test')));
+        result += `, ${data.missing} missing`;
     }
 
+    result += `, ${pluralise(data.failed, 'failure')}`;
+
     if (data.catastrophic > 0) {
-        log.info(red(pluralise(data.catastrophic, 'catastrophic failure')));
+        result += `, ${pluralise(data.catastrophic, 'catastrophic failure')}`;
+    }
+
+    if (data.failed > 0 || data.catastrophic > 0) {
+        log.info(red(result));
+    } else {
+        log.info(result);
     }
 }
 

@@ -54,8 +54,7 @@ it('detects missing tests', function () {
     summary(log, suite);
 
     assert.deepStrictEqual(log.info.calls, [
-        ['0/0 passing, 0 failures'],
-        ['\x1b[31m2 missing tests\x1b[0m']
+        ['0/0 passing, 2 missing, 0 failures']
     ]);
 });
 
@@ -72,8 +71,7 @@ it('detects catastrophic failures', function () {
     summary(log, suite);
 
     assert.deepStrictEqual(log.info.calls, [
-        ['1/1 passing, 0 failures'],
-        ['\x1b[31m1 catastrophic failure\x1b[0m']
+        ['\x1b[31m1/1 passing, 0 failures, 1 catastrophic failure\x1b[0m']
     ]);
 });
 
