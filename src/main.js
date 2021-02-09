@@ -12,7 +12,7 @@ function describe (description, cb) {
     if (typeof description !== 'string') {
         throw new Error(`Description must be a string got ${typeof description} instead.`);
     }
-    if (typeof cb !== 'function') {
+    if (cb !== undefined && typeof cb !== 'function') {
         throw new Error(`Container must be a function got ${typeof cb} instead.`);
     }
     const { container } = global.kequtest;
