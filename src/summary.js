@@ -32,7 +32,7 @@ function getData (parent) {
         if (!(child instanceof JobContainer)) {
             if (child.error) {
                 result.failed++;
-            } else if (typeof child.cb !== 'function') {
+            } else if (child.cb === undefined) {
                 result.missing++;
             } else {
                 result.passed++;

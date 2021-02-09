@@ -9,11 +9,23 @@ process.env.NODE_ENV = process.env.NODE_ENV || 'test';
 
 // GLOBAL
 function describe (description, cb) {
+    if (typeof description !== 'string') {
+        throw new Error(`Description must be a string got ${typeof description} instead.`);
+    }
+    if (typeof cb !== 'function') {
+        throw new Error(`Container must be a function got ${typeof cb} instead.`);
+    }
     const { container } = global.kequtest;
     container.buffer.push(new JobContainer(description, cb, container.depth + 1));
 }
 
 function it (description, cb) {
+    if (typeof description !== 'string') {
+        throw new Error(`Description must be a string got ${typeof description} instead.`);
+    }
+    if (cb !== undefined && typeof cb !== 'function') {
+        throw new Error(`Test must be a function got ${typeof cb} instead.`);
+    }
     const { container } = global.kequtest;
     container.buffer.push(new JobTest(description, cb, container.depth + 1));
 }
