@@ -33,9 +33,9 @@ it('displays output when cb fails', async function () {
     ]);
 });
 
-it('displays output when cb is not a function', async function () {
+it('displays output when cb is undefined', async function () {
     const log = util.log();
-    const result = new JobTest(DESCRIPTION, null, 2);
+    const result = new JobTest(DESCRIPTION, undefined, 2);
 
     await result.run(log);
 
