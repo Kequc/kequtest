@@ -13,6 +13,24 @@ it('creates an instance', function () {
     assert.strictEqual(result.error, null);
 });
 
+it('throws an error when description is invalid', function () {
+    const cb = () => {};
+    assert.throws(() => { new Job(undefined, cb, 0); }, { message: /^Description must be a string/ });
+    assert.throws(() => { new Job(null, cb, 0); }, { message: /^Description must be a string/ });
+    assert.throws(() => { new Job(100, cb, 0); }, { message: /^Description must be a string/ });
+});
+
+it('throws an error when callback is invalid', function () {
+    assert.throws(() => { new Job('testing', null, 0); }, { message: /^Block must be a function/ });
+    assert.throws(() => { new Job('testing', 100, 0); }, { message: /^Block must be a function/ });
+});
+
+it('allows block to be undefined', function () {
+    const cb = undefined;
+    const result = new Job(DESCRIPTION, cb, 0);
+    assert.strictEqual(result.cb, undefined);
+});
+
 it('runs the callback and displays output', async function () {
     const log = util.log();
     const cb = util.spy();

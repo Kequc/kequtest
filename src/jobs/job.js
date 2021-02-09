@@ -1,5 +1,12 @@
 class Job {
     constructor (description, cb, depth) {
+        if (typeof description !== 'string') {
+            throw new Error(`Description must be a string got ${typeof description} instead.`);
+        }
+        if (cb !== undefined && typeof cb !== 'function') {
+            throw new Error(`Block must be a function got ${typeof cb} instead.`);
+        }
+
         this.description = description;
         this.cb = cb;
         this.depth = depth;
