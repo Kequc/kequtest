@@ -32,3 +32,15 @@ it('displays output when cb fails', async function () {
         [error]
     ]);
 });
+
+it('displays output when cb is not a function', async function () {
+    const log = util.log();
+    const result = new JobTest(DESCRIPTION, null, 2);
+
+    await result.run(log);
+
+    assert.strictEqual(result.error, null);
+    assert.deepStrictEqual(log.info.calls, [
+        ['  \u00B7 ' + DESCRIPTION + '\x1b[31m - missing -\x1b[0m']
+    ]);
+});

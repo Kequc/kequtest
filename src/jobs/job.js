@@ -8,7 +8,7 @@ class Job {
 
     async run (log) {
         try {
-            await this.cb();
+            if (typeof this.cb === 'function') await this.cb();
             log.info(this.message());
         } catch (error) {
             this.error = error;

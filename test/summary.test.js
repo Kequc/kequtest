@@ -17,8 +17,8 @@ it('counts passing tests', function () {
     const log = util.log();
     const suite = new JobContainer('test suite', () => {}, 0);
     suite.buffer = [
-        { error: null },
-        { error: null }
+        { cb: () => {}, error: null },
+        { cb: () => {}, error: null }
     ];
 
     summary(log, suite);
@@ -32,14 +32,30 @@ it('counts failing tests', function () {
     const log = util.log();
     const suite = new JobContainer('test suite', () => {}, 0);
     suite.buffer = [
-        { error: new Error('test1') },
-        { error: new Error('test2') }
+        { cb: () => {}, error: new Error('test1') },
+        { cb: () => {}, error: new Error('test2') }
     ];
 
     summary(log, suite);
 
     assert.deepStrictEqual(log.info.calls, [
         ['\x1b[31m0/2 passing, 2 failures\x1b[0m']
+    ]);
+});
+
+it('detects missing tests', function () {
+    const log = util.log();
+    const suite = new JobContainer('test suite', () => {}, 0);
+    suite.buffer = [
+        {},
+        {}
+    ];
+
+    summary(log, suite);
+
+    assert.deepStrictEqual(log.info.calls, [
+        ['0/0 passing, 0 failures'],
+        ['\x1b[31m2 missing tests\x1b[0m']
     ]);
 });
 
@@ -50,7 +66,7 @@ it('detects catastrophic failures', function () {
     describe.error = new Error('test1');
     suite.buffer = [
         describe,
-        { error: null }
+        { cb: () => {}, error: null }
     ];
 
     summary(log, suite);
@@ -66,14 +82,14 @@ it('counts tests deep', function () {
     const suite = new JobContainer('test suite', () => {}, 0);
     const describe = new JobContainer('test describe', () => {}, 1);
     describe.buffer = [
-        { error: new Error('test1') },
-        { error: null },
-        { error: null }
+        { cb: () => {}, error: new Error('test1') },
+        { cb: () => {}, error: null },
+        { cb: () => {}, error: null }
     ];
     suite.buffer = [
         describe,
-        { error: new Error('test2') },
-        { error: null }
+        { cb: () => {}, error: new Error('test2') },
+        { cb: () => {}, error: null }
     ];
 
     summary(log, suite);

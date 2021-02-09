@@ -4,7 +4,7 @@ const { pluralise } = require('../helpers.js');
 class JobSuite extends JobContainer {
     constructor (absolute, filenames) {
         const description = `Found ${pluralise(filenames.length, 'test file')}...`;
-        const cb = () => {};
+        const cb = null;
 
         super(description, cb, 0);
 
