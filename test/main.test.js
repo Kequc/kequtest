@@ -18,9 +18,9 @@ describe('describe', function () {
         assert.throws(() => { describe(100); }, { message: /^Description must be a string/ });
     });
     it('throws an error when callback is invalid', function () {
-        assert.throws(() => { describe('testing'); }, { message: /^Callback must be a function/ });
-        assert.throws(() => { describe('testing', null); }, { message: /^Callback must be a function/ });
-        assert.throws(() => { describe('testing', 100); }, { message: /^Callback must be a function/ });
+        assert.throws(() => { describe('testing'); }, { message: /^Container must be a function/ });
+        assert.throws(() => { describe('testing', null); }, { message: /^Container must be a function/ });
+        assert.throws(() => { describe('testing', 100); }, { message: /^Container must be a function/ });
     });
 });
 
@@ -31,8 +31,8 @@ describe('it', function () {
         assert.throws(() => { it(100); }, { message: /^Description must be a string/ });
     });
     it('throws an error when callback is invalid', function () {
-        assert.throws(() => { it('testing', null); }, { message: /^Callback must be a function/ });
-        assert.throws(() => { it('testing', 100); }, { message: /^Callback must be a function/ });
+        assert.throws(() => { it('testing', null); }, { message: /^Test must be a function/ });
+        assert.throws(() => { it('testing', 100); }, { message: /^Test must be a function/ });
     });
 });
 
