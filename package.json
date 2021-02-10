@@ -1,6 +1,6 @@
 {
   "name": "kequtest",
-  "version": "0.2.16",
+  "version": "0.2.17",
   "description": "A very simple test utility",
   "main": "index.js",
   "scripts": {
