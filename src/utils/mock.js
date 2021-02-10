@@ -47,6 +47,9 @@ module.exports = { mock, uncache };
 
 // Convert a request into an absolute path
 function calcAbsolute (request, parentFilename) {
+    if (typeof request !== 'string') {
+        throw new Error(`Request must be a string got ${typeof request} instead.`);
+    }
     if (/^\.{1,2}[/\\]?/.test(request)) {
         return path.join(path.dirname(parentFilename), request);
     }
