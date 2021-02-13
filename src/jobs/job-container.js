@@ -1,4 +1,5 @@
 const Job = require('./job.js');
+const { sequence } = require('../helpers.js');
 
 class JobContainer extends Job {
     constructor (...params) {
@@ -25,15 +26,15 @@ class JobContainer extends Job {
             return;
         }
 
-        // Looking at all the hooks up the tree
-        const hooks = {
+        // Hooks up the tree
+        const childHooks = {
             beforeEach: parentHooks.beforeEach.concat(this.hooks.beforeEach),
             afterEach: this.hooks.afterEach.concat(parentHooks.afterEach)
         };
 
         try {
             await sequence(this.hooks.before);
-            await sequence(this.buffer.map(job => buildJob(log, job, hooks)));
+            await sequence(this.buffer.map(job => queue(log, job, childHooks)));
             await sequence(this.hooks.after);
         } catch (error) {
             this.error = error;
@@ -50,22 +51,28 @@ class JobContainer extends Job {
             global.util.mock.stop(mock);
         }
     }
-}
 
-function buildJob (log, job, hooks) {
-    return async () => {
-        if (job instanceof JobContainer) {
-            await job.run(log, hooks);
-        } else {
-            await sequence(hooks.beforeEach);
-            await job.run(log);
-            await sequence(hooks.afterEach);
+    getData () {
+        const result = super.getData();
+
+        if (this.error) {
+            result.catastrophic++;
         }
-    };
+
+        for (const job of this.buffer) {
+            for (const [key, value] of Object.entries(job.getData())) {
+                result[key] += value;
+            }
+        }
+
+        return result;
+    }
 }
 
-async function sequence (promises) {
-    await promises.reduce((acc, curr) => acc.then(curr), Promise.resolve());
+function queue (log, job, childHooks) {
+    return async function () {
+        await job.run(log, childHooks);
+    };
 }
 
 module.exports = JobContainer;

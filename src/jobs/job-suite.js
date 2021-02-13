@@ -1,12 +1,13 @@
+const path = require('path');
 const JobContainer = require('./job-container.js');
 const { pluralise } = require('../helpers.js');
 
 class JobSuite extends JobContainer {
     constructor (absolute, filenames) {
         const description = `Found ${pluralise(filenames.length, 'test file')}...`;
-        const cb = undefined;
+        const block = undefined;
 
-        super(description, cb, 0);
+        super(description, block, 0);
 
         this.buffer = filenames.map(filename => new JobFile(absolute, filename));
     }
@@ -18,10 +19,10 @@ class JobSuite extends JobContainer {
 
 class JobFile extends JobContainer {
     constructor (absolute, filename) {
-        const description = filename.replace(absolute + '/', '');
-        const cb = () => { require(filename); };
+        const description = filename.replace(absolute + path.sep, '');
+        const block = () => { require(filename); };
 
-        super(description, cb, 0);
+        super(description, block, 0);
 
         this.filename = filename;
     }

@@ -37,7 +37,7 @@ function stopAll () {
 function uncache (request) {
     const { filename } = global.kequtest;
     const absolute = calcAbsolute(request, filename);
-    delete require.cache[absolute];
+    delete require.cache[require.resolve(absolute)];
 }
 
 mock.stop = stop;
@@ -48,7 +48,7 @@ module.exports = { mock, uncache };
 // Convert a request into an absolute path
 function calcAbsolute (request, parentFilename) {
     if (typeof request !== 'string') {
-        throw new Error(`Request must be a string got ${typeof request} instead.`);
+        throw new Error(`Target must be a string got ${typeof request} instead.`);
     }
     if (/^\.{1,2}[/\\]?/.test(request)) {
         return path.join(path.dirname(parentFilename), request);

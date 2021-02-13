@@ -11,4 +11,8 @@ function green (text) {
     return `\x1b[32m${text}\x1b[0m`;
 }
 
-module.exports = { pluralise, red, green };
+async function sequence (promises) {
+    await promises.reduce((acc, curr) => acc.then(curr), Promise.resolve());
+}
+
+module.exports = { pluralise, red, green, sequence };

@@ -1,4 +1,5 @@
 const assert = require('assert');
+const path = require('path');
 const main = require('../src/main.js');
 
 it('sets up test environment', function () {
@@ -13,7 +14,7 @@ it('sets up test environment', function () {
 
 it('runs test suite', async function () {
     const log = util.log();
-    const absolute = __dirname + '/fake-src';
+    const absolute = path.join(__dirname, '/fake-src');
     const exts = ['.fake-test.js'];
 
     await main(log, absolute, exts);

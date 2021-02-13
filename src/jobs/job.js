@@ -1,21 +1,21 @@
 class Job {
-    constructor (description, cb, depth) {
+    constructor (description, block, depth) {
         if (typeof description !== 'string') {
             throw new Error(`Description must be a string got ${typeof description} instead.`);
         }
-        if (cb !== undefined && typeof cb !== 'function') {
-            throw new Error(`Block must be a function got ${typeof cb} instead.`);
+        if (block !== undefined && typeof block !== 'function') {
+            throw new Error(`Block must be a function got ${typeof block} instead.`);
         }
 
         this.description = description;
-        this.cb = cb;
+        this.block = block;
         this.depth = depth;
         this.error = null;
     }
 
     async run (log) {
         try {
-            if (this.cb !== undefined) await this.cb();
+            if (this.block !== undefined) await this.block();
             log.info(this.message());
         } catch (error) {
             this.error = error;
@@ -29,6 +29,15 @@ class Job {
     message () {
         const padding = (this.depth) * 2;
         return this.description.padStart(this.description.length + padding);
+    }
+
+    getData () {
+        return {
+            passed: 0,
+            failed: 0,
+            missing: 0,
+            catastrophic: 0
+        };
     }
 }
 

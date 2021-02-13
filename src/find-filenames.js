@@ -21,6 +21,8 @@ function findFilenames (log, absolute, exts) {
     return scan(absolute, exts);
 }
 
+module.exports = findFilenames;
+
 function scan (absolute, exts) {
     if (isDirectory(absolute)) {
         const filenames = fs.readdirSync(absolute);
@@ -34,7 +36,7 @@ function scan (absolute, exts) {
 
 function isDirectory (absolute) {
     if (fs.statSync(absolute).isDirectory()) {
-        return !IGNORE.includes(absolute.split('/').pop());
+        return !IGNORE.includes(absolute.split(path.sep).pop());
     }
     return false;
 }
@@ -45,5 +47,3 @@ function isTestFile (absolute, exts) {
     }
     return false;
 }
-
-module.exports = findFilenames;

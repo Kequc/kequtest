@@ -8,14 +8,14 @@ const summary = require('./summary.js');
 process.env.NODE_ENV = process.env.NODE_ENV || 'test';
 
 // GLOBAL
-function describe (description, cb) {
+function describe (description, block) {
     const { container } = global.kequtest;
-    container.buffer.push(new JobContainer(description, cb, container.depth + 1));
+    container.buffer.push(new JobContainer(description, block, container.depth + 1));
 }
 
-function it (description, cb) {
+function it (description, block) {
     const { container } = global.kequtest;
-    container.buffer.push(new JobTest(description, cb, container.depth + 1));
+    container.buffer.push(new JobTest(description, block, container.depth + 1));
 }
 
 global.kequtest = { filename: null, container: null };
@@ -24,9 +24,9 @@ global.it = it;
 global.util = require('./utils/util.js');
 
 function hook (name) {
-    global[name] = function (cb) {
+    global[name] = function (block) {
         const { container } = global.kequtest;
-        container.hooks[name].push(cb);
+        container.hooks[name].push(block);
     };
 }
 
@@ -40,8 +40,7 @@ async function main (log, absolute, exts) {
     log.info('STARTING');
     log.info('> ' + absolute);
 
-    const filenames = findFilenames(log, absolute, exts);
-    const suite = new JobSuite(absolute, filenames);
+    const suite = new JobSuite(absolute, findFilenames(log, absolute, exts));
     await suite.run(log);
 
     log.info('FINISHED');

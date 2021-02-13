@@ -13,8 +13,8 @@ describe('mock', function () {
     });
 
     it('throws an error when request is not a string', function () {
-        assert.throws(() => { util.mock(null); }, { message: /^Request must be a string/ });
-        assert.throws(() => { util.mock.stop(null); }, { message: /^Request must be a string/ });
+        assert.throws(() => { util.mock(null); }, { message: /^Target must be a string/ });
+        assert.throws(() => { util.mock.stop(null); }, { message: /^Target must be a string/ });
     });
 
     it('mocks a relative path', function () {
@@ -56,6 +56,6 @@ describe('uncache', function () {
     });
 
     it('throws an error when request is not a string', function () {
-        assert.throws(() => { util.uncache(null); }, { message: /^Request must be a string/ });
+        assert.throws(() => { util.uncache(null); }, { message: /^Target must be a string/ });
     });
 });

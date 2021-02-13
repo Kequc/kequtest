@@ -4,20 +4,20 @@ const Job = require('../../src/jobs/job.js');
 const DESCRIPTION = 'fake description';
 
 it('creates an instance', function () {
-    const cb = () => {};
-    const result = new Job(DESCRIPTION, cb, 0);
+    const block = () => {};
+    const result = new Job(DESCRIPTION, block, 0);
 
     assert.strictEqual(result.description, DESCRIPTION);
-    assert.strictEqual(result.cb, cb);
+    assert.strictEqual(result.block, block);
     assert.strictEqual(result.depth, 0);
     assert.strictEqual(result.error, null);
 });
 
 it('throws an error when description is invalid', function () {
-    const cb = () => {};
-    assert.throws(() => { new Job(undefined, cb, 0); }, { message: /^Description must be a string/ });
-    assert.throws(() => { new Job(null, cb, 0); }, { message: /^Description must be a string/ });
-    assert.throws(() => { new Job(100, cb, 0); }, { message: /^Description must be a string/ });
+    const block = () => {};
+    assert.throws(() => { new Job(undefined, block, 0); }, { message: /^Description must be a string/ });
+    assert.throws(() => { new Job(null, block, 0); }, { message: /^Description must be a string/ });
+    assert.throws(() => { new Job(100, block, 0); }, { message: /^Description must be a string/ });
 });
 
 it('throws an error when callback is invalid', function () {
@@ -26,19 +26,19 @@ it('throws an error when callback is invalid', function () {
 });
 
 it('allows block to be undefined', function () {
-    const cb = undefined;
-    const result = new Job(DESCRIPTION, cb, 0);
-    assert.strictEqual(result.cb, undefined);
+    const block = undefined;
+    const result = new Job(DESCRIPTION, block, 0);
+    assert.strictEqual(result.block, undefined);
 });
 
 it('runs the callback and displays output', async function () {
     const log = util.log();
-    const cb = util.spy();
-    const result = new Job(DESCRIPTION, cb, 0);
+    const block = util.spy();
+    const result = new Job(DESCRIPTION, block, 0);
 
-    assert.strictEqual(cb.calls.length, 0);
+    assert.strictEqual(block.calls.length, 0);
     await result.run(log);
-    assert.strictEqual(cb.calls.length, 1);
+    assert.strictEqual(block.calls.length, 1);
 
     assert.strictEqual(result.error, null);
     assert.deepStrictEqual(log.info.calls, [
@@ -58,7 +58,7 @@ it('displays output with depth', async function () {
     ]);
 });
 
-it('displays an error when cb fails', async function () {
+it('displays an error when block fails', async function () {
     const error = new Error('fake failure');
     const log = util.log();
     const result = new Job(DESCRIPTION, () => { throw error; }, 2);
@@ -74,4 +74,15 @@ it('displays an error when cb fails', async function () {
     assert.deepStrictEqual(log.error.calls, [
         [error]
     ]);
+});
+
+it('reports empty test results', function () {
+    const result = new Job(DESCRIPTION, () => {}, 0);
+
+    assert.deepStrictEqual(result.getData(), {
+        passed: 0,
+        failed: 0,
+        missing: 0,
+        catastrophic: 0
+    });
 });

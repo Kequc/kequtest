@@ -1,5 +1,6 @@
 const assert = require('assert');
 const JobContainer = require('../src/jobs/job-container.js');
+const JobTest = require('../src/jobs/job-test.js');
 const summary = require('../src/summary.js');
 
 it('prints a test summary', function () {
@@ -16,9 +17,10 @@ it('prints a test summary', function () {
 it('counts passing tests', function () {
     const log = util.log();
     const suite = new JobContainer('test suite', () => {}, 0);
+
     suite.buffer = [
-        { cb: () => {}, error: null },
-        { cb: () => {}, error: null }
+        new JobTest('test1', () => {}, 1),
+        new JobTest('test2', () => {}, 1)
     ];
 
     summary(log, suite);
@@ -31,10 +33,13 @@ it('counts passing tests', function () {
 it('counts failing tests', function () {
     const log = util.log();
     const suite = new JobContainer('test suite', () => {}, 0);
+
     suite.buffer = [
-        { cb: () => {}, error: new Error('test1') },
-        { cb: () => {}, error: new Error('test2') }
+        new JobTest('test1', () => {}, 1),
+        new JobTest('test2', () => {}, 1)
     ];
+    suite.buffer[0].error = new Error('error1');
+    suite.buffer[1].error = new Error('error2');
 
     summary(log, suite);
 
@@ -46,9 +51,10 @@ it('counts failing tests', function () {
 it('detects missing tests', function () {
     const log = util.log();
     const suite = new JobContainer('test suite', () => {}, 0);
+
     suite.buffer = [
-        {},
-        {}
+        new JobTest('test1', undefined, 1),
+        new JobTest('test2', undefined, 1)
     ];
 
     summary(log, suite);
@@ -62,11 +68,12 @@ it('detects catastrophic failures', function () {
     const log = util.log();
     const suite = new JobContainer('test suite', () => {}, 0);
     const describe = new JobContainer('test describe', () => {}, 1);
-    describe.error = new Error('test1');
+
     suite.buffer = [
         describe,
-        { cb: () => {}, error: null }
+        new JobTest('test1', () => {}, 1)
     ];
+    describe.error = new Error('error1');
 
     summary(log, suite);
 
@@ -80,15 +87,17 @@ it('counts tests deep', function () {
     const suite = new JobContainer('test suite', () => {}, 0);
     const describe = new JobContainer('test describe', () => {}, 1);
     describe.buffer = [
-        { cb: () => {}, error: new Error('test1') },
-        { cb: () => {}, error: null },
-        { cb: () => {}, error: null }
+        new JobTest('test1', () => {}, 2),
+        new JobTest('test2', () => {}, 2),
+        new JobTest('test3', () => {}, 2)
     ];
     suite.buffer = [
         describe,
-        { cb: () => {}, error: new Error('test2') },
-        { cb: () => {}, error: null }
+        new JobTest('test4', () => {}, 1),
+        new JobTest('test5', () => {}, 1)
     ];
+    describe.buffer[0].error = new Error('error1');
+    suite.buffer[1].error = new Error('error2');
 
     summary(log, suite);
 
