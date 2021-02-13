@@ -15,7 +15,7 @@ class JobContainer extends Job {
         this.mocks = [];
     }
 
-    async run (log, parentHooks) {
+    async run (log, hooks) {
         global.kequtest.container = this;
 
         await super.run(log);
@@ -27,14 +27,14 @@ class JobContainer extends Job {
         }
 
         // Hooks up the tree
-        const childHooks = {
-            beforeEach: parentHooks.beforeEach.concat(this.hooks.beforeEach),
-            afterEach: this.hooks.afterEach.concat(parentHooks.afterEach)
+        const treeHooks = {
+            beforeEach: hooks.beforeEach.concat(this.hooks.beforeEach),
+            afterEach: this.hooks.afterEach.concat(hooks.afterEach)
         };
 
         try {
             await sequence(this.hooks.before);
-            await sequence(this.buffer.map(job => queue(log, job, childHooks)));
+            await sequence(this.buffer.map(job => queue(log, job, treeHooks)));
             await sequence(this.hooks.after);
         } catch (error) {
             this.error = error;
@@ -69,9 +69,9 @@ class JobContainer extends Job {
     }
 }
 
-function queue (log, job, childHooks) {
+function queue (log, job, treeHooks) {
     return async function () {
-        await job.run(log, childHooks);
+        await job.run(log, treeHooks);
     };
 }
 
