@@ -18,7 +18,7 @@ beforeEach(function () {
 });
 
 afterEach(function () {
-    // Make sure we're unsetting this again
+    // make sure we're unsetting this again
     Object.assign(global.kequtest, originalKequtest);
 });
 

@@ -45,7 +45,7 @@ mock.stopAll = stopAll;
 
 module.exports = { mock, uncache };
 
-// Convert a request into an absolute path
+// request to absolute path
 function calcAbsolute (request, parentFilename) {
     if (typeof request !== 'string') {
         throw new Error(`Target must be a string got ${typeof request} instead.`);
