@@ -2,6 +2,8 @@
 
 A very clean and lightweight unit test runner using no dependencies. Useful for testing small projects, plugins, things like that quickly. The goal is to be simple.
 
+You don't need to configure anything to begin testing just run kequtest.
+
 ## Install
 
 ```
@@ -33,7 +35,7 @@ Kequtest finds all `.test.js` files recursively throughout the current directory
 
 `it`
 
-Containers are defined using `describe` and tests are defined with `it`, a test will fail if an error is thrown. Easy way to throw errors is by using Node's built in [`assert`](https://nodejs.org/api/assert.html).
+Containers are defined using `describe` and tests are defined with `it`, a test will fail if an error is thrown. An easy way to throw errors is by using Node's [`assert`](https://nodejs.org/api/assert.html) library but you can use [`chai`](https://www.npmjs.com/package/chai) if you want or any assertion module.
 
 ## Example
 
@@ -46,20 +48,6 @@ const myLib = require('./my-lib.js');
 it('counts nearby offices', function () {
     const result = myLib();
     assert.strictEqual(result, 42);
-});
-```
-
-Using [`chai`](https://www.npmjs.com/package/chai).
-
-```javascript
-// /my-project/somewhere/my-lib.test.js
-
-const { expect } = require('chai');
-const myLib = require('./my-lib.js');
-
-it('counts nearby offices', function () {
-    const result = myLib();
-    expect(result).to.equal(42);
 });
 ```
 
