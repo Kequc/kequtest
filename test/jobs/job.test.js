@@ -37,7 +37,7 @@ it('runs the block and displays output', async function () {
     const result = new Job(DESCRIPTION, block, 0);
 
     assert.strictEqual(block.calls.length, 0);
-    await result.clientCode(log);
+    await result.runClientCode(log);
     assert.strictEqual(block.calls.length, 1);
 
     assert.strictEqual(result.error, null);
@@ -50,7 +50,7 @@ it('displays output with depth', async function () {
     const log = util.log();
     const result = new Job(DESCRIPTION, () => {}, 2);
 
-    await result.clientCode(log);
+    await result.runClientCode(log);
 
     assert.strictEqual(result.depth, 2);
     assert.deepStrictEqual(log.info.calls, [
@@ -63,7 +63,7 @@ it('displays an error when block fails', async function () {
     const log = util.log();
     const result = new Job(DESCRIPTION, () => { throw error; }, 2);
 
-    await result.clientCode(log);
+    await result.runClientCode(log);
 
     assert.strictEqual(result.error, error);
     assert.deepStrictEqual(log.info.calls, [

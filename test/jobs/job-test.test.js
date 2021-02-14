@@ -3,17 +3,17 @@ const JobTest = require('../../src/jobs/job-test.js');
 
 const DESCRIPTION = 'fake test description';
 
-let clientHooks;
+let parentHooks;
 
 beforeEach(function () {
-    clientHooks = { beforeEach: [], afterEach: [] };
+    parentHooks = { beforeEach: [], afterEach: [] };
 });
 
 it('displays output', async function () {
     const log = util.log();
     const result = new JobTest(DESCRIPTION, () => {}, 2);
 
-    await result.run(log, clientHooks);
+    await result.run(log, parentHooks);
 
     assert.strictEqual(result.error, null);
     assert.deepStrictEqual(log.info.calls, [
@@ -26,7 +26,7 @@ it('displays output when block fails', async function () {
     const log = util.log();
     const result = new JobTest(DESCRIPTION, () => { throw error; }, 2);
 
-    await result.run(log, clientHooks);
+    await result.run(log, parentHooks);
 
     assert.strictEqual(result.error, error);
     assert.deepStrictEqual(log.info.calls, [
@@ -43,7 +43,7 @@ it('displays output when block is undefined', async function () {
     const log = util.log();
     const result = new JobTest(DESCRIPTION, undefined, 2);
 
-    await result.run(log, clientHooks);
+    await result.run(log, parentHooks);
 
     assert.strictEqual(result.error, null);
     assert.deepStrictEqual(log.info.calls, [
@@ -52,23 +52,23 @@ it('displays output when block is undefined', async function () {
 });
 
 it('runs beforeEach hooks', async function () {
-    clientHooks.beforeEach = [util.spy(), util.spy()];
+    parentHooks.beforeEach = [util.spy(), util.spy()];
     const result = new JobTest(DESCRIPTION, () => {}, 0);
 
-    await result.run(util.log(), clientHooks);
+    await result.run(util.log(), parentHooks);
 
-    assert.strictEqual(clientHooks.beforeEach[0].calls.length, 1);
-    assert.strictEqual(clientHooks.beforeEach[1].calls.length, 1);
+    assert.strictEqual(parentHooks.beforeEach[0].calls.length, 1);
+    assert.strictEqual(parentHooks.beforeEach[1].calls.length, 1);
 });
 
 it('runs afterEach hooks', async function () {
-    clientHooks.afterEach = [util.spy(), util.spy()];
+    parentHooks.afterEach = [util.spy(), util.spy()];
     const result = new JobTest(DESCRIPTION, () => {}, 0);
 
-    await result.run(util.log(), clientHooks);
+    await result.run(util.log(), parentHooks);
 
-    assert.strictEqual(clientHooks.afterEach[0].calls.length, 1);
-    assert.strictEqual(clientHooks.afterEach[1].calls.length, 1);
+    assert.strictEqual(parentHooks.afterEach[0].calls.length, 1);
+    assert.strictEqual(parentHooks.afterEach[1].calls.length, 1);
 });
 
 describe('score', function () {

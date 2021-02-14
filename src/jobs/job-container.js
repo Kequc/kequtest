@@ -6,34 +6,30 @@ class JobContainer extends Job {
         super(...params);
 
         this.buffer = [];
+        this.mocks = [];
         this.hooks = {
             before: [],
             beforeEach: [],
             afterEach: [],
             after: []
         };
-        this.mocks = [];
     }
 
-    async run (log, clientHooks) {
+    async run (log, parentHooks) {
         global.kequtest.container = this;
 
-        await this.clientCode(log);
+        await this.runClientCode(log);
 
         if (this.error) {
             this.cleanup();
             return;
         }
 
-        // Hooks up the tree
-        const treeClientHooks = {
-            beforeEach: clientHooks.beforeEach.concat(this.hooks.beforeEach),
-            afterEach: this.hooks.afterEach.concat(clientHooks.afterEach)
-        };
+        const treeHooks = getTreeHooks(parentHooks, this.hooks);
 
         try {
             await sequence(this.hooks.before);
-            await sequence(this.buffer.map(job => queueJob(log, job, treeClientHooks)));
+            await sequence(this.buffer.map(job => queueJob(log, job, treeHooks)));
             await sequence(this.hooks.after);
         } catch (error) {
             this.error = error;
@@ -56,11 +52,12 @@ class JobContainer extends Job {
 
         if (this.error) {
             result.catastrophic++;
-        } else {
-            for (const job of this.buffer) {
-                for (const [key, value] of Object.entries(job.getScore())) {
-                    result[key] += value;
-                }
+            return result;
+        }
+
+        for (const job of this.buffer) {
+            for (const [key, value] of Object.entries(job.getScore())) {
+                result[key] += value;
             }
         }
 
@@ -70,8 +67,17 @@ class JobContainer extends Job {
 
 module.exports = JobContainer;
 
-function queueJob (log, job, clientHooks) {
+// Combine hooks
+function getTreeHooks (parentHooks, hooks) {
+    return {
+        beforeEach: parentHooks.beforeEach.concat(hooks.beforeEach),
+        afterEach: hooks.afterEach.concat(parentHooks.afterEach)
+    };
+}
+
+// Prepare job
+function queueJob (log, job, treeHooks) {
     return async function () {
-        await job.run(log, clientHooks);
+        await job.run(log, treeHooks);
     };
 }

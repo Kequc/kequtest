@@ -2,10 +2,10 @@ const Job = require('./job.js');
 const { red, green, sequence } = require('../helpers.js');
 
 class JobTest extends Job {
-    async run (log, clientHooks) {
-        await sequence(clientHooks.beforeEach);
-        await this.clientCode(log);
-        await sequence(clientHooks.afterEach);
+    async run (log, parentHooks) {
+        await sequence(parentHooks.beforeEach);
+        await this.runClientCode(log);
+        await sequence(parentHooks.afterEach);
     }
 
     message () {

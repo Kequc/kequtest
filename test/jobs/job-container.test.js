@@ -3,11 +3,11 @@ const JobContainer = require('../../src/jobs/job-container.js');
 
 const DESCRIPTION = 'fake description';
 
-let clentHooks;
+let parentHooks;
 let originalKequtest;
 
 beforeEach(function () {
-    clentHooks = { beforeEach: [], afterEach: [] };
+    parentHooks = { beforeEach: [], afterEach: [] };
     originalKequtest = Object.assign({}, global.kequtest);
     global.kequtest = { filename: null, container: null };
 });
@@ -43,7 +43,7 @@ it('runs the block sets container and displays output', async function () {
     const result = new JobContainer(DESCRIPTION, block, 2);
 
     assert.strictEqual(block.calls.length, 0);
-    await result.run(log, clentHooks);
+    await result.run(log, parentHooks);
     assert.strictEqual(block.calls.length, 1);
 
     assert.strictEqual(result.error, null);
@@ -57,7 +57,7 @@ it('runs before hooks', async function () {
     const result = new JobContainer(DESCRIPTION, () => {}, 0);
     result.hooks.before = [util.spy(), util.spy()];
 
-    await result.run(util.log(), clentHooks);
+    await result.run(util.log(), parentHooks);
 
     assert.strictEqual(result.hooks.before[0].calls.length, 1);
     assert.strictEqual(result.hooks.before[1].calls.length, 1);
@@ -67,7 +67,7 @@ it('runs after hooks', async function () {
     const result = new JobContainer(DESCRIPTION, () => {}, 0);
     result.hooks.after = [util.spy(), util.spy()];
 
-    await result.run(util.log(), clentHooks);
+    await result.run(util.log(), parentHooks);
 
     assert.strictEqual(result.hooks.after[0].calls.length, 1);
     assert.strictEqual(result.hooks.after[1].calls.length, 1);
@@ -79,7 +79,7 @@ it('runs buffer', async function () {
     result.buffer = [{ run: util.spy() }, { run: util.spy() }];
     result.hooks.after = [util.spy()];
 
-    await result.run(util.log(), clentHooks);
+    await result.run(util.log(), parentHooks);
 
     assert.strictEqual(result.hooks.before[0].calls.length, 1);
     assert.strictEqual(result.buffer[0].run.calls.length, 1);
@@ -104,7 +104,7 @@ describe('using mocks', function () {
         result.mocks = ['test1', 'test2'];
         result.buffer = [{ run: util.spy() }, { run: util.spy() }];
     
-        await result.run(util.log(), clentHooks);
+        await result.run(util.log(), parentHooks);
     
         assert.strictEqual(result.error, null);
         assert.strictEqual(result.buffer.length, 2);
@@ -118,7 +118,7 @@ describe('using mocks', function () {
         const result = new JobContainer(DESCRIPTION, () => { throw error; }, 2);
         result.mocks = ['test1', 'test2'];
     
-        await result.run(log, clentHooks);
+        await result.run(log, parentHooks);
     
         assert.strictEqual(result.error, error);
         assert.strictEqual(result.buffer.length, 0);
@@ -128,30 +128,30 @@ describe('using mocks', function () {
 
 it('sends hooks along to children', async function () {
     const result = new JobContainer(DESCRIPTION, () => {}, 0);
-    clentHooks = { beforeEach: [util.spy(), util.spy()], afterEach: [util.spy(), util.spy()] };
+    parentHooks = { beforeEach: [util.spy(), util.spy()], afterEach: [util.spy(), util.spy()] };
     result.hooks.beforeEach = [util.spy(), util.spy()];
     result.hooks.afterEach = [util.spy(), util.spy()];
     result.buffer = [
         { run: util.spy() }
     ];
 
-    await result.run(util.log(), clentHooks);
+    await result.run(util.log(), parentHooks);
 
-    assert.strictEqual(clentHooks.beforeEach[0].calls.length, 0);
-    assert.strictEqual(clentHooks.afterEach[0].calls.length, 0);
+    assert.strictEqual(parentHooks.beforeEach[0].calls.length, 0);
+    assert.strictEqual(parentHooks.afterEach[0].calls.length, 0);
     assert.strictEqual(result.buffer[0].run.calls.length, 1);
     assert.deepStrictEqual(result.buffer[0].run.calls[0][1], {
         beforeEach: [
-            clentHooks.beforeEach[0],
-            clentHooks.beforeEach[1],
+            parentHooks.beforeEach[0],
+            parentHooks.beforeEach[1],
             result.hooks.beforeEach[0],
             result.hooks.beforeEach[1]
         ],
         afterEach: [
             result.hooks.afterEach[0],
             result.hooks.afterEach[1],
-            clentHooks.afterEach[0],
-            clentHooks.afterEach[1]
+            parentHooks.afterEach[0],
+            parentHooks.afterEach[1]
         ]
     });
 });

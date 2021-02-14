@@ -13,7 +13,7 @@ class Job {
         this.error = null;
     }
 
-    async clientCode (log) {
+    async runClientCode (log) {
         try {
             if (this.block !== undefined) await this.block();
             log.info(this.message());

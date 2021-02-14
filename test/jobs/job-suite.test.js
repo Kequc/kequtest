@@ -8,11 +8,11 @@ const FILES = [
     path.join(ABSOLUTE, '/index.fake-test.js')
 ];
 
-let clientHooks;
+let parentHooks;
 let originalKequtest;
 
 beforeEach(function () {
-    clientHooks = { beforeEach: [], afterEach: [] };
+    parentHooks = { beforeEach: [], afterEach: [] };
     originalKequtest = Object.assign({}, global.kequtest);
     global.kequtest = { filename: null, container: null };
 });
@@ -34,7 +34,7 @@ it('sets filename and displays output', async function () {
     const result = new JobSuite(ABSOLUTE, FILES);
     const log = util.log();
 
-    await result.run(log, clientHooks);
+    await result.run(log, parentHooks);
 
     assert.strictEqual(result.error, null);
     assert.strictEqual(global.kequtest.filename, FILES[FILES.length - 1]);
