@@ -2,10 +2,10 @@ const Job = require('./job.js');
 const { red, green, sequence } = require('../helpers.js');
 
 class JobTest extends Job {
-    async run (log, hooks) {
-        await sequence(hooks.beforeEach);
-        await super.run(log);
-        await sequence(hooks.afterEach);
+    async run (log, clientHooks) {
+        await sequence(clientHooks.beforeEach);
+        await this.clientCode(log);
+        await sequence(clientHooks.afterEach);
     }
 
     message () {
@@ -19,8 +19,8 @@ class JobTest extends Job {
         return green(' \u2713');
     }
 
-    getData () {
-        const result = super.getData();
+    getScore () {
+        const result = super.getScore();
 
         if (this.error) {
             result.failed++;

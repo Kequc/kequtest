@@ -15,26 +15,25 @@ class JobContainer extends Job {
         this.mocks = [];
     }
 
-    async run (log, hooks) {
+    async run (log, clientHooks) {
         global.kequtest.container = this;
 
-        await super.run(log);
+        await this.clientCode(log);
 
         if (this.error) {
-            this.buffer = [];
             this.cleanup();
             return;
         }
 
         // Hooks up the tree
-        const treeHooks = {
-            beforeEach: hooks.beforeEach.concat(this.hooks.beforeEach),
-            afterEach: this.hooks.afterEach.concat(hooks.afterEach)
+        const treeClientHooks = {
+            beforeEach: clientHooks.beforeEach.concat(this.hooks.beforeEach),
+            afterEach: this.hooks.afterEach.concat(clientHooks.afterEach)
         };
 
         try {
             await sequence(this.hooks.before);
-            await sequence(this.buffer.map(job => queue(log, job, treeHooks)));
+            await sequence(this.buffer.map(job => queueJob(log, job, treeClientHooks)));
             await sequence(this.hooks.after);
         } catch (error) {
             this.error = error;
@@ -52,16 +51,16 @@ class JobContainer extends Job {
         }
     }
 
-    getData () {
-        const result = super.getData();
+    getScore () {
+        const result = super.getScore();
 
         if (this.error) {
             result.catastrophic++;
-        }
-
-        for (const job of this.buffer) {
-            for (const [key, value] of Object.entries(job.getData())) {
-                result[key] += value;
+        } else {
+            for (const job of this.buffer) {
+                for (const [key, value] of Object.entries(job.getScore())) {
+                    result[key] += value;
+                }
             }
         }
 
@@ -69,10 +68,10 @@ class JobContainer extends Job {
     }
 }
 
-function queue (log, job, treeHooks) {
+module.exports = JobContainer;
+
+function queueJob (log, job, clientHooks) {
     return async function () {
-        await job.run(log, treeHooks);
+        await job.run(log, clientHooks);
     };
 }
-
-module.exports = JobContainer;

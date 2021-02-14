@@ -13,7 +13,7 @@ class Job {
         this.error = null;
     }
 
-    async run (log) {
+    async clientCode (log) {
         try {
             if (this.block !== undefined) await this.block();
             log.info(this.message());
@@ -31,7 +31,7 @@ class Job {
         return this.description.padStart(this.description.length + padding);
     }
 
-    getData () {
+    getScore () {
         return {
             passed: 0,
             failed: 0,

@@ -1,10 +1,10 @@
 const { pluralise, red } = require('./helpers.js');
 
 function summary (log, suite) {
-    const data = suite.getData();
-    const result = getParts(data).join(', ');
+    const score = suite.getScore();
+    const result = render(score);
 
-    if (data.failed > 0 || data.catastrophic > 0) {
+    if (score.failed > 0 || score.catastrophic > 0) {
         log.info(red(result));
     } else {
         log.info(result);
@@ -13,20 +13,20 @@ function summary (log, suite) {
 
 module.exports = summary;
 
-function getParts (data) {
-    const result = [];
+function render (score) {
+    const parts = [];
 
-    result.push(`${data.passed}/${data.passed + data.failed} passing`);
+    parts.push(`${score.passed}/${score.passed + score.failed} passing`);
 
-    if (data.missing > 0) {
-        result.push(`${data.missing} missing`);
+    if (score.missing > 0) {
+        parts.push(`${score.missing} missing`);
     }
 
-    result.push(pluralise(data.failed, 'failure'));
+    parts.push(pluralise(score.failed, 'failure'));
 
-    if (data.catastrophic > 0) {
-        result.push(pluralise(data.catastrophic, 'catastrophic failure'));
+    if (score.catastrophic > 0) {
+        parts.push(pluralise(score.catastrophic, 'catastrophic failure'));
     }
 
-    return result;
+    return parts.join(', ');
 }

@@ -5,9 +5,8 @@ const { pluralise } = require('../helpers.js');
 class JobSuite extends JobContainer {
     constructor (absolute, filenames) {
         const description = `Found ${pluralise(filenames.length, 'test file')}...`;
-        const block = undefined;
 
-        super(description, block, 0);
+        super(description, undefined, 0);
 
         this.buffer = filenames.map(filename => new JobFile(absolute, filename));
     }
@@ -20,9 +19,8 @@ class JobSuite extends JobContainer {
 class JobFile extends JobContainer {
     constructor (absolute, filename) {
         const description = filename.replace(absolute + path.sep, '');
-        const block = () => { require(filename); };
 
-        super(description, block, 0);
+        super(description, () => { require(filename); }, 0);
 
         this.filename = filename;
     }

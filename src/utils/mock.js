@@ -37,7 +37,7 @@ function stopAll () {
 function uncache (request) {
     const { filename } = global.kequtest;
     const absolute = calcAbsolute(request, filename);
-    delete require.cache[require.resolve(absolute)];
+    delete require.cache[absolute];
 }
 
 mock.stop = stop;
@@ -53,5 +53,5 @@ function calcAbsolute (request, parentFilename) {
     if (/^\.{1,2}[/\\]?/.test(request)) {
         return path.join(path.dirname(parentFilename), request);
     }
-    return request;
+    return require.resolve(request);
 }
