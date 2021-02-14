@@ -1,6 +1,6 @@
 # <img alt="kequtest" src="https://github.com/Kequc/kequtest/raw/main/logo.png" width="190" height="85" />
 
-A very lightweight unit test runner using no dependencies. Useful for testing small projects, plugins, things like that. The goal is to be simple.
+A very clean and lightweight unit test runner using no dependencies. Useful for testing small projects, plugins, things like that quickly. The goal is to be simple.
 
 ## Install
 
@@ -33,7 +33,7 @@ Kequtest finds all `.test.js` files recursively throughout the current directory
 
 `it`
 
-Containers are defined using `describe` and tests are defined with `it`, a test will fail if an error is thrown. Easy way to throw an error is by using [`assert`](https://nodejs.org/api/assert.html).
+Containers are defined using `describe` and tests are defined with `it`, a test will fail if an error is thrown. Easy way to throw errors is by using Node's built in [`assert`](https://nodejs.org/api/assert.html).
 
 ## Example
 
@@ -46,6 +46,20 @@ const myLib = require('./my-lib.js');
 it('counts nearby offices', function () {
     const result = myLib();
     assert.strictEqual(result, 42);
+});
+```
+
+Using [`chai`](https://www.npmjs.com/package/chai).
+
+```javascript
+// /my-project/somewhere/my-lib.test.js
+
+const { expect } = require('chai');
+const myLib = require('./my-lib.js');
+
+it('counts nearby offices', function () {
+    const result = myLib();
+    expect(result).to.equal(42);
 });
 ```
 
@@ -93,7 +107,7 @@ Generates a pseudo `console` object where each method `debug`, `info`, `log`, `w
 
 `util.spy`
 
-Takes a function to spy on as a parameter. Values that pass through are available as an array on the `calls` attribute.
+Takes a function to spy on as a parameter (or empty). Values that pass through are available as an array on the `calls` attribute.
 
 ```javascript
 const mySpy = util.spy(() => 'hi there');
@@ -142,7 +156,15 @@ Stops mocking all targets.
 
 `util.uncache`
 
-Clear a module from the cache at a specific target, this will force the module to be loaded again when it is imported next.
+Clear a module from the cache at a specific target, this will force the module to be loaded again when it is imported next. Best used so that your loaded module doesn't remain in memory with a mock that you are no longer using.
+
+It can also be used any time a loaded module contains side effects.
+
+```javascript
+after(function () {
+    util.uncache('../src/main-lib.js');
+});
+```
 
 ## Eslint
 

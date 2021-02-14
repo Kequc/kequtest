@@ -75,7 +75,6 @@ function getTreeHooks (parentHooks, hooks) {
     };
 }
 
-// Prepare job
 function queueJob (log, job, treeHooks) {
     return async function () {
         await job.run(log, treeHooks);
