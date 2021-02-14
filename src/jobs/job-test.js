@@ -1,11 +1,14 @@
 const Job = require('./job.js');
-const { red, green, sequence } = require('../helpers.js');
+const { red, green } = require('../helpers.js');
 
 class JobTest extends Job {
     async run (log, parentHooks) {
-        await sequence(parentHooks.beforeEach);
+        // sequence
+        for (const beforeEach of parentHooks.beforeEach) await beforeEach();
+        // run block
         await this.runClientCode(log);
-        await sequence(parentHooks.afterEach);
+        // sequence
+        for (const afterEach of parentHooks.afterEach) await afterEach();
     }
 
     message () {

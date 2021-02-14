@@ -1,5 +1,5 @@
 const assert = require('assert');
-const { pluralise, red, green, sequence } = require('../src/helpers.js');
+const { pluralise, red, green } = require('../src/helpers.js');
 
 describe('pluralise', function () {
     it('pluralises a word', function () {
@@ -32,23 +32,5 @@ describe('red', function () {
 describe('green', function () {
     it('adds green around text', function () {
         assert.strictEqual(green('test 1'), '\x1b[32mtest 1\x1b[0m');
-    });
-});
-
-describe('sequence', function () {
-    it('runs promises in sequence', async function () {
-        const result = [];
-
-        function wait (ms) {
-            return new Promise((resolve) => { setTimeout(resolve, ms); });
-        }
-
-        await sequence([
-            async function () { result.push(0); },
-            async function () { await wait(50); result.push(1); },
-            async function () { result.push(2); }
-        ]);
-
-        assert.deepStrictEqual(result, [0, 1, 2]);
     });
 });

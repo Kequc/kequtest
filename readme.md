@@ -1,6 +1,6 @@
 # <img alt="kequtest" src="https://github.com/Kequc/kequtest/raw/main/logo.png" width="190" height="85" />
 
-A very clean and lightweight unit test runner using no dependencies. Useful for testing small projects, plugins, things like that quickly. The goal is to be simple.
+A clean and lightweight unit test runner using no dependencies. Useful for testing small projects, plugins, things like that quickly. The goal is to be simple.
 
 You don't need to configure anything to begin testing just run kequtest.
 
@@ -29,13 +29,13 @@ Add the following script to `package.json` for easier access:
 
 ## Use
 
-Kequtest finds all `.test.js` files recursively throughout the current directory.
+It finds all `.test.js` files in the current directory.
 
 `describe`
 
 `it`
 
-Containers are defined using `describe` and tests are defined with `it`, a test will fail if an error is thrown. An easy way to throw errors is by using Node's [`assert`](https://nodejs.org/api/assert.html) library but you can use [`chai`](https://www.npmjs.com/package/chai) if you want or any assertion module.
+Containers are defined using `describe` and tests are defined with `it`, a test will fail if an error is thrown. An easy way to throw errors is by using Node's [`assert`](https://nodejs.org/api/assert.html) but you can use [`chai`](https://www.npmjs.com/package/chai) if you want or any assertion library.
 
 ## Example
 
@@ -85,7 +85,7 @@ kequc@kequ4k:~/my-project$ kequtest somewhere/my-lib.test.js
 
 `after`
 
-They run in conjunction with the current block. So, putting `beforeEach` inside of a `describe` block your hook will run once for each `it` inside.
+They run in conjunction with the current block. So, by putting `beforeEach` inside of a `describe` block your hook will run once for each `it` inside.
 
 ## Spies
 
@@ -144,9 +144,9 @@ Stops mocking all targets.
 
 `util.uncache`
 
-Clear a module from the cache at a specific target, this will force the module to be loaded again when it is imported next. Best used so that your loaded module doesn't remain in memory with a mock that you are no longer using.
+Clear a module from the cache at a specific target, this will force the module to be loaded again when it is imported next. Best used so that your module doesn't remain in memory when a mock was used that is no longer there.
 
-It can also be used any time a loaded module contains side effects.
+It can be used any time a loaded module contains side effects.
 
 ```javascript
 after(function () {

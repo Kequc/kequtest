@@ -1,5 +1,4 @@
 const Job = require('./job.js');
-const { sequence } = require('../helpers.js');
 
 class JobContainer extends Job {
     constructor (...params) {
@@ -28,9 +27,12 @@ class JobContainer extends Job {
         const treeHooks = getTreeHooks(parentHooks, this.hooks);
 
         try {
-            await sequence(this.hooks.before);
-            await sequence(this.buffer.map(job => queueJob(log, job, treeHooks)));
-            await sequence(this.hooks.after);
+            // sequence
+            for (const before of this.hooks.before) await before();
+            // sequence
+            for (const job of this.buffer) await job.run(log, treeHooks);
+            // sequence
+            for (const after of this.hooks.after) await after();
         } catch (error) {
             this.error = error;
             log.info('');
@@ -72,11 +74,5 @@ function getTreeHooks (parentHooks, hooks) {
     return {
         beforeEach: parentHooks.beforeEach.concat(hooks.beforeEach),
         afterEach: hooks.afterEach.concat(parentHooks.afterEach)
-    };
-}
-
-function queueJob (log, job, treeHooks) {
-    return async function () {
-        await job.run(log, treeHooks);
     };
 }
