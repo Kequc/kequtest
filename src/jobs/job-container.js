@@ -5,13 +5,14 @@ class JobContainer extends Job {
         super(...params);
 
         this.buffer = [];
-        this.mocks = [];
         this.hooks = {
             before: [],
             beforeEach: [],
             afterEach: [],
             after: []
         };
+        this.mocks = [];
+        this.caches = [];
     }
 
     async run (log, parentHooks) {
@@ -46,6 +47,9 @@ class JobContainer extends Job {
     cleanup () {
         for (const mock of this.mocks) {
             global.util.mock.stop(mock);
+        }
+        for (const cache of this.caches) {
+            global.util.uncache(cache);
         }
     }
 

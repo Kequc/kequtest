@@ -21,7 +21,7 @@ function it (description, block) {
 global.kequtest = { filename: null, container: null };
 global.describe = describe;
 global.it = it;
-global.util = require('./utils/util.js');
+global.util = require('./util/util.js');
 
 function hook (name) {
     global[name] = function (block) {
@@ -45,6 +45,7 @@ async function main (log, absolute, exts) {
 
     log.info('FINISHED');
     summary(log, suite);
+
     log.info('');
 }
 

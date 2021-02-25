@@ -5,13 +5,20 @@ const _load = Module._load;
 const overrides = {};
 
 Module._load = function (request, parent) {
-    if (parent) {
-        const absolute = calcAbsolute(request, parent.filename);
-        if (overrides[absolute]) {
-            return overrides[absolute];
-        }
+    const { container } = global.kequtest;
+    const absolute = calcAbsolute(request, parent.filename);
+
+    // check if we're overriding it
+    if (parent && overrides[absolute]) {
+        return overrides[absolute];
     }
 
+    // node will cache the requested resource
+    if (container && !require.cache[absolute]) {
+        container.caches.push(absolute);
+    }
+
+    // hand over to node
     return _load.apply(this, arguments);
 };
 
@@ -46,12 +53,12 @@ mock.stopAll = stopAll;
 module.exports = { mock, uncache };
 
 // request to absolute path
-function calcAbsolute (request, parentFilename) {
+function calcAbsolute (request, filename) {
     if (typeof request !== 'string') {
         throw new Error(`Target must be a string got ${typeof request} instead.`);
     }
     if (/^\.{1,2}[/\\]?/.test(request)) {
-        return path.join(path.dirname(parentFilename), request);
+        return path.join(path.dirname(filename), request);
     }
     return require.resolve(request);
 }

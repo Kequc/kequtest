@@ -1,7 +1,7 @@
 const assert = require('assert');
 
 it('returns utility functions', function () {
-    assert.strictEqual(util, require('../../src/utils/util.js'));
+    assert.strictEqual(util, require('../../src/util/util.js'));
     assert.strictEqual(typeof util.mock, 'function');
     assert.strictEqual(typeof util.mock.stop, 'function');
     assert.strictEqual(typeof util.mock.stopAll, 'function');
