@@ -23,6 +23,12 @@ describe('mock', function () {
         assert.strictEqual(result.getData().id, 'fake-id');
     });
 
+    it('mocks a relative path without an extension', function () {
+        const result = require('../fake-src/index');
+
+        assert.strictEqual(result.getData().id, 'fake-id');
+    });
+
     describe('inside a block', function () {
         util.mock('../fake-src/deep/other.js', {
             getData: () => ({ id: 'fake-id', name: 'paul' })
@@ -39,6 +45,18 @@ describe('mock', function () {
         const result = require('../fake-src/deep/other.js');
 
         assert.strictEqual(result.getData().id, 'real-id');
+    });
+
+    describe('inside a block again', function () {
+        util.mock('../fake-src/deep/other', {
+            getData: () => ({ id: 'fake-id', name: 'paul' })
+        });
+        
+        it('mocks without an extension', function () {
+            const result = require('../fake-src/deep/other.js');
+        
+            assert.strictEqual(result.getData().id, 'fake-id');
+        });
     });
 });
 

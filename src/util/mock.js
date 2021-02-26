@@ -58,7 +58,8 @@ function calcAbsolute (request, filename) {
         throw new Error(`Target must be a string got ${typeof request} instead.`);
     }
     if (/^\.{1,2}[/\\]?/.test(request)) {
-        return path.join(path.dirname(filename), request);
+        const absolute = path.join(path.dirname(filename), request);
+        return require.resolve(absolute);
     }
     return require.resolve(request);
 }
