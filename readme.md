@@ -7,7 +7,9 @@ You don't need to configure anything to begin testing just run kequtest.
 ## Install
 
 ```
-npm i --save-dev kequtest
+npm i -D kequtest
+//or
+npm i -g kequtest
 ```
 
 Add the following script to `package.json` for easier access:
@@ -35,7 +37,7 @@ It finds all `.test.js` files in the current directory.
 
 `it`
 
-Containers are defined using `describe` and tests are defined with `it`, a test will fail if an error is thrown. An easy way to throw errors is by using Node's [`assert`](https://nodejs.org/api/assert.html) but you can use [`chai`](https://www.npmjs.com/package/chai) or any assertion library.
+Containers are defined using `describe` and tests are defined with `it`, a test will fail if an error is thrown. An easy way to throw errors is by using Node's [`assert`](https://nodejs.org/api/assert.html).
 
 ## Example
 
