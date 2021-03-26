@@ -5,7 +5,7 @@ describe('mock', function () {
         getData: () => ({ id: 'fake-id', name: 'Paul' })
     });
     util.mock('http', { ok: true });
-    
+
     it('mocks a module', function () {
         const result = require('http');
 
