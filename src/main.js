@@ -53,8 +53,7 @@ async function main (log, absolute, exts) {
     await suite.run(log);
 
     log.info('FINISHED');
-    summary(log, suite);
-
+    log.info(summary(suite));
     log.info('');
 }
 

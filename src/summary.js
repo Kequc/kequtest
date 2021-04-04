@@ -1,14 +1,14 @@
 const { pluralise, red } = require('./helpers.js');
 
 // output single line of info
-function summary (log, suite) {
+function summary (suite) {
     const score = suite.getScore();
     const text = render(score);
 
     if (score.failed > 0 || score.catastrophic > 0) {
-        log.info(red(text));
+        return red(text);
     } else {
-        log.info(text);
+        return text;
     }
 }
 

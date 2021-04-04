@@ -4,18 +4,12 @@ const JobTest = require('../src/jobs/job-test.js');
 const summary = require('../src/summary.js');
 
 it('prints a test summary', function () {
-    const log = util.log();
     const suite = new JobContainer('test suite', () => {}, 0);
 
-    summary(log, suite);
-
-    assert.deepStrictEqual(log.info.calls, [
-        ['0/0 passing, 0 failures']
-    ]);
+    assert.strictEqual(summary(suite), '0/0 passing, 0 failures');
 });
 
 it('counts passing tests', function () {
-    const log = util.log();
     const suite = new JobContainer('test suite', () => {}, 0);
 
     suite.buffer = [
@@ -23,15 +17,10 @@ it('counts passing tests', function () {
         new JobTest('test2', () => {}, 1)
     ];
 
-    summary(log, suite);
-
-    assert.deepStrictEqual(log.info.calls, [
-        ['2/2 passing, 0 failures']
-    ]);
+    assert.strictEqual(summary(suite), '2/2 passing, 0 failures');
 });
 
 it('counts failing tests', function () {
-    const log = util.log();
     const suite = new JobContainer('test suite', () => {}, 0);
 
     suite.buffer = [
@@ -41,15 +30,10 @@ it('counts failing tests', function () {
     suite.buffer[0].error = new Error('error1');
     suite.buffer[1].error = new Error('error2');
 
-    summary(log, suite);
-
-    assert.deepStrictEqual(log.info.calls, [
-        ['\x1b[31m0/2 passing, 2 failures\x1b[0m']
-    ]);
+    assert.strictEqual(summary(suite), '\x1b[31m0/2 passing, 2 failures\x1b[0m');
 });
 
 it('detects missing tests', function () {
-    const log = util.log();
     const suite = new JobContainer('test suite', () => {}, 0);
 
     suite.buffer = [
@@ -57,15 +41,10 @@ it('detects missing tests', function () {
         new JobTest('test2', undefined, 1)
     ];
 
-    summary(log, suite);
-
-    assert.deepStrictEqual(log.info.calls, [
-        ['0/0 passing, 2 missing, 0 failures']
-    ]);
+    assert.strictEqual(summary(suite), '0/0 passing, 2 missing, 0 failures');
 });
 
 it('detects catastrophic failures', function () {
-    const log = util.log();
     const suite = new JobContainer('test suite', () => {}, 0);
     const describe = new JobContainer('test describe', () => {}, 1);
 
@@ -75,15 +54,10 @@ it('detects catastrophic failures', function () {
     ];
     describe.error = new Error('error1');
 
-    summary(log, suite);
-
-    assert.deepStrictEqual(log.info.calls, [
-        ['\x1b[31m1/1 passing, 0 failures, 1 catastrophic failure\x1b[0m']
-    ]);
+    assert.strictEqual(summary(suite), '\x1b[31m1/1 passing, 0 failures, 1 catastrophic failure\x1b[0m');
 });
 
 it('counts tests deep', function () {
-    const log = util.log();
     const suite = new JobContainer('test suite', () => {}, 0);
     const describe = new JobContainer('test describe', () => {}, 1);
     describe.buffer = [
@@ -99,9 +73,5 @@ it('counts tests deep', function () {
     describe.buffer[0].error = new Error('error1');
     suite.buffer[1].error = new Error('error2');
 
-    summary(log, suite);
-
-    assert.deepStrictEqual(log.info.calls, [
-        ['\x1b[31m3/5 passing, 2 failures\x1b[0m']
-    ]);
+    assert.strictEqual(summary(suite), '\x1b[31m3/5 passing, 2 failures\x1b[0m');
 });
