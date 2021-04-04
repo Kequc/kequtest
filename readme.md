@@ -1,6 +1,6 @@
 # <img alt="kequtest" src="https://github.com/Kequc/kequtest/raw/main/logo.png" width="190" height="85" />
 
-A clean and lightweight unit test runner using no dependencies. Useful for testing small projects, plugins, things like that quickly.
+A lightweight unit test runner using no dependencies. Useful for testing small projects, plugins, things like that quickly.
 
 You don't need to configure anything to begin testing just run kequtest.
 
@@ -116,8 +116,10 @@ Takes a function to spy on (or empty). Values that pass through are available as
 const mySpy = util.spy(() => 'hi there');
 const result = mySpy('hello?', 1);
 // result ~= 'hi there'
-
 // mySpy.calls ~= [['hello?', 1]]
+
+mySpy.reset();
+// mySpy.calls ~= []
 ```
 
 ## Mocks

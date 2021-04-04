@@ -2,34 +2,43 @@ const path = require('path');
 const JobContainer = require('./job-container.js');
 const { pluralise } = require('../helpers.js');
 
+// entrypoint
 class JobSuite extends JobContainer {
     constructor (absolute, filenames) {
         const description = `Found ${pluralise(filenames.length, 'test file')}...`;
+        const block = undefined;
 
-        super(description, undefined, 0);
+        super(description, block, 0);
 
+        // populate job buffer here
         this.buffer = filenames.map(filename => new JobFile(absolute, filename));
     }
 
     async run (log) {
-        await super.run(log, { beforeEach: [], afterEach : [] });
+        // prepare hooks
+        const treeHooks = { beforeEach: [], afterEach : [] };
+
+        await super.run(log, treeHooks);
     }
 }
+
+module.exports = JobSuite;
 
 class JobFile extends JobContainer {
     constructor (absolute, filename) {
         const description = filename.replace(absolute + path.sep, '');
+        const block = () => { require(filename); };
 
-        super(description, () => { require(filename); }, 0);
+        super(description, block, 0);
 
+        // track filename
         this.filename = filename;
     }
 
     async run (...params) {
+        // track active filename
         global.kequtest.filename = this.filename;
 
         await super.run(...params);
     }
 }
-
-module.exports = JobSuite;

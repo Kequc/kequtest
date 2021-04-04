@@ -1,3 +1,4 @@
+// abstract
 class Job {
     constructor (description, block, depth) {
         if (typeof description !== 'string') {
@@ -13,6 +14,7 @@ class Job {
         this.error = null;
     }
 
+    // attempt to run client code
     async runClientCode (log) {
         try {
             if (this.block !== undefined) await this.block();
@@ -26,11 +28,13 @@ class Job {
         }
     }
 
+    // basic output
     message () {
-        const padding = (this.depth) * 2;
-        return this.description.padStart(this.description.length + padding);
+        const padding = this.description.length + (this.depth) * 2;
+        return this.description.padStart(padding);
     }
 
+    // default score
     getScore () {
         return {
             passed: 0,

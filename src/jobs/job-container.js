@@ -1,5 +1,6 @@
 const Job = require('./job.js');
 
+// everything other than an actual test
 class JobContainer extends Job {
     constructor (...params) {
         super(...params);
@@ -16,15 +17,19 @@ class JobContainer extends Job {
     }
 
     async run (log, parentHooks) {
+        // track active container
         global.kequtest.container = this;
 
+        // initialize
         await this.runClientCode(log);
 
         if (this.error) {
+            // initialization threw catastrophic error
             this.cleanup();
             return;
         }
 
+        // beforeEach and afterEach hooks from all ancestors
         const treeHooks = getTreeHooks(parentHooks, this.hooks);
 
         try {
@@ -35,6 +40,7 @@ class JobContainer extends Job {
             // sequence
             for (const after of this.hooks.after) await after();
         } catch (error) {
+            // hook threw catastrophic error
             this.error = error;
             log.info('');
             log.error(error);
@@ -44,6 +50,7 @@ class JobContainer extends Job {
         this.cleanup();
     }
 
+    // remove all mocks and caches
     cleanup () {
         for (const mock of this.mocks) {
             global.util.mock.stop(mock);
@@ -53,6 +60,7 @@ class JobContainer extends Job {
         }
     }
 
+    // total score for children
     getScore () {
         const result = super.getScore();
 
@@ -73,7 +81,7 @@ class JobContainer extends Job {
 
 module.exports = JobContainer;
 
-// Combine hooks
+// combine hooks
 function getTreeHooks (parentHooks, hooks) {
     return {
         beforeEach: parentHooks.beforeEach.concat(hooks.beforeEach),

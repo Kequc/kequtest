@@ -4,6 +4,7 @@ const path = require('path');
 const _load = Module._load;
 const overrides = {};
 
+// overridden node internal
 Module._load = function (request, parent) {
     if (parent) {
         const { container } = global.kequtest;
@@ -25,6 +26,7 @@ Module._load = function (request, parent) {
     return _load.apply(this, arguments);
 };
 
+// track specified overload
 function mock (request, override) {
     const { filename, container } = global.kequtest;
     const absolute = calcAbsolute(request, filename);
@@ -32,18 +34,21 @@ function mock (request, override) {
     overrides[absolute] = override;
 }
 
+// untrack specified overload
 function stop (request) {
     const { filename } = global.kequtest;
     const absolute = calcAbsolute(request, filename);
     delete overrides[absolute];
 }
 
+// untrack all overloads
 function stopAll () {
     for (const absolute of Object.keys(overrides)) {
         delete overrides[absolute];
     }
 }
 
+// remove from node internal cache
 function uncache (request) {
     const { filename } = global.kequtest;
     const absolute = calcAbsolute(request, filename);

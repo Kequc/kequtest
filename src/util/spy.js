@@ -1,3 +1,4 @@
+// fake console
 function log () {
     return {
         debug: spy(),
@@ -8,6 +9,7 @@ function log () {
     };
 }
 
+// wrapper function to track arguments
 function spy (method = () => {}) {
     if (typeof method !== 'function') {
         throw new Error(`Spy must be a function got ${typeof method} instead.`);
@@ -18,6 +20,11 @@ function spy (method = () => {}) {
         return method(...params);
     }
 
+    function reset () {
+        result.calls = [];
+    }
+
+    result.reset = reset;
     result.calls = [];
 
     return result;

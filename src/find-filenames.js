@@ -23,6 +23,7 @@ function findFilenames (log, absolute, exts) {
 
 module.exports = findFilenames;
 
+// recursive search
 function scan (absolute, exts) {
     if (isDirectory(absolute)) {
         const filenames = fs.readdirSync(absolute);
