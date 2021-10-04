@@ -1,5 +1,7 @@
+import { Logger } from '../../types/main';
+
 // fake console
-function log () {
+export function log (): Logger {
     return {
         debug: spy(),
         info: spy(),
@@ -10,12 +12,12 @@ function log () {
 }
 
 // wrapper function to track arguments
-function spy (method = () => {}) {
+export function spy (method: (...params: any) => any = () => {}) {
     if (typeof method !== 'function') {
         throw new Error(`Spy must be a function got ${typeof method} instead.`);
     }
 
-    function result (...params) {
+    function result (...params: any) {
         result.calls.push(params);
         return method(...params);
     }
@@ -25,9 +27,7 @@ function spy (method = () => {}) {
     }
 
     result.reset = reset;
-    result.calls = [];
+    result.calls = [] as any[];
 
     return result;
 }
-
-module.exports = { log, spy };

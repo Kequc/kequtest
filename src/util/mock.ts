@@ -1,11 +1,11 @@
-const Module = require('module');
-const path = require('path');
+import Module from 'module';
+import path from 'path';
 
-const _load = Module._load;
-const overrides = {};
+const _load = (Module as any)._load;
+const overrides: { [key: string]: any } = {};
 
 // overridden node internal
-Module._load = function (request, parent) {
+(Module as any)._load = function (request: string, parent: { filename: string }) {
     if (parent) {
         const { container } = global.kequtest;
         const absolute = calcAbsolute(request, parent.filename);
@@ -27,7 +27,7 @@ Module._load = function (request, parent) {
 };
 
 // track specified overload
-function mock (request, override) {
+function mock (request: string, override: any) {
     const { filename, container } = global.kequtest;
     const absolute = calcAbsolute(request, filename);
     container.mocks.push(absolute);
@@ -35,7 +35,7 @@ function mock (request, override) {
 }
 
 // untrack specified overload
-function stop (request) {
+function stop (request: string) {
     const { filename } = global.kequtest;
     const absolute = calcAbsolute(request, filename);
     delete overrides[absolute];
@@ -49,7 +49,7 @@ function stopAll () {
 }
 
 // remove from node internal cache
-function uncache (request) {
+function uncache (request: string) {
     const { filename } = global.kequtest;
     const absolute = calcAbsolute(request, filename);
     delete require.cache[absolute];
@@ -58,16 +58,18 @@ function uncache (request) {
 mock.stop = stop;
 mock.stopAll = stopAll;
 
-module.exports = { mock, uncache };
+export { mock, uncache };
 
 // convert request to absolute path
-function calcAbsolute (request, filename) {
+function calcAbsolute (request: string, filename: string) {
     if (typeof request !== 'string') {
         throw new Error(`Target must be a string got ${typeof request} instead.`);
     }
+
     if (/^\.{1,2}[/\\]?/.test(request)) {
         const absolute = path.join(path.dirname(filename), request);
         return require.resolve(absolute);
     }
+
     return require.resolve(request);
 }

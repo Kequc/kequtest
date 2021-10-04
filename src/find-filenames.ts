@@ -1,9 +1,11 @@
-const path = require('path');
-const fs = require('fs');
+import path from 'path';
+import fs from 'fs';
+
+import { Logger } from '../types/main';
 
 const IGNORE = ['node_modules'];
 
-function findFilenames (log, absolute, exts) {
+function findFilenames (log: Logger, absolute: string, exts: string[]) {
     try {
         if (!fs.existsSync(absolute)) {
             throw new Error(`Specified location doesn't exist. ${absolute}`);
@@ -21,10 +23,10 @@ function findFilenames (log, absolute, exts) {
     return scan(absolute, exts);
 }
 
-module.exports = findFilenames;
+export default findFilenames;
 
 // recursive search
-function scan (absolute, exts) {
+function scan (absolute: string, exts: string[]) {
     if (isDirectory(absolute)) {
         const filenames = fs.readdirSync(absolute);
         return filenames.reduce((acc, curr) => acc.concat(scan(path.join(absolute, curr), exts)), []);
@@ -35,14 +37,14 @@ function scan (absolute, exts) {
     }
 }
 
-function isDirectory (absolute) {
+function isDirectory (absolute: string) {
     if (fs.statSync(absolute).isDirectory()) {
-        return !IGNORE.includes(absolute.split(path.sep).pop());
+        return !IGNORE.includes(absolute.split(path.sep).pop() || '');
     }
     return false;
 }
 
-function isTestFile (absolute, exts) {
+function isTestFile (absolute: string, exts: string[]) {
     for (const extension of exts) {
         if (absolute.endsWith(extension)) return true;
     }

@@ -1,8 +1,17 @@
-const { pluralise, red } = require('./helpers.js');
+import { pluralise, red } from './helpers';
+
+import { IJobSuite } from '../types/jobs';
+
+type Score = {
+    passed: number;
+    failed: number;
+    missing: number;
+    catastrophic: number;
+};
 
 // output single line of info
-function summary (suite) {
-    const score = suite.getScore();
+function summary (suite: IJobSuite) {
+    const score: Score = suite.getScore();
     const text = render(score);
 
     if (score.failed > 0 || score.catastrophic > 0) {
@@ -12,10 +21,10 @@ function summary (suite) {
     }
 }
 
-module.exports = summary;
+export default summary;
 
-function render (score) {
-    const parts = [];
+function render (score: Score) {
+    const parts: string[] = [];
 
     parts.push(`${score.passed}/${score.passed + score.failed} passing`);
 

@@ -1,21 +1,24 @@
-const JobSuite = require('./jobs/job-suite.js');
-const JobContainer = require('./jobs/job-container.js');
-const JobTest = require('./jobs/job-test.js');
+import JobSuite from './jobs/job-suite';
+import JobContainer from './jobs/job-container';
+import JobTest from './jobs/job-test';
 
-const findFilenames = require('./find-filenames.js');
-const summary = require('./summary.js');
+import findFilenames from './find-filenames';
+import summary from './summary';
+import util from './util/util';
+
+import { IDescribe, IHook, ITest, Logger } from '../types/main';
 
 // default test env
 process.env.NODE_ENV = process.env.NODE_ENV || 'test';
 
 // GLOBAL ****
-function describe (description, block) {
+function describe (description: string, block: IDescribe) {
     // populate buffer when run
     const { container } = global.kequtest;
     container.buffer.push(new JobContainer(description, block, container.depth + 1));
 }
 
-function it (description, block) {
+function it (description: string, block: ITest) {
     // populate buffer when run
     const { container } = global.kequtest;
     container.buffer.push(new JobTest(description, block, container.depth + 1));
@@ -27,11 +30,11 @@ global.kequtest = { filename: null, container: null };
 // client tools
 global.describe = describe;
 global.it = it;
-global.util = require('./util/util.js');
+global.util = util;
 
 // hooks
 function hook (name) {
-    global[name] = function (block) {
+    global[name] = function (block: IHook) {
         const { container } = global.kequtest;
         container.hooks[name].push(block);
     };
@@ -43,7 +46,7 @@ hook('after');
 // ****
 
 
-async function main (log, absolute, exts) {
+async function main (log: Logger, absolute: string, exts: string[]) {
     log.info('STARTING');
     log.info('> ' + absolute);
 
@@ -57,4 +60,4 @@ async function main (log, absolute, exts) {
     log.info('');
 }
 
-module.exports = main;
+export default main;

@@ -1,14 +1,12 @@
-function pluralise (count, singular, plural = `${singular}s`) {
+export function pluralise (count: number, singular: string, plural = `${singular}s`) {
     const text = (count === 1 ? singular : plural);
     return `${count} ${text}`;
 }
 
-function red (text) {
+export function red (text: string) {
     return `\x1b[31m${text}\x1b[0m`;
 }
 
-function green (text) {
+export function green (text: string) {
     return `\x1b[32m${text}\x1b[0m`;
 }
-
-module.exports = { pluralise, red, green };
