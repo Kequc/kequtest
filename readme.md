@@ -26,12 +26,13 @@ Add the following script to `package.json` for easier access:
 
 * Supports async tests
 * Use any mechanism for thowing errors
+* Supports Typescript (*experimental feature)
 * Runs all tests
 * Displays errors
 
 ## Use
 
-It finds all `.test.js` files in the current directory.
+It finds all `.test.js` or `.test.ts` files in the current directory.
 
 `describe`
 

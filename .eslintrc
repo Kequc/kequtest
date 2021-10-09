@@ -28,5 +28,6 @@
         "after": "readonly"
       }
     }
-  ]
+  ],
+  "ignorePatterns": "dist"
 }
