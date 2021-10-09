@@ -1,6 +1,6 @@
-const assert = require('assert');
-const path = require('path');
-const main = require('../src/main.js');
+import assert from 'assert';
+import path from 'path';
+import main from '../src/main';
 
 it('sets up test environment', function () {
     assert.strictEqual(process.env.NODE_ENV, 'test');

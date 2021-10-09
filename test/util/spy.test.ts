@@ -1,4 +1,4 @@
-const assert = require('assert');
+import assert from 'assert';
 
 describe('spy', function () {
     it('returns a function', function () {
@@ -28,7 +28,7 @@ describe('spy', function () {
 
     it('throws an error when spy is not a function', function () {
         assert.throws(() => { util.spy(null); }, { message: /^Spy must be a function/ });
-        assert.throws(() => { util.spy(1); }, { message: /^Spy must be a function/ });
+        assert.throws(() => { util.spy(1 as any); }, { message: /^Spy must be a function/ });
     });
 
     it('allows you to reset', function () {

@@ -1,4 +1,4 @@
-const assert = require('assert');
+import assert from 'assert';
 
 describe('mock', function () {
     util.mock('../fake-src/deep/other.js', {
@@ -13,7 +13,7 @@ describe('mock', function () {
     });
 
     it('throws an error when request is not a string', function () {
-        assert.throws(() => { util.mock(null); }, { message: /^Target must be a string/ });
+        assert.throws(() => { util.mock(null as any, null); }, { message: /^Target must be a string/ });
         assert.throws(() => { util.mock.stop(null); }, { message: /^Target must be a string/ });
     });
 

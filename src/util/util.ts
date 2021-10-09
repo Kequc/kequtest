@@ -1,4 +1,4 @@
-import { mock, uncache } from './mock.js';
-import { log, spy } from './spy.js';
+import { mock, uncache } from './mock';
+import { log, spy } from './spy';
 
 export { mock, uncache, log, spy };

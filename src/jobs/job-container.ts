@@ -1,9 +1,16 @@
-const Job = require('./job.js');
+import Job from './job';
+import { administrative } from '../main';
+
+import { Block, Hooks, Logger, TreeHooks } from '../../types';
 
 // everything other than an actual test
 class JobContainer extends Job {
-    constructor (...params) {
-        super(...params);
+    hooks: Hooks;
+    mocks: string[];
+    caches: string[];
+
+    constructor (description: string, block: Block, depth: number) {
+        super(description, block, depth);
 
         this.buffer = [];
         this.hooks = {
@@ -16,9 +23,9 @@ class JobContainer extends Job {
         this.caches = [];
     }
 
-    async run (log, parentHooks) {
+    async run (log: Logger, parentHooks: TreeHooks) {
         // track active container
-        global.kequtest.container = this;
+        administrative.container = this;
 
         // initialize
         await this.runClientCode(log);
@@ -41,7 +48,7 @@ class JobContainer extends Job {
             for (const after of this.hooks.after) await after();
         } catch (error) {
             // hook threw catastrophic error
-            this.error = error;
+            this.error = error as Error;
             log.info('');
             log.error(error);
             log.info('');
@@ -79,10 +86,10 @@ class JobContainer extends Job {
     }
 }
 
-module.exports = JobContainer;
+export default JobContainer;
 
 // combine hooks
-function getTreeHooks (parentHooks, hooks) {
+function getTreeHooks (parentHooks: TreeHooks, hooks: TreeHooks): TreeHooks {
     return {
         beforeEach: parentHooks.beforeEach.concat(hooks.beforeEach),
         afterEach: hooks.afterEach.concat(parentHooks.afterEach)

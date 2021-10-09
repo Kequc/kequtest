@@ -1,6 +1,7 @@
-const assert = require('assert');
-const path = require('path');
-const JobSuite = require('../../src/jobs/job-suite.js');
+import assert from 'assert';
+import path from 'path';
+import JobSuite from '../../src/jobs/job-suite';
+import { administrative } from '../../src/main';
 
 const ABSOLUTE = path.join(__dirname, '/fake-src');
 const FILES = [
@@ -8,18 +9,16 @@ const FILES = [
     path.join(ABSOLUTE, '/index.fake-test.js')
 ];
 
-let parentHooks;
 let originalKequtest;
 
 beforeEach(function () {
-    parentHooks = { beforeEach: [], afterEach: [] };
-    originalKequtest = Object.assign({}, global.kequtest);
-    global.kequtest = { filename: null, container: null };
+    originalKequtest = Object.assign({}, administrative);
+    Object.assign(administrative, { filename: null, container: null });
 });
 
 afterEach(function () {
     // make sure we're unsetting this again
-    Object.assign(global.kequtest, originalKequtest);
+    Object.assign(administrative, originalKequtest);
 });
 
 it('creates a buffer', async function () {
@@ -34,9 +33,9 @@ it('sets filename and displays output', async function () {
     const result = new JobSuite(ABSOLUTE, FILES);
     const log = util.log();
 
-    await result.run(log, parentHooks);
+    await result.run(log);
 
     assert.strictEqual(result.error, null);
-    assert.strictEqual(global.kequtest.filename, FILES[FILES.length - 1]);
+    assert.strictEqual(administrative.filename, FILES[FILES.length - 1]);
     assert.strictEqual(log.info.calls[0][0], 'Found 2 test files...');
 });

@@ -1,5 +1,5 @@
-const assert = require('assert');
-const JobTest = require('../../src/jobs/job-test.js');
+import assert from 'assert';
+import JobTest from '../../src/jobs/job-test';
 
 const DESCRIPTION = 'fake test description';
 

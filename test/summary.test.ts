@@ -1,12 +1,12 @@
-const assert = require('assert');
-const JobContainer = require('../src/jobs/job-container.js');
-const JobTest = require('../src/jobs/job-test.js');
-const summary = require('../src/summary.js');
+import assert from 'assert';
+import JobContainer from '../src/jobs/job-container';
+import JobTest from '../src/jobs/job-test';
+import summary from '../src/summary';
 
 it('prints a test summary', function () {
     const suite = new JobContainer('test suite', () => {}, 0);
 
-    assert.strictEqual(summary(suite), '0/0 passing, 0 failures');
+    assert.strictEqual(summary(suite as any), '0/0 passing, 0 failures');
 });
 
 it('counts passing tests', function () {
@@ -17,7 +17,7 @@ it('counts passing tests', function () {
         new JobTest('test2', () => {}, 1)
     ];
 
-    assert.strictEqual(summary(suite), '2/2 passing, 0 failures');
+    assert.strictEqual(summary(suite as any), '2/2 passing, 0 failures');
 });
 
 it('counts failing tests', function () {
@@ -30,7 +30,7 @@ it('counts failing tests', function () {
     suite.buffer[0].error = new Error('error1');
     suite.buffer[1].error = new Error('error2');
 
-    assert.strictEqual(summary(suite), '\x1b[31m0/2 passing, 2 failures\x1b[0m');
+    assert.strictEqual(summary(suite as any), '\x1b[31m0/2 passing, 2 failures\x1b[0m');
 });
 
 it('detects missing tests', function () {
@@ -41,7 +41,7 @@ it('detects missing tests', function () {
         new JobTest('test2', undefined, 1)
     ];
 
-    assert.strictEqual(summary(suite), '0/0 passing, 2 missing, 0 failures');
+    assert.strictEqual(summary(suite as any), '0/0 passing, 2 missing, 0 failures');
 });
 
 it('detects catastrophic failures', function () {
@@ -54,7 +54,7 @@ it('detects catastrophic failures', function () {
     ];
     describe.error = new Error('error1');
 
-    assert.strictEqual(summary(suite), '\x1b[31m1/1 passing, 0 failures, 1 catastrophic failure\x1b[0m');
+    assert.strictEqual(summary(suite as any), '\x1b[31m1/1 passing, 0 failures, 1 catastrophic failure\x1b[0m');
 });
 
 it('counts tests deep', function () {
@@ -73,5 +73,5 @@ it('counts tests deep', function () {
     describe.buffer[0].error = new Error('error1');
     suite.buffer[1].error = new Error('error2');
 
-    assert.strictEqual(summary(suite), '\x1b[31m3/5 passing, 2 failures\x1b[0m');
+    assert.strictEqual(summary(suite as any), '\x1b[31m3/5 passing, 2 failures\x1b[0m');
 });

@@ -1,7 +1,7 @@
-import { Logger } from '../../types/main';
+import { Func, SpyFunc } from '../../types';
 
 // fake console
-export function log (): Logger {
+export function log () {
     return {
         debug: spy(),
         info: spy(),
@@ -12,7 +12,7 @@ export function log (): Logger {
 }
 
 // wrapper function to track arguments
-export function spy (method: (...params: any) => any = () => {}) {
+export function spy (method: Func = () => {}): SpyFunc {
     if (typeof method !== 'function') {
         throw new Error(`Spy must be a function got ${typeof method} instead.`);
     }

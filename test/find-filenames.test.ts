@@ -1,6 +1,7 @@
-const assert = require('assert');
-const path = require('path');
-const findFilenames = require('../src/find-filenames.js');
+import assert from 'assert';
+import fs from 'fs/promises';
+import path from 'path';
+import findFilenames from '../src/find-filenames';
 
 const ABSOLUTE = path.join(__dirname, '/fake-src');
 const EXTS = ['.fake-test.js'];
@@ -49,8 +50,13 @@ it('displays error when path is not a valid test file', function () {
     assert.match(log.error.calls[0][0].message, /^Not a valid test file/);
 });
 
-it('displays error when path is node_modules', function () {
+it('displays error when path is node_modules', async function () {
     const log = util.log();
+    try {
+        await fs.mkdir(path.join(ABSOLUTE, '/node_modules'));
+    } catch (error) {
+        // just want to make sure it exists
+    }
     const result = findFilenames(log, path.join(ABSOLUTE, '/node_modules'), EXTS);
     assert.deepStrictEqual(result, []);
     assert.ok(log.error.calls[0][0] instanceof Error);

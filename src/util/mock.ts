@@ -1,13 +1,14 @@
 import Module from 'module';
 import path from 'path';
+import { administrative } from '../main';
 
 const _load = (Module as any)._load;
 const overrides: { [key: string]: any } = {};
 
 // overridden node internal
 (Module as any)._load = function (request: string, parent: { filename: string }) {
-    if (parent) {
-        const { container } = global.kequtest;
+    if (parent && administrative) {
+        const { container } = administrative;
         const absolute = calcAbsolute(request, parent.filename);
 
         // if we're mocking this request
@@ -28,16 +29,16 @@ const overrides: { [key: string]: any } = {};
 
 // track specified overload
 function mock (request: string, override: any) {
-    const { filename, container } = global.kequtest;
-    const absolute = calcAbsolute(request, filename);
-    container.mocks.push(absolute);
+    const { filename, container } = administrative;
+    const absolute = calcAbsolute(request, filename!);
+    container!.mocks.push(absolute);
     overrides[absolute] = override;
 }
 
 // untrack specified overload
 function stop (request: string) {
-    const { filename } = global.kequtest;
-    const absolute = calcAbsolute(request, filename);
+    const { filename } = administrative;
+    const absolute = calcAbsolute(request, filename!);
     delete overrides[absolute];
 }
 
@@ -50,8 +51,8 @@ function stopAll () {
 
 // remove from node internal cache
 function uncache (request: string) {
-    const { filename } = global.kequtest;
-    const absolute = calcAbsolute(request, filename);
+    const { filename } = administrative;
+    const absolute = calcAbsolute(request, filename!);
     delete require.cache[absolute];
 }
 

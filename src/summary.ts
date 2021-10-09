@@ -1,6 +1,5 @@
 import { pluralise, red } from './helpers';
-
-import { IJobSuite } from '../types/jobs';
+import JobSuite from './jobs/job-suite';
 
 type Score = {
     passed: number;
@@ -10,7 +9,7 @@ type Score = {
 };
 
 // output single line of info
-function summary (suite: IJobSuite) {
+function summary (suite: JobSuite) {
     const score: Score = suite.getScore();
     const text = render(score);
 

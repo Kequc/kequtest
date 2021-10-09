@@ -1,6 +1,14 @@
+import { Block, Logger, TreeHooks } from '../../types';
+
 // abstract
 class Job {
-    constructor (description, block, depth) {
+    description: string;
+    block: Block;
+    depth: number;
+    buffer: Job[] = [];
+    error: Error | null;
+
+    constructor (description: string, block: Block, depth: number) {
         if (typeof description !== 'string') {
             throw new Error(`Description must be a string got ${typeof description} instead.`);
         }
@@ -14,13 +22,16 @@ class Job {
         this.error = null;
     }
 
+    async run (_log: Logger, _parentHooks: TreeHooks) {
+    }
+
     // attempt to run client code
-    async runClientCode (log) {
+    async runClientCode (log: Logger) {
         try {
             if (this.block !== undefined) await this.block();
             log.info(this.message());
         } catch (error) {
-            this.error = error;
+            this.error = error as Error;
             log.info(this.message());
             log.info('');
             log.error(error);
@@ -45,4 +56,4 @@ class Job {
     }
 }
 
-module.exports = Job;
+export default Job;

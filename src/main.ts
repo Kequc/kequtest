@@ -4,28 +4,32 @@ import JobTest from './jobs/job-test';
 
 import findFilenames from './find-filenames';
 import summary from './summary';
-import util from './util/util';
+import * as util from './util/util';
 
-import { IDescribe, IHook, ITest, Logger } from '../types/main';
+import { Block, Logger } from '../types';
 
 // default test env
 process.env.NODE_ENV = process.env.NODE_ENV || 'test';
 
-// GLOBAL ****
-function describe (description: string, block: IDescribe) {
-    // populate buffer when run
-    const { container } = global.kequtest;
-    container.buffer.push(new JobContainer(description, block, container.depth + 1));
-}
-
-function it (description: string, block: ITest) {
-    // populate buffer when run
-    const { container } = global.kequtest;
-    container.buffer.push(new JobTest(description, block, container.depth + 1));
-}
-
 // administrative
-global.kequtest = { filename: null, container: null };
+export const administrative: {
+    filename: string | null,
+    container: JobContainer | null
+} = { filename: null, container: null };
+
+
+// GLOBAL ****
+function describe (description: string, block: Block) {
+    // populate buffer when run
+    const { container } = administrative;
+    container!.buffer.push(new JobContainer(description, block, container!.depth + 1));
+}
+
+function it (description: string, block: Block) {
+    // populate buffer when run
+    const { container } = administrative;
+    container!.buffer.push(new JobTest(description, block, container!.depth + 1));
+}
 
 // client tools
 global.describe = describe;
@@ -33,16 +37,17 @@ global.it = it;
 global.util = util;
 
 // hooks
-function hook (name) {
-    global[name] = function (block: IHook) {
-        const { container } = global.kequtest;
-        container.hooks[name].push(block);
+function createHook (name: string) {
+    global[name] = function (block: Block) {
+        const { container } = administrative;
+        container!.hooks[name].push(block);
     };
 }
-hook('before');
-hook('beforeEach');
-hook('afterEach');
-hook('after');
+
+createHook('before');
+createHook('beforeEach');
+createHook('afterEach');
+createHook('after');
 // ****
 
 

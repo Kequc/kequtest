@@ -1,5 +1,5 @@
-const assert = require('assert');
-const { pluralise, red, green } = require('../src/helpers.js');
+import assert from 'assert';
+import { pluralise, red, green } from '../src/helpers';
 
 describe('pluralise', function () {
     it('pluralises a word', function () {

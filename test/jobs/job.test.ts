@@ -1,5 +1,5 @@
-const assert = require('assert');
-const Job = require('../../src/jobs/job.js');
+import assert from 'assert';
+import Job from '../../src/jobs/job';
 
 const DESCRIPTION = 'fake description';
 
@@ -17,12 +17,12 @@ it('throws an error when description is invalid', function () {
     const block = () => {};
     assert.throws(() => { new Job(undefined, block, 0); }, { message: /^Description must be a string/ });
     assert.throws(() => { new Job(null, block, 0); }, { message: /^Description must be a string/ });
-    assert.throws(() => { new Job(100, block, 0); }, { message: /^Description must be a string/ });
+    assert.throws(() => { new Job(100 as any, block, 0); }, { message: /^Description must be a string/ });
 });
 
 it('throws an error when block is invalid', function () {
     assert.throws(() => { new Job('testing', null, 0); }, { message: /^Block must be a function/ });
-    assert.throws(() => { new Job('testing', 100, 0); }, { message: /^Block must be a function/ });
+    assert.throws(() => { new Job('testing', 100 as any, 0); }, { message: /^Block must be a function/ });
 });
 
 it('allows block to be undefined', function () {

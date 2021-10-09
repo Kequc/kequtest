@@ -1,8 +1,10 @@
-const Job = require('./job.js');
-const { red, green } = require('../helpers.js');
+import Job from './job';
+import { red, green } from '../helpers';
+
+import { Logger, TreeHooks } from '../../types';
 
 class JobTest extends Job {
-    async run (log, parentHooks) {
+    async run (log: Logger, parentHooks: TreeHooks) {
         // sequence
         for (const beforeEach of parentHooks.beforeEach) await beforeEach();
         // block
@@ -39,4 +41,4 @@ class JobTest extends Job {
     }
 }
 
-module.exports = JobTest;
+export default JobTest;
