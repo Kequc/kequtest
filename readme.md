@@ -222,6 +222,6 @@ To enjoy types you should create a `kequtest.d.ts` file or similar in the root o
 
 ## Contribute
 
-If you know how to better implement TypeScript functionality so that globals like `beforeEach` can be used via intellisense in tests I'd love to hear from you. I feel the current implementation requiring an additional type definition file is not the best. It's also confusing as it causes methods exposed by kequtest to appear via intellisense in every file of the project, not just test files.
+If you know how to better implement TypeScript so globals like `beforeEach` can be used via intellisense in tests I'd love to hear from you. I feel the current implementation requiring an additional type definition file is not the best. It's also confusing as it causes methods exposed by kequtest to appear via intellisense in every file of the project, not just test files.
 
 A better TypeScript implementation is warmly welcomed.
