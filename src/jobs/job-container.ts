@@ -1,15 +1,13 @@
 import Job from './job';
 import { administrative } from '../main';
 
-import { Block, Hooks, Logger, Score, TreeHooks } from '../../types';
-
 // everything other than an actual test
 class JobContainer extends Job {
-    hooks: Hooks;
+    hooks: kequtest.Hooks;
     mocks: string[];
     caches: string[];
 
-    constructor (description: string, block: Block, depth: number) {
+    constructor (description: string, block: kequtest.Block, depth: number) {
         super(description, block, depth);
 
         this.buffer = [];
@@ -23,7 +21,7 @@ class JobContainer extends Job {
         this.caches = [];
     }
 
-    async run (log: Logger, parentHooks: TreeHooks): Promise<void> {
+    async run (log: kequtest.Logger, parentHooks: kequtest.TreeHooks): Promise<void> {
         // track active container
         administrative.container = this;
 
@@ -68,7 +66,7 @@ class JobContainer extends Job {
     }
 
     // total score for children
-    getScore (): Score {
+    getScore (): kequtest.Score {
         const result = super.getScore();
 
         if (this.error) {
@@ -89,7 +87,7 @@ class JobContainer extends Job {
 export default JobContainer;
 
 // combine hooks
-function getTreeHooks (parentHooks: TreeHooks, hooks: TreeHooks): TreeHooks {
+function getTreeHooks (parentHooks: kequtest.TreeHooks, hooks: kequtest.TreeHooks): kequtest.TreeHooks {
     return {
         beforeEach: parentHooks.beforeEach.concat(hooks.beforeEach),
         afterEach: hooks.afterEach.concat(parentHooks.afterEach)

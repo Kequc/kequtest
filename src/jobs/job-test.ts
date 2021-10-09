@@ -1,10 +1,8 @@
 import Job from './job';
 import { red, green } from '../helpers';
 
-import { Logger, Score, TreeHooks } from '../../types';
-
 class JobTest extends Job {
-    async run (log: Logger, parentHooks: TreeHooks): Promise<void> {
+    async run (log: kequtest.Logger, parentHooks: kequtest.TreeHooks): Promise<void> {
         // sequence
         for (const beforeEach of parentHooks.beforeEach) await beforeEach();
         // block
@@ -26,7 +24,7 @@ class JobTest extends Job {
         return green(' \u2713');
     }
 
-    getScore (): Score {
+    getScore (): kequtest.Score {
         const result = super.getScore();
 
         if (this.error) {

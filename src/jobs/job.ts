@@ -1,5 +1,3 @@
-import { Block, Logger, Score, TreeHooks } from '../../types';
-
 export const BASE_SCORE = {
     passed: 0,
     failed: 0,
@@ -10,12 +8,12 @@ export const BASE_SCORE = {
 // abstract
 class Job {
     description: string;
-    block: Block;
+    block: kequtest.Block;
     depth: number;
     buffer: Job[] = [];
     error: Error | null;
 
-    constructor (description: string, block: Block, depth: number) {
+    constructor (description: string, block: kequtest.Block, depth: number) {
         if (typeof description !== 'string') {
             throw new Error(`Description must be a string got ${typeof description} instead.`);
         }
@@ -30,11 +28,11 @@ class Job {
     }
 
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
-    async run (_log: Logger, _parentHooks: TreeHooks): Promise<void> {
+    async run (_log: kequtest.Logger, _parentHooks: kequtest.TreeHooks): Promise<void> {
     }
 
     // attempt to run client code
-    async runClientCode (log: Logger): Promise<void> {
+    async runClientCode (log: kequtest.Logger): Promise<void> {
         try {
             if (this.block !== undefined) await this.block();
             log.info(this.message());
@@ -54,7 +52,7 @@ class Job {
     }
 
     // default score
-    getScore (): Score {
+    getScore (): kequtest.Score {
         return Object.assign({}, BASE_SCORE);
     }
 }

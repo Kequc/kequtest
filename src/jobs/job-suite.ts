@@ -2,8 +2,6 @@ import JobContainer from './job-container';
 import { pluralise } from '../helpers';
 import { administrative } from '../main';
 
-import { Logger, TreeHooks } from '../../types';
-
 // entrypoint
 class JobSuite extends JobContainer {
     constructor (filenames: string[]) {
@@ -16,7 +14,7 @@ class JobSuite extends JobContainer {
         this.buffer = filenames.map(filename => new JobFile(filename));
     }
 
-    async run (log: Logger): Promise<void> {
+    async run (log: kequtest.Logger): Promise<void> {
         // prepare hooks
         const treeHooks = { beforeEach: [], afterEach : [] };
 
@@ -39,7 +37,7 @@ class JobFile extends JobContainer {
         this.filename = filename;
     }
 
-    async run (log: Logger, parentHooks: TreeHooks): Promise<void> {
+    async run (log: kequtest.Logger, parentHooks: kequtest.TreeHooks): Promise<void> {
         // track active filename
         administrative.filename = this.filename;
 

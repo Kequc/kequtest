@@ -9,7 +9,8 @@
     "test": "ts-node src/index.ts --ts"
   },
   "files": [
-    "dist"
+    "dist",
+    "types.d.ts"
   ],
   "bugs": {
     "url": "https://github.com/Kequc/kequtest/issues"

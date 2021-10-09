@@ -1,8 +1,6 @@
 import { pluralise, red } from './helpers';
 import JobSuite from './jobs/job-suite';
 
-import { Score } from '../types';
-
 // output single line of info
 function summary (suite: JobSuite): string {
     const score = suite.getScore();
@@ -17,7 +15,7 @@ function summary (suite: JobSuite): string {
 
 export default summary;
 
-function render (score: Score) {
+function render (score: kequtest.Score) {
     const parts: string[] = [];
 
     parts.push(`${score.passed}/${score.passed + score.failed} passing`);
