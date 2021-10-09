@@ -1,4 +1,11 @@
-import { Block, Logger, TreeHooks } from '../../types';
+import { Block, Logger, Score, TreeHooks } from '../../types';
+
+export const BASE_SCORE = {
+    passed: 0,
+    failed: 0,
+    missing: 0,
+    catastrophic: 0
+};
 
 // abstract
 class Job {
@@ -22,11 +29,12 @@ class Job {
         this.error = null;
     }
 
-    async run (_log: Logger, _parentHooks: TreeHooks) {
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
+    async run (_log: Logger, _parentHooks: TreeHooks): Promise<void> {
     }
 
     // attempt to run client code
-    async runClientCode (log: Logger) {
+    async runClientCode (log: Logger): Promise<void> {
         try {
             if (this.block !== undefined) await this.block();
             log.info(this.message());
@@ -40,19 +48,14 @@ class Job {
     }
 
     // basic output
-    message () {
+    message (): string {
         const padding = this.description.length + (this.depth) * 2;
         return this.description.padStart(padding);
     }
 
     // default score
-    getScore () {
-        return {
-            passed: 0,
-            failed: 0,
-            missing: 0,
-            catastrophic: 0
-        };
+    getScore (): Score {
+        return Object.assign({}, BASE_SCORE);
     }
 }
 

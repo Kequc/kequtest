@@ -1,6 +1,6 @@
 # <img alt="kequtest" src="https://github.com/Kequc/kequtest/raw/main/logo.png" width="190" height="85" />
 
-A lightweight unit test runner using no dependencies. Useful for testing small projects, plugins, things like that quickly.
+A lightweight unit test runner using no dependencies. It's meant to run fast and be useful for testing small projects, plugins, things like that quickly.
 
 You don't need to configure anything to begin testing just run kequtest.
 
@@ -26,7 +26,7 @@ Add the following script to `package.json` for easier access:
 
 * Supports async tests
 * Use any mechanism for thowing errors
-* Supports Typescript (*experimental feature)
+* Supports Typescript
 * Runs all tests
 * Displays errors
 
@@ -60,10 +60,13 @@ Output will look like this.
 kequc@kequ4k:~/my-project$ npm t
 
 STARTING
+
 > /home/kequc/my-project
 Found 1 test file...
+
 somewhere/my-lib.test.js
 · counts nearby offices ✓
+
 FINISHED
 1/1 passing, 0 failures
 
@@ -196,5 +199,19 @@ Tip if you want to avoid `no-undef` warnings add overrides to your eslint config
       }
     }
   ]
+}
+```
+
+## TypeScript
+
+TypeScript testing can be enabled if you want to test a TypeScript project or your tests are written in TypeScript. Use `kequtest` with the `--ts` flag, this will automatically register `ts-node` and look for `.test.ts` files.
+
+Ensure you have both `typescript` and `ts-node` installed in your project.
+
+```
+{
+  "scripts": {
+    "test": "kequtest --ts"
+  }
 }
 ```

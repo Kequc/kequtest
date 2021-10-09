@@ -1,7 +1,7 @@
-import { Func, SpyFunc } from '../../types';
+import { Func, SpyLogger, SpyFunc } from '../../types';
 
 // fake console
-export function log () {
+export function log (): SpyLogger {
     return {
         debug: spy(),
         info: spy(),
@@ -17,7 +17,7 @@ export function spy (method: Func = () => {}): SpyFunc {
         throw new Error(`Spy must be a function got ${typeof method} instead.`);
     }
 
-    function result (...params: any) {
+    function result (...params: any[]) {
         result.calls.push(params);
         return method(...params);
     }

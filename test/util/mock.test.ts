@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-var-requires */
 import assert from 'assert';
 
 describe('mock', function () {

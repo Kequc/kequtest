@@ -5,22 +5,24 @@ import { Logger } from '../types';
 
 const IGNORE = ['node_modules'];
 
-function findFilenames (log: Logger, absolute: string, exts: string[]) {
-    try {
-        if (!fs.existsSync(absolute)) {
-            throw new Error(`Specified location doesn't exist. ${absolute}`);
+function findFilenames (log: Logger, absolutes: string[], exts: string[]): string[] {
+    for (const absolute of absolutes) {
+        try {
+            if (!fs.existsSync(absolute)) {
+                throw new Error(`Specified location doesn't exist. ${absolute}`);
+            }
+            if (!isDirectory(absolute) && !isTestFile(absolute, exts)) {
+                throw new Error(`Not a valid test file. ${absolute}`);
+            }
+        } catch (error) {
+            log.info('');
+            log.error(error);
+            log.info('');
+            return [];
         }
-        if (!isDirectory(absolute) && !isTestFile(absolute, exts)) {
-            throw new Error(`Not a valid test file. ${absolute}`);
-        }
-    } catch (error) {
-        log.info('');
-        log.error(error);
-        log.info('');
-        return [];
     }
 
-    return scan(absolute, exts);
+    return absolutes.reduce((acc: string[], cur) => acc.concat(scan(cur, exts)), []);
 }
 
 export default findFilenames;

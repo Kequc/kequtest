@@ -22,15 +22,17 @@ afterEach(function () {
 });
 
 it('creates a buffer', async function () {
-    const result = new JobSuite(ABSOLUTE, FILES);
+    const result = new JobSuite(FILES);
+
+    const desc = (absolute: string) => '\n' + absolute.replace(process.cwd(), '');
 
     assert.strictEqual(result.buffer.length, 2);
-    assert.strictEqual(result.buffer[0].description, path.normalize('deep/other.fake-test.js'));
-    assert.strictEqual(result.buffer[1].description, 'index.fake-test.js');
+    assert.strictEqual(result.buffer[0].description, desc(FILES[0]));
+    assert.strictEqual(result.buffer[1].description, desc(FILES[1]));
 });
 
 it('sets filename and displays output', async function () {
-    const result = new JobSuite(ABSOLUTE, FILES);
+    const result = new JobSuite(FILES);
     const log = util.log();
 
     await result.run(log);

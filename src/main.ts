@@ -4,7 +4,8 @@ import JobTest from './jobs/job-test';
 
 import findFilenames from './find-filenames';
 import summary from './summary';
-import * as util from './util/util';
+import { mock, uncache } from './util/mock';
+import { log, spy } from './util/spy';
 
 import { Block, Logger } from '../types';
 
@@ -34,7 +35,7 @@ function it (description: string, block: Block) {
 // client tools
 global.describe = describe;
 global.it = it;
-global.util = util;
+global.util = { mock, uncache, log, spy };
 
 // hooks
 function createHook (name: string) {
@@ -51,14 +52,19 @@ createHook('after');
 // ****
 
 
-async function main (log: Logger, absolute: string, exts: string[]) {
+async function main (log: Logger, absolutes: string[], exts: string[]): Promise<void> {
     log.info('STARTING');
-    log.info('> ' + absolute);
+    log.info('');
 
-    const filenames = findFilenames(log, absolute, exts);
-    const suite = new JobSuite(absolute, filenames);
+    for (const absolute of absolutes) {
+        log.info('> ' + absolute);
+    }
+
+    const filenames = findFilenames(log, absolutes, exts);
+    const suite = new JobSuite(filenames);
 
     await suite.run(log);
+    log.info('');
 
     log.info('FINISHED');
     log.info(summary(suite));

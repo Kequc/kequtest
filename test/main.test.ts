@@ -12,21 +12,31 @@ it('sets up test environment', function () {
     assert.strictEqual(typeof after, 'function');
 });
 
+it('returns utility functions', function () {
+    assert.strictEqual(typeof util.mock, 'function');
+    assert.strictEqual(typeof util.mock.stop, 'function');
+    assert.strictEqual(typeof util.mock.stopAll, 'function');
+    assert.strictEqual(typeof util.uncache, 'function');
+    assert.strictEqual(typeof util.spy, 'function');
+    assert.strictEqual(typeof util.log, 'function');
+});
+
 it('runs test suite', async function () {
     const log = util.log();
     const absolute = path.join(__dirname, '/fake-src');
     const exts = ['.fake-test.js'];
 
-    await main(log, absolute, exts);
+    await main(log, [absolute], exts);
 
-    assert.deepStrictEqual(log.info.calls, [
-        ['STARTING'],
-        ['> ' + absolute],
-        ['Found 2 test files...'],
-        ['deep/other.fake-test.js'],
-        ['index.fake-test.js'],
-        ['FINISHED'],
-        ['0/0 passing, 0 failures'],
-        ['']
-    ]);
+    const line = (index: number) => log.info.calls[index][0];
+    const desc = (relative: string) =>
+        '\n' + path.join(absolute, relative).replace(process.cwd(), '');
+
+    assert.strictEqual(line(0), 'STARTING');
+    assert.strictEqual(line(2), '> ' + absolute);
+    assert.strictEqual(line(3), 'Found 2 test files...');
+    assert.strictEqual(line(4), desc('deep/other.fake-test.js'));
+    assert.strictEqual(line(5), desc('index.fake-test.js'));
+    assert.strictEqual(line(7), 'FINISHED');
+    assert.strictEqual(line(8), '0/0 passing, 0 failures');
 });

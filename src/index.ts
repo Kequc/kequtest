@@ -2,7 +2,27 @@
 import path from 'path';
 import kequtest from './main';
 
-const absolute = path.join(process.cwd(), process.argv[2] || '.');
-const exts = ['.test.js', '.test.ts'];
+const args = process.argv.slice(2);
 
-kequtest(console, absolute, exts);
+const targets = extractTargets(args);
+const absolutes = targets.map(target => path.join(process.cwd(), target));
+const exts = ['.test.js'];
+
+if (isTs(args, targets)) {
+    // add typescript support
+    exts.push('.test.ts');
+    // eslint-disable-next-line @typescript-eslint/no-var-requires
+    require('ts-node').register();
+}
+
+kequtest(console, absolutes, exts);
+
+function extractTargets (args: string[]) {
+    const result = args.filter(arg => arg[0] !== '-');
+    if (result.length < 1) result.push('.');
+    return result;
+}
+
+function isTs (args: string[], targets: string[]) {
+    return args.includes('--ts') || targets.some(target => target.endsWith('.test.ts'));
+}

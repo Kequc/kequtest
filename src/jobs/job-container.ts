@@ -1,7 +1,7 @@
 import Job from './job';
 import { administrative } from '../main';
 
-import { Block, Hooks, Logger, TreeHooks } from '../../types';
+import { Block, Hooks, Logger, Score, TreeHooks } from '../../types';
 
 // everything other than an actual test
 class JobContainer extends Job {
@@ -23,7 +23,7 @@ class JobContainer extends Job {
         this.caches = [];
     }
 
-    async run (log: Logger, parentHooks: TreeHooks) {
+    async run (log: Logger, parentHooks: TreeHooks): Promise<void> {
         // track active container
         administrative.container = this;
 
@@ -58,7 +58,7 @@ class JobContainer extends Job {
     }
 
     // remove all mocks and caches
-    cleanup () {
+    cleanup (): void {
         for (const mock of this.mocks) {
             global.util.mock.stop(mock);
         }
@@ -68,7 +68,7 @@ class JobContainer extends Job {
     }
 
     // total score for children
-    getScore () {
+    getScore (): Score {
         const result = super.getScore();
 
         if (this.error) {

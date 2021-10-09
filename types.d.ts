@@ -7,16 +7,11 @@ declare global {
     function afterEach(block: Block): void;
     function after(block: Block): void;
 
+    // eslint-disable-next-line no-var
     var util: {
         mock: Mock;
         uncache: (request: string) => void;
-        log: () => {
-            log: SpyFunc;
-            error: SpyFunc;
-            warn: SpyFunc;
-            debug: SpyFunc;
-            info: SpyFunc;
-        };
+        log: () => SpyLogger;
         spy: (method?: Func) => SpyFunc;
     };
 }
@@ -29,20 +24,28 @@ export type Logger = {
     info: Func;
 };
 
+export type SpyLogger = {
+    log: SpyFunc;
+    error: SpyFunc;
+    warn: SpyFunc;
+    debug: SpyFunc;
+    info: SpyFunc;
+};
+
 export type TreeHooks = {
-    beforeEach: HookCollection;
-    afterEach: HookCollection;
+    beforeEach: AsyncFunc[];
+    afterEach: AsyncFunc[];
 };
 
 export type Hooks = {
-    before: HookCollection;
-    beforeEach: HookCollection;
-    afterEach: HookCollection;
-    after: HookCollection;
+    before: AsyncFunc[];
+    beforeEach: AsyncFunc[];
+    afterEach: AsyncFunc[];
+    after: AsyncFunc[];
 };
 
 export interface SpyFunc {
-    (...params: any): any;
+    (...params: any[]): any;
     reset: () => void;
     calls: any[];
 }
@@ -53,7 +56,13 @@ export interface Mock {
     stopAll: () => void;
 }
 
+export type Score = {
+    passed: number;
+    failed: number;
+    missing: number;
+    catastrophic: number;
+};
+
 export type Block = AsyncFunc | undefined;
-export type Func = (...params: any) => any;
-export type HookCollection = AsyncFunc[];
+export type Func = (...params: any[]) => any;
 export type AsyncFunc = () => Promise<void> | void;

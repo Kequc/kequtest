@@ -1,16 +1,11 @@
 import { pluralise, red } from './helpers';
 import JobSuite from './jobs/job-suite';
 
-type Score = {
-    passed: number;
-    failed: number;
-    missing: number;
-    catastrophic: number;
-};
+import { Score } from '../types';
 
 // output single line of info
-function summary (suite: JobSuite) {
-    const score: Score = suite.getScore();
+function summary (suite: JobSuite): string {
+    const score = suite.getScore();
     const text = render(score);
 
     if (score.failed > 0 || score.catastrophic > 0) {

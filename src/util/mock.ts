@@ -24,11 +24,12 @@ const overrides: { [key: string]: any } = {};
     }
 
     // hand over to node
+    // eslint-disable-next-line prefer-rest-params
     return _load.apply(this, arguments);
 };
 
 // track specified overload
-function mock (request: string, override: any) {
+function mock (request: string, override: any): void {
     const { filename, container } = administrative;
     const absolute = calcAbsolute(request, filename!);
     container!.mocks.push(absolute);
@@ -36,21 +37,21 @@ function mock (request: string, override: any) {
 }
 
 // untrack specified overload
-function stop (request: string) {
+function stop (request: string): void {
     const { filename } = administrative;
     const absolute = calcAbsolute(request, filename!);
     delete overrides[absolute];
 }
 
 // untrack all overloads
-function stopAll () {
+function stopAll (): void {
     for (const absolute of Object.keys(overrides)) {
         delete overrides[absolute];
     }
 }
 
 // remove from node internal cache
-function uncache (request: string) {
+function uncache (request: string): void {
     const { filename } = administrative;
     const absolute = calcAbsolute(request, filename!);
     delete require.cache[absolute];
