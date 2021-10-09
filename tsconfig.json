@@ -14,7 +14,11 @@
     "strictNullChecks": true,
     "alwaysStrict": true,
     "moduleResolution": "node",
-    "esModuleInterop": true
+    "esModuleInterop": true,
+    "types": ["node"],
+    "typeRoots": [
+      "./"
+    ]
   },
   "include": [
     "./src",

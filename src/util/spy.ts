@@ -1,5 +1,7 @@
+import { Func, SpyFunc, SpyLogger } from '../../types';
+
 // fake console
-export function log (): kequtest.SpyLogger {
+export function log (): SpyLogger {
     return {
         debug: spy(),
         info: spy(),
@@ -10,7 +12,7 @@ export function log (): kequtest.SpyLogger {
 }
 
 // wrapper function to track arguments
-export function spy (method: kequtest.Func = () => {}): kequtest.SpyFunc {
+export function spy (method: Func = () => {}): SpyFunc {
     if (typeof method !== 'function') {
         throw new Error(`Spy must be a function got ${typeof method} instead.`);
     }

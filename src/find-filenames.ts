@@ -1,9 +1,11 @@
 import path from 'path';
 import fs from 'fs';
 
+import { Logger } from '../types';
+
 const IGNORE = ['node_modules'];
 
-function findFilenames (log: kequtest.Logger, absolutes: string[], exts: string[]): string[] {
+function findFilenames (log: Logger, absolutes: string[], exts: string[]): string[] {
     for (const absolute of absolutes) {
         try {
             if (!fs.existsSync(absolute)) {

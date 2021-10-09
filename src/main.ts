@@ -7,6 +7,8 @@ import summary from './summary';
 import { mock, uncache } from './util/mock';
 import { log, spy } from './util/spy';
 
+import { Block, Logger } from '../types';
+
 // default test env
 process.env.NODE_ENV = process.env.NODE_ENV || 'test';
 
@@ -18,26 +20,22 @@ export const administrative: {
 
 
 // GLOBAL ****
-function describe (description: string, block: kequtest.Block) {
+function describe (description: string, block: Block) {
     // populate buffer when run
     const { container } = administrative;
     container!.buffer.push(new JobContainer(description, block, container!.depth + 1));
 }
+global.describe = describe;
 
-function it (description: string, block: kequtest.Block) {
+function it (description: string, block: Block) {
     // populate buffer when run
     const { container } = administrative;
     container!.buffer.push(new JobTest(description, block, container!.depth + 1));
 }
-
-// client tools
-global.describe = describe;
 global.it = it;
-global.util = { mock, uncache, log, spy };
 
-// hooks
 function createHook (name: string) {
-    global[name] = function (block: kequtest.Block) {
+    global[name] = function (block: Block) {
         const { container } = administrative;
         container!.hooks[name].push(block);
     };
@@ -47,10 +45,12 @@ createHook('before');
 createHook('beforeEach');
 createHook('afterEach');
 createHook('after');
+
+global.util = { mock, uncache, log, spy };
 // ****
 
 
-async function main (log: kequtest.Logger, absolutes: string[], exts: string[]): Promise<void> {
+async function main (log: Logger, absolutes: string[], exts: string[]): Promise<void> {
     log.info('STARTING');
     log.info('');
 

@@ -2,6 +2,8 @@
 import path from 'path';
 import kequtest from './main';
 
+import { Block, Func, Mock, SpyFunc, SpyLogger } from '../types';
+
 const args = process.argv.slice(2);
 
 const targets = extractTargets(args);
@@ -18,6 +20,24 @@ if (isTs(args, targets)) {
 }
 
 kequtest(console, absolutes, exts);
+
+declare global {
+    function describe(description: string, block: Block): void;
+    function it(description: string, block: Block): void;
+
+    function before(block: Block): void;
+    function beforeEach(block: Block): void;
+    function afterEach(block: Block): void;
+    function after(block: Block): void;
+
+    // eslint-disable-next-line no-var
+    var util: {
+        mock: Mock;
+        uncache: (request: string) => void;
+        log: () => SpyLogger;
+        spy: (method?: Func) => SpyFunc;
+    };
+}
 
 function extractTargets (args: string[]) {
     const result = args.filter(arg => arg[0] !== '-');
