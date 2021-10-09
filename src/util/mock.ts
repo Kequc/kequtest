@@ -29,6 +29,7 @@ const overrides: { [key: string]: any } = {};
 };
 
 // track specified overload
+// eslint-disable-next-line @typescript-eslint/explicit-module-boundary-types
 function mock (request: string, override: any): void {
     const { filename, container } = administrative;
     const absolute = calcAbsolute(request, filename!);

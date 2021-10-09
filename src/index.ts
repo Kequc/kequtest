@@ -12,7 +12,9 @@ if (isTs(args, targets)) {
     // add typescript support
     exts.push('.test.ts');
     // eslint-disable-next-line @typescript-eslint/no-var-requires
-    require('ts-node').register();
+    require('ts-node').register({
+        transpileOnly: true
+    });
 }
 
 kequtest(console, absolutes, exts);

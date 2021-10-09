@@ -4,6 +4,10 @@
     "es6": true,
     "node": true
   },
+  "parser": "@typescript-eslint/parser",
+  "plugins": [
+    "@typescript-eslint"
+  ],
   "extends": [
     "eslint:recommended"
   ],
@@ -16,13 +20,9 @@
   },
   "overrides": [
     {
-      "files": ["**.*.ts"],
+      "files": ["*.ts"],
       "extends": [
         "plugin:@typescript-eslint/recommended"
-      ],
-      "parser": "@typescript-eslint/parser",
-      "plugins": [
-        "@typescript-eslint"
       ],
       "rules": {
         "@typescript-eslint/no-non-null-assertion": "off",

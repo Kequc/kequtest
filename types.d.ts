@@ -31,6 +31,12 @@ declare namespace kequtest {
         info: SpyFunc;
     };
 
+    interface SpyFunc {
+        (...params: any[]): any;
+        reset: () => void;
+        calls: any[];
+    }
+
     type TreeHooks = {
         beforeEach: AsyncFunc[];
         afterEach: AsyncFunc[];
@@ -42,12 +48,6 @@ declare namespace kequtest {
         afterEach: AsyncFunc[];
         after: AsyncFunc[];
     };
-
-    interface SpyFunc {
-        (...params: any[]): any;
-        reset: () => void;
-        calls: any[];
-    }
 
     interface Mock {
         (request: string, override: any): void;
