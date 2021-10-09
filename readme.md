@@ -8,8 +8,6 @@ You don't need to configure anything to begin testing just run kequtest.
 
 ```
 npm i -D kequtest
-//or
-npm i -g kequtest
 ```
 
 Add the following script to `package.json` for easier access:
@@ -181,7 +179,7 @@ afterEach(function () {
 
 ## Eslint
 
-Tip if you want to avoid `no-undef` warnings add overrides to your eslint config.
+Tip if you aren't using TypeScript and want to avoid `no-undef` warnings add overrides to your eslint config.
 
 ```json
 {
@@ -204,7 +202,7 @@ Tip if you want to avoid `no-undef` warnings add overrides to your eslint config
 
 ## TypeScript
 
-TypeScript testing can be enabled if you want to test a TypeScript project or your tests are written in TypeScript. Use `kequtest` with the `--ts` flag, this will automatically register `ts-node` and look for `.test.ts` files.
+If you want to test a TypeScript project or your tests are written in TypeScript. Use `kequtest` with the `--ts` flag, this will automatically register `ts-node` and look for `.test.ts` files.
 
 Ensure you have both `typescript` and `ts-node` installed in your project.
 
@@ -215,3 +213,15 @@ Ensure you have both `typescript` and `ts-node` installed in your project.
   }
 }
 ```
+
+To enjoy types you should create a `kequtest.d.ts` file or similar in the root of your project with the following added to it.
+
+```
+/// <reference types="kequtest" />
+```
+
+## Contribute
+
+If you know how to better implement TypeScript functionality so that globals like `beforeEach` can be used via intellisense in tests I'd love to hear from you. I feel the current implementation requiring an additional type definition file is not the best. It's also confusing as it causes methods exposed by kequtest to appear via intellisense in every file of the project, not just test files.
+
+A better TypeScript implementation is warmly welcomed.
