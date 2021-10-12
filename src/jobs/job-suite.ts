@@ -1,5 +1,5 @@
 import JobContainer from './job-container';
-import { pluralise } from '../helpers';
+import { pluralize } from '../helpers';
 import { administrative } from '../main';
 
 import { Logger, TreeHooks } from '../../types';
@@ -7,7 +7,7 @@ import { Logger, TreeHooks } from '../../types';
 // entrypoint
 class JobSuite extends JobContainer {
     constructor (filenames: string[]) {
-        const description = `Found ${pluralise(filenames.length, 'test file')}...`;
+        const description = `Found ${pluralize(filenames.length, 'test file')}...`;
         const block = undefined;
 
         super(description, block, 0);

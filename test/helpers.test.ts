@@ -1,24 +1,24 @@
 import assert from 'assert';
-import { pluralise, red, green } from '../src/helpers';
+import { pluralize, red, green } from '../src/helpers';
 
-describe('pluralise', function () {
+describe('pluralize', function () {
     it('pluralises a word', function () {
-        const result = pluralise(0, 'cat');
+        const result = pluralize(0, 'cat');
         assert.strictEqual(result, '0 cats');
     });
 
-    it('does not pluralise a word', function () {
-        const result = pluralise(1, 'cat');
+    it('does not pluralize a word', function () {
+        const result = pluralize(1, 'cat');
         assert.strictEqual(result, '1 cat');
     });
 
     it('uses customised plural', function () {
-        const result = pluralise(2, 'cat', 'dogs');
+        const result = pluralize(2, 'cat', 'dogs');
         assert.strictEqual(result, '2 dogs');
     });
 
     it('does not use customised plural', function () {
-        const result = pluralise(1, 'cat', 'dogs');
+        const result = pluralize(1, 'cat', 'dogs');
         assert.strictEqual(result, '1 cat');
     });
 });

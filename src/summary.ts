@@ -1,4 +1,4 @@
-import { pluralise, red } from './helpers';
+import { pluralize, red } from './helpers';
 import JobSuite from './jobs/job-suite';
 
 import { Score } from '../types';
@@ -26,10 +26,10 @@ function render (score: Score) {
         parts.push(`${score.missing} missing`);
     }
 
-    parts.push(pluralise(score.failed, 'failure'));
+    parts.push(pluralize(score.failed, 'failure'));
 
     if (score.catastrophic > 0) {
-        parts.push(pluralise(score.catastrophic, 'catastrophic failure'));
+        parts.push(pluralize(score.catastrophic, 'catastrophic failure'));
     }
 
     return parts.join(', ');

@@ -22,16 +22,16 @@ function findFilenames (log: Logger, absolutes: string[], exts: string[]): strin
         }
     }
 
-    return absolutes.reduce((acc: string[], cur) => acc.concat(scan(cur, exts)), []);
+    return absolutes.reduce((acc: string[], absolute) => acc.concat(scan(absolute, exts)), []);
 }
 
 export default findFilenames;
 
 // recursive search
-function scan (absolute: string, exts: string[]) {
+function scan (absolute: string, exts: string[]): string[] {
     if (isDirectory(absolute)) {
         const filenames = fs.readdirSync(absolute);
-        return filenames.reduce((acc, curr) => acc.concat(scan(path.join(absolute, curr), exts)), []);
+        return filenames.reduce((acc: string[], filename) => acc.concat(scan(path.join(absolute, filename), exts)), []);
     } else if (isTestFile(absolute, exts)) {
         return [absolute];
     } else {
