@@ -1,6 +1,6 @@
 import assert from 'assert';
 import CreateContainerJob from '../../src/factory/container-job';
-import { CHARS, HookType } from '../../src/helpers';
+import { HookType } from '../../src/helpers';
 import { administrative } from '../../src/main';
 
 const DESCRIPTION = 'fake description';

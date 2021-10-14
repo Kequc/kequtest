@@ -31,14 +31,14 @@ export type Logger = {
 };
 
 export type SpyLogger = {
-    log: SpyFunc;
-    error: SpyFunc;
-    warn: SpyFunc;
-    debug: SpyFunc;
-    info: SpyFunc;
+    log: ISpyFunc;
+    error: ISpyFunc;
+    warn: ISpyFunc;
+    debug: ISpyFunc;
+    info: ISpyFunc;
 };
 
-export interface SpyFunc {
+export interface ISpyFunc {
     (...params: any[]): any;
     reset: () => void;
     calls: any[];
@@ -56,7 +56,7 @@ export type Hooks = {
     [HookType.AFTER]: AsyncFunc[];
 };
 
-export interface Mock {
+export interface IMock {
     (request: string, override: any): void;
     stop: (mock: string) => void;
     stopAll: () => void;

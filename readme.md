@@ -46,7 +46,7 @@ Containers are defined using `describe` and tests are defined with `it`, a test 
 const assert = require('assert');
 const myLib = require('./my-lib.js');
 
-it('counts nearby offices', function () {
+it('counts nearby offices', () => {
   const result = myLib();
   assert.strictEqual(result, 42);
 });
@@ -89,17 +89,17 @@ kequtest somewhere/my-lib.test.js
 
 `after`
 
-They run in conjunction with the current block, using `beforeEach` inside a `describe` block will run once for each `it` inside.
+They run in conjunction with the current container, using `beforeEach` will run once for each `it` inside.
 
 
 ```javascript
 let count = 0;
 
-beforeEach(function () {
+beforeEach(() => {
   count++;
 });
 
-it('uses hooks', function () {
+it('uses hooks', () => {
   // count ~= 1
 });
 ```
@@ -144,14 +144,14 @@ util.mock('../src/my-data.js', {
 
 const { id } = require('../src/main-lib.js');
 
-it('mocks', function () {
+it('mocks', () => {
   // id ~= 'fake-id'
 });
 ```
 
 `util.mock.stop`
 
-Stops mocking a specific target. Mocks are automatically stopped at the end of the current block.
+Stops mocking a specific target. Mocks are automatically stopped at the end of the current container.
 
 `util.mock.stopAll`
 
@@ -163,7 +163,7 @@ Stops mocking all targets.
 
 Clear a module from the cache, this will force the module to be loaded again the next time it is required.
 
-Modules are automatically uncached at the end of the current block. This could be used manually if you wanted to uncache between, or during tests.
+Modules are automatically uncached at the end of the current container. This could be used manually if you wanted to uncache between, or during tests.
 
 ```javascript
 let mainLib;

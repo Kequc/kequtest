@@ -2,7 +2,7 @@
 import path from 'path';
 import kequtest from './main';
 
-import { AsyncFunc, Func, Mock, SpyFunc, SpyLogger } from '../types';
+import { AsyncFunc, Func, IMock, ISpyFunc, SpyLogger } from '../types';
 
 const args = process.argv.slice(2);
 
@@ -22,8 +22,8 @@ if (isTs(args, targets)) {
 kequtest(console, absolutes, exts);
 
 declare global {
-    function describe(description: string, block: AsyncFunc): void;
-    function it(description: string, block: AsyncFunc): void;
+    function describe(description: string, block?: AsyncFunc): void;
+    function it(description: string, block?: AsyncFunc): void;
 
     function before(block: AsyncFunc): void;
     function beforeEach(block: AsyncFunc): void;
@@ -32,10 +32,10 @@ declare global {
 
     // eslint-disable-next-line no-var
     var util: {
-        mock: Mock;
+        mock: IMock;
         uncache: (request: string) => void;
         log: () => SpyLogger;
-        spy: (method?: Func) => SpyFunc;
+        spy: (method?: Func) => ISpyFunc;
     };
 }
 
