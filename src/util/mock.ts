@@ -1,5 +1,6 @@
 import Module from 'module';
 import path from 'path';
+
 import { administrative } from '../main';
 
 const _load = (Module as any)._load;
@@ -19,7 +20,7 @@ const overrides: { [key: string]: any } = {};
         // node will cache the requested resource
         // we track it so that it can be uncached later
         if (container && !require.cache[absolute]) {
-            container.caches.push(absolute);
+            container.addCache(absolute);
         }
     }
 
@@ -33,7 +34,7 @@ const overrides: { [key: string]: any } = {};
 function mock (request: string, override: any): void {
     const { filename, container } = administrative;
     const absolute = calcAbsolute(request, filename!);
-    container!.mocks.push(absolute);
+    container!.addMock(absolute);
     overrides[absolute] = override;
 }
 

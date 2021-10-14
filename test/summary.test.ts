@@ -1,77 +1,74 @@
 import assert from 'assert';
-import JobContainer from '../src/jobs/job-container';
-import JobTest from '../src/jobs/job-test';
+import CreateContainerJob from '../src/factory/container-job';
+import CreateTestJob from '../src/factory/test-job';
 import summary from '../src/summary';
 
-it('prints a test summary', function () {
-    const suite = new JobContainer('test suite', () => {}, 0);
+it('prints a test summary', async function () {
+    const suite = CreateContainerJob('test suite', () => {});
 
-    assert.strictEqual(summary(suite as any), '0/0 passing, 0 failures');
+    await suite.run(util.log());
+
+    assert.strictEqual(summary(suite), '0/0 passing, 0 failures');
 });
 
-it('counts passing tests', function () {
-    const suite = new JobContainer('test suite', () => {}, 0);
+it('counts passing tests', async function () {
+    const suite = CreateContainerJob('test suite', () => {});
 
-    suite.buffer = [
-        new JobTest('test1', () => {}, 1),
-        new JobTest('test2', () => {}, 1)
-    ];
+    suite.addJob(CreateTestJob('test1', () => {}));
+    suite.addJob(CreateTestJob('test2', () => {}));
 
-    assert.strictEqual(summary(suite as any), '2/2 passing, 0 failures');
+    await suite.run(util.log());
+
+    assert.strictEqual(summary(suite), '2/2 passing, 0 failures');
 });
 
-it('counts failing tests', function () {
-    const suite = new JobContainer('test suite', () => {}, 0);
+it('counts failing tests', async function () {
+    const suite = CreateContainerJob('test suite', () => {});
 
-    suite.buffer = [
-        new JobTest('test1', () => {}, 1),
-        new JobTest('test2', () => {}, 1)
-    ];
-    suite.buffer[0].error = new Error('error1');
-    suite.buffer[1].error = new Error('error2');
+    suite.addJob(CreateTestJob('test1', () => { throw new Error('error1'); }));
+    suite.addJob(CreateTestJob('test2', () => { throw new Error('error2'); }));
 
-    assert.strictEqual(summary(suite as any), '\x1b[31m0/2 passing, 2 failures\x1b[0m');
+    await suite.run(util.log());
+
+    assert.strictEqual(summary(suite), '\x1b[31m0/2 passing, 2 failures\x1b[0m');
 });
 
-it('detects missing tests', function () {
-    const suite = new JobContainer('test suite', () => {}, 0);
+it('detects missing tests', async function () {
+    const suite = CreateContainerJob('test suite', () => {});
 
-    suite.buffer = [
-        new JobTest('test1', undefined, 1),
-        new JobTest('test2', undefined, 1)
-    ];
+    suite.addJob(CreateTestJob('test1', undefined));
+    suite.addJob(CreateTestJob('test2', undefined));
 
-    assert.strictEqual(summary(suite as any), '0/0 passing, 2 missing, 0 failures');
+    await suite.run(util.log());
+
+    assert.strictEqual(summary(suite), '0/0 passing, 2 missing, 0 failures');
 });
 
-it('detects catastrophic failures', function () {
-    const suite = new JobContainer('test suite', () => {}, 0);
-    const describe = new JobContainer('test describe', () => {}, 1);
+it('detects catastrophic failures', async function () {
+    const suite = CreateContainerJob('test suite', () => {});
+    const describe = CreateContainerJob('test describe', () => { throw new Error('error1'); });
 
-    suite.buffer = [
-        describe,
-        new JobTest('test1', () => {}, 1)
-    ];
-    describe.error = new Error('error1');
+    suite.addJob(describe);
+    suite.addJob(CreateTestJob('test1', () => {}));
 
-    assert.strictEqual(summary(suite as any), '\x1b[31m1/1 passing, 0 failures, 1 catastrophic failure\x1b[0m');
+    await suite.run(util.log());
+
+    assert.strictEqual(summary(suite), '\x1b[31m1/1 passing, 0 failures, 1 catastrophic failure\x1b[0m');
 });
 
-it('counts tests deep', function () {
-    const suite = new JobContainer('test suite', () => {}, 0);
-    const describe = new JobContainer('test describe', () => {}, 1);
-    describe.buffer = [
-        new JobTest('test1', () => {}, 2),
-        new JobTest('test2', () => {}, 2),
-        new JobTest('test3', () => {}, 2)
-    ];
-    suite.buffer = [
-        describe,
-        new JobTest('test4', () => {}, 1),
-        new JobTest('test5', () => {}, 1)
-    ];
-    describe.buffer[0].error = new Error('error1');
-    suite.buffer[1].error = new Error('error2');
+it('counts tests deep', async function () {
+    const suite = CreateContainerJob('test suite', () => {});
+    const describe = CreateContainerJob('test describe', () => {});
 
-    assert.strictEqual(summary(suite as any), '\x1b[31m3/5 passing, 2 failures\x1b[0m');
+    describe.addJob(CreateTestJob('test1', () => { throw new Error('error1'); }));
+    describe.addJob(CreateTestJob('test2', () => {}));
+    describe.addJob(CreateTestJob('test3', () => {}));
+
+    suite.addJob(describe);
+    suite.addJob(CreateTestJob('test4', () => { throw new Error('error2'); }));
+    suite.addJob(CreateTestJob('test5', () => {}));
+
+    await suite.run(util.log());
+
+    assert.strictEqual(summary(suite), '\x1b[31m3/5 passing, 2 failures\x1b[0m');
 });

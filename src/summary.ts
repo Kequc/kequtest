@@ -1,10 +1,9 @@
 import { pluralize, red } from './helpers';
-import JobSuite from './jobs/job-suite';
 
-import { Score } from '../types';
+import { ContainerJob, Score } from '../types';
 
 // output single line of info
-function summary (suite: JobSuite): string {
+function summary (suite: ContainerJob): string {
     const score = suite.getScore();
     const text = render(score);
 

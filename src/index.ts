@@ -1,8 +1,9 @@
 #!/usr/bin/env node
 import path from 'path';
+
 import kequtest from './main';
 
-import { Block, Func, Mock, SpyFunc, SpyLogger } from '../types';
+import { AsyncFunc, Func, Mock, SpyFunc, SpyLogger } from '../types';
 
 const args = process.argv.slice(2);
 
@@ -22,13 +23,13 @@ if (isTs(args, targets)) {
 kequtest(console, absolutes, exts);
 
 declare global {
-    function describe(description: string, block: Block): void;
-    function it(description: string, block: Block): void;
+    function describe(description: string, block: AsyncFunc): void;
+    function it(description: string, block: AsyncFunc): void;
 
-    function before(block: Block): void;
-    function beforeEach(block: Block): void;
-    function afterEach(block: Block): void;
-    function after(block: Block): void;
+    function before(block: AsyncFunc): void;
+    function beforeEach(block: AsyncFunc): void;
+    function afterEach(block: AsyncFunc): void;
+    function after(block: AsyncFunc): void;
 
     // eslint-disable-next-line no-var
     var util: {

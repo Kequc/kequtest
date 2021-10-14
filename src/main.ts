@@ -1,57 +1,58 @@
-import JobSuite from './jobs/job-suite';
-import JobContainer from './jobs/job-container';
-import JobTest from './jobs/job-test';
+import CreateContainerJob from './factory/container-job';
+import CreateSuiteJob from './factory/suite-job';
+import CreateTestJob from './factory/test-job';
 
-import findFilenames from './find-filenames';
-import summary from './summary';
 import { mock, uncache } from './util/mock';
 import { log, spy } from './util/spy';
 
-import { Block, Logger } from '../types';
+import findFilenames from './find-filenames';
+import { HookType } from './helpers';
+import summary from './summary';
+
+import { Administrative, AsyncFunc, Logger } from '../types';
 
 // default test env
 process.env.NODE_ENV = process.env.NODE_ENV || 'test';
 
 // administrative
-export const administrative: {
-    filename: string | null,
-    container: JobContainer | null
-} = { filename: null, container: null };
-
+export const administrative: Administrative = {
+    filename: null,
+    container: null,
+    depth: -1
+};
 
 // GLOBAL ****
-function describe (description: string, block: Block) {
+function describe (description: string, block?: AsyncFunc) {
     // populate buffer when run
     const { container } = administrative;
-    container!.buffer.push(new JobContainer(description, block, container!.depth + 1));
+    container!.addJob(CreateContainerJob(description, block));
 }
 global.describe = describe;
 
-function it (description: string, block: Block) {
+function it (description: string, block?: AsyncFunc) {
     // populate buffer when run
     const { container } = administrative;
-    container!.buffer.push(new JobTest(description, block, container!.depth + 1));
+    container!.addJob(CreateTestJob(description, block));
 }
 global.it = it;
 
-function createHook (name: string) {
-    global[name] = function (block: Block) {
+function createHook (hookType: HookType) {
+    return function (block: AsyncFunc) {
         const { container } = administrative;
-        container!.hooks[name].push(block);
+        container!.addHook(hookType, block);
     };
 }
-
-createHook('before');
-createHook('beforeEach');
-createHook('afterEach');
-createHook('after');
+global.before = createHook(HookType.BEFORE);
+global.beforeEach = createHook(HookType.BEFORE_EACH);
+global.afterEach = createHook(HookType.AFTER_EACH);
+global.after = createHook(HookType.AFTER);
 
 global.util = { mock, uncache, log, spy };
 // ****
 
-
 async function main (log: Logger, absolutes: string[], exts: string[]): Promise<void> {
     log.info('STARTING');
+    log.debug('-'.repeat(process.stdout.columns));
     log.info('');
 
     for (const absolute of absolutes) {
@@ -59,11 +60,12 @@ async function main (log: Logger, absolutes: string[], exts: string[]): Promise<
     }
 
     const filenames = findFilenames(log, absolutes, exts);
-    const suite = new JobSuite(filenames);
+    const suite = CreateSuiteJob(filenames);
 
     await suite.run(log);
-    log.info('');
 
+    log.info('');
+    log.debug('-'.repeat(process.stdout.columns));
     log.info('FINISHED');
     log.info(summary(suite));
     log.info('');

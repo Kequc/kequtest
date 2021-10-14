@@ -1,6 +1,19 @@
 import assert from 'assert';
 import path from 'path';
-import main from '../src/main';
+
+import main, { administrative } from '../src/main';
+
+let originalKequtest;
+
+beforeEach(function () {
+    originalKequtest = Object.assign({}, administrative);
+    Object.assign(administrative, { filename: null, container: null, depth: -1 });
+});
+
+afterEach(function () {
+    // make sure we're unsetting this again
+    Object.assign(administrative, originalKequtest);
+});
 
 it('sets up test environment', function () {
     assert.strictEqual(process.env.NODE_ENV, 'test');
@@ -29,14 +42,16 @@ it('runs test suite', async function () {
     await main(log, [absolute], exts);
 
     const line = (index: number) => log.info.calls[index][0];
-    const desc = (relative: string) =>
-        '\n' + path.join(absolute, relative).replace(process.cwd(), '');
+    const desc = (relative: string) => path.join(absolute, relative).replace(process.cwd(), '');
 
     assert.strictEqual(line(0), 'STARTING');
     assert.strictEqual(line(2), '> ' + absolute);
     assert.strictEqual(line(3), 'Found 2 test files...');
-    assert.strictEqual(line(4), desc('deep/other.fake-test.js'));
-    assert.strictEqual(line(5), desc('index.fake-test.js'));
-    assert.strictEqual(line(7), 'FINISHED');
-    assert.strictEqual(line(8), '0/0 passing, 0 failures');
+    assert.strictEqual(line(4), '');
+    assert.strictEqual(line(5), desc('deep/other.fake-test.js'));
+    assert.strictEqual(line(6), '');
+    assert.strictEqual(line(7), desc('index.fake-test.js'));
+    assert.strictEqual(line(8), '');
+    assert.strictEqual(line(9), 'FINISHED');
+    assert.strictEqual(line(10), '0/0 passing, 0 failures');
 });
