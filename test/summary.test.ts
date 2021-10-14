@@ -1,10 +1,9 @@
 import assert from 'assert';
 import CreateContainerJob from '../src/factory/container-job';
-import CreateTestJob from '../src/factory/test-job';
 import summary from '../src/summary';
 
 it('prints a test summary', async function () {
-    const suite = CreateContainerJob('test suite', () => {});
+    const suite = CreateContainerJob('test suite');
 
     await suite.run(util.log());
 
@@ -12,10 +11,10 @@ it('prints a test summary', async function () {
 });
 
 it('counts passing tests', async function () {
-    const suite = CreateContainerJob('test suite', () => {});
+    const suite = CreateContainerJob('test suite');
 
-    suite.addJob(CreateTestJob('test1', () => {}));
-    suite.addJob(CreateTestJob('test2', () => {}));
+    suite.addTest('test1', () => {});
+    suite.addTest('test2', () => {});
 
     await suite.run(util.log());
 
@@ -23,10 +22,10 @@ it('counts passing tests', async function () {
 });
 
 it('counts failing tests', async function () {
-    const suite = CreateContainerJob('test suite', () => {});
+    const suite = CreateContainerJob('test suite');
 
-    suite.addJob(CreateTestJob('test1', () => { throw new Error('error1'); }));
-    suite.addJob(CreateTestJob('test2', () => { throw new Error('error2'); }));
+    suite.addTest('test1', () => { throw new Error('error1'); });
+    suite.addTest('test2', () => { throw new Error('error2'); });
 
     await suite.run(util.log());
 
@@ -34,10 +33,10 @@ it('counts failing tests', async function () {
 });
 
 it('detects missing tests', async function () {
-    const suite = CreateContainerJob('test suite', () => {});
+    const suite = CreateContainerJob('test suite');
 
-    suite.addJob(CreateTestJob('test1', undefined));
-    suite.addJob(CreateTestJob('test2', undefined));
+    suite.addTest('test1', undefined);
+    suite.addTest('test2', undefined);
 
     await suite.run(util.log());
 
@@ -45,11 +44,10 @@ it('detects missing tests', async function () {
 });
 
 it('detects catastrophic failures', async function () {
-    const suite = CreateContainerJob('test suite', () => {});
-    const describe = CreateContainerJob('test describe', () => { throw new Error('error1'); });
+    const suite = CreateContainerJob('test suite');
 
-    suite.addJob(describe);
-    suite.addJob(CreateTestJob('test1', () => {}));
+    suite.addContainer('test describe', () => { throw new Error('error1'); });
+    suite.addTest('test1', () => {});
 
     await suite.run(util.log());
 
@@ -57,16 +55,15 @@ it('detects catastrophic failures', async function () {
 });
 
 it('counts tests deep', async function () {
-    const suite = CreateContainerJob('test suite', () => {});
-    const describe = CreateContainerJob('test describe', () => {});
+    const suite = CreateContainerJob('test suite');
+    const describe = suite.addContainer('test describe');
 
-    describe.addJob(CreateTestJob('test1', () => { throw new Error('error1'); }));
-    describe.addJob(CreateTestJob('test2', () => {}));
-    describe.addJob(CreateTestJob('test3', () => {}));
+    describe.addTest('test1', () => { throw new Error('error1'); });
+    describe.addTest('test2', () => {});
+    describe.addTest('test3', () => {});
 
-    suite.addJob(describe);
-    suite.addJob(CreateTestJob('test4', () => { throw new Error('error2'); }));
-    suite.addJob(CreateTestJob('test5', () => {}));
+    suite.addTest('test4', () => { throw new Error('error2'); });
+    suite.addTest('test5', () => {});
 
     await suite.run(util.log());
 

@@ -1,10 +1,6 @@
-import CreateContainerJob from './factory/container-job';
 import CreateSuiteJob from './factory/suite-job';
-import CreateTestJob from './factory/test-job';
-
 import { mock, uncache } from './util/mock';
 import { log, spy } from './util/spy';
-
 import findFilenames from './find-filenames';
 import { HookType } from './helpers';
 import summary from './summary';
@@ -17,29 +13,28 @@ process.env.NODE_ENV = process.env.NODE_ENV || 'test';
 // administrative
 export const administrative: Administrative = {
     filename: null,
-    container: null,
-    depth: -1
+    container: null
 };
 
 // GLOBAL ****
 function describe (description: string, block?: AsyncFunc) {
     // populate buffer when run
     const { container } = administrative;
-    container!.addJob(CreateContainerJob(description, block));
+    if (container) container.addContainer(description, block);
 }
 global.describe = describe;
 
 function it (description: string, block?: AsyncFunc) {
     // populate buffer when run
     const { container } = administrative;
-    container!.addJob(CreateTestJob(description, block));
+    if (container) container.addTest(description, block);
 }
 global.it = it;
 
 function createHook (hookType: HookType) {
     return function (block: AsyncFunc) {
         const { container } = administrative;
-        container!.addHook(hookType, block);
+        if (container) container.addHook(hookType, block);
     };
 }
 global.before = createHook(HookType.BEFORE);

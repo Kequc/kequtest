@@ -1,22 +1,9 @@
 import assert from 'assert';
 import CreateContainerJob from '../../src/factory/container-job';
-import CreateTestJob from '../../src/factory/test-job';
-import { HookType } from '../../src/helpers';
+import { CHARS, HookType } from '../../src/helpers';
 import { administrative } from '../../src/main';
 
 const DESCRIPTION = 'fake description';
-
-let originalKequtest;
-
-beforeEach(function () {
-    originalKequtest = Object.assign({}, administrative);
-    Object.assign(administrative, { filename: null, container: null, depth: -1 });
-});
-
-afterEach(function () {
-    // make sure we're unsetting this again
-    Object.assign(administrative, originalKequtest);
-});
 
 it('allows block to be undefined', function () {
     CreateContainerJob(DESCRIPTION);
@@ -100,8 +87,8 @@ it('runs buffer', async function () {
     const after = [util.spy()];
 
     result.addHook(HookType.BEFORE, before[0]);
-    result.addJob(CreateTestJob('test1', buffer[0]));
-    result.addJob(CreateTestJob('test2', buffer[1]));
+    result.addTest('test1', buffer[0]);
+    result.addTest('test2', buffer[1]);
     result.addHook(HookType.AFTER, after[0]);
 
     await result.run(util.log());
@@ -130,8 +117,8 @@ describe('using mocks', function () {
 
         result.addMock('mock1');
         result.addMock('mock2');
-        result.addJob(CreateTestJob('test1', buffer[0]));
-        result.addJob(CreateTestJob('test2', buffer[1]));
+        result.addTest('test1', buffer[0]);
+        result.addTest('test2', buffer[1]);
     
         await result.run(util.log());
     
@@ -152,60 +139,51 @@ describe('using mocks', function () {
 });
 
 it('sends hooks along to children', async function () {
+    const hookCalls = [];
+    const add = (num: number) => () => {
+        hookCalls.push(num);
+    };
+
     const result = CreateContainerJob(DESCRIPTION, () => {});
-    const beforeEach = [util.spy(), util.spy()];
-    const afterEach = [util.spy(), util.spy()];
-    const buffer = [util.spy()];
+    const beforeEach = [util.spy(add(0)), util.spy(add(1))];
+    const afterEach = [util.spy(add(2)), util.spy(add(3))];
+    const test = util.spy();
 
     const parentHooks = {
-        [HookType.BEFORE_EACH]: [util.spy(), util.spy()],
-        [HookType.AFTER_EACH]: [util.spy(), util.spy()]
+        [HookType.BEFORE_EACH]: [util.spy(add(4)), util.spy(add(5))],
+        [HookType.AFTER_EACH]: [util.spy(add(6)), util.spy(add(7))]
     };
 
     result.addHook(HookType.BEFORE_EACH, beforeEach[0]);
     result.addHook(HookType.BEFORE_EACH, beforeEach[1]);
     result.addHook(HookType.AFTER_EACH, afterEach[0]);
     result.addHook(HookType.AFTER_EACH, afterEach[1]);
-    result.addJob(CreateTestJob('test1', buffer[0]));
+    result.addTest('test1', test);
 
     await result.run(util.log(), parentHooks);
 
-    console.log(buffer[0].calls);
-
     assert.strictEqual(parentHooks[HookType.BEFORE_EACH][0].calls.length, 1);
     assert.strictEqual(parentHooks[HookType.AFTER_EACH][0].calls.length, 1);
-    assert.strictEqual(buffer[0].calls.length, 1);
-    assert.deepStrictEqual(buffer[0].calls[0][1], {
-        [HookType.BEFORE_EACH]: [
-            parentHooks[HookType.BEFORE_EACH][0],
-            parentHooks[HookType.BEFORE_EACH][1],
-            beforeEach[0],
-            beforeEach[1]
-        ],
-        [HookType.AFTER_EACH]: [
-            afterEach[0],
-            afterEach[1],
-            parentHooks[HookType.AFTER_EACH][0],
-            parentHooks[HookType.AFTER_EACH][1]
-        ]
-    });
+    assert.strictEqual(test.calls.length, 1);
+    assert.deepStrictEqual(hookCalls, [4, 5, 0, 1, 2, 3, 6, 7]);
 });
 
 describe('score', function () {
     it('produces test results', function () {
-        const result = CreateContainerJob(DESCRIPTION, () => {});
+        const result = CreateContainerJob(DESCRIPTION);
 
         const containers = [
-            CreateContainerJob(DESCRIPTION, () => {}),
-            CreateContainerJob(DESCRIPTION, () => {})
+            result.addContainer(DESCRIPTION),
+            result.addContainer(DESCRIPTION)
         ];
+
         const jobs = [
-            CreateTestJob('test1'),
-            CreateTestJob('test2'),
-            CreateTestJob('test3'),
-            CreateTestJob('test4'),
-            CreateTestJob('test5'),
-            CreateTestJob('test6')
+            containers[0].addTest('test1'),
+            containers[0].addTest('test2'),
+            containers[1].addTest('test3'),
+            containers[1].addTest('test4'),
+            result.addTest('test5'),
+            result.addTest('test6')
         ];
 
         jobs[0].getScore = () => ({ passed: 1, failed: 0, missing: 0, catastrophic: 0 });
@@ -214,16 +192,6 @@ describe('score', function () {
         jobs[3].getScore = () => ({ passed: 0, failed: 0, missing: 0, catastrophic: 1 });
         jobs[4].getScore = () => ({ passed: 1, failed: 0, missing: 0, catastrophic: 0 });
         jobs[5].getScore = () => ({ passed: 0, failed: 1, missing: 0, catastrophic: 0 });
-
-        containers[0].addJob(jobs[0]);
-        containers[0].addJob(jobs[1]);
-        containers[1].addJob(jobs[2]);
-        containers[1].addJob(jobs[3]);
-
-        result.addJob(containers[0]);
-        result.addJob(containers[1]);
-        result.addJob(jobs[4]);
-        result.addJob(jobs[5]);
 
         assert.deepStrictEqual(result.getScore(), {
             passed: 2,

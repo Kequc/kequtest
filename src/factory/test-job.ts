@@ -1,9 +1,8 @@
-import { BASE_SCORE, green, HookType, red, verifyBlock, verifyDescription } from '../helpers';
-import { administrative } from '../main';
+import { BASE_SCORE, CHARS, green, HookType, red, verifyBlock, verifyDescription } from '../helpers';
 
 import { AsyncFunc, Logger, TestJob } from '../../types';
 
-function CreateTestJob (description: string, block?: AsyncFunc): TestJob {
+function CreateTestJob (description: string, block?: AsyncFunc, depth = 0): TestJob {
     if (block !== undefined) verifyBlock(block);
     verifyDescription(description);
 
@@ -11,13 +10,13 @@ function CreateTestJob (description: string, block?: AsyncFunc): TestJob {
 
     // red x missing tag or green checkmark
     function postfix (): string {
-        if (_error) return red(' \u2717');
+        if (_error) return red(' ' + CHARS.fail);
         if (block === undefined) return green(' -- missing --');
-        return green(' \u2713');
+        return green(' ' + CHARS.success);
     }
 
     async function runClientCode (log: Logger) {
-        const padding = description.length + (administrative.depth) * 2;
+        const padding = description.length + (depth * 2);
         const message = ('\u00B7 ' + description).padStart(padding);
 
         try {
@@ -36,11 +35,13 @@ function CreateTestJob (description: string, block?: AsyncFunc): TestJob {
     return {
         async run (log, parentHooks) {
             // sequence
-            for (const beforeEach of parentHooks?.[HookType.BEFORE_EACH] || []) await beforeEach(log);
+            if (parentHooks)
+                for (const beforeEach of parentHooks[HookType.BEFORE_EACH]) await beforeEach(log);
             // block
             await runClientCode(log);
             // sequence
-            for (const afterEach of parentHooks?.[HookType.AFTER_EACH] || []) await afterEach(log);
+            if (parentHooks)
+                for (const afterEach of parentHooks[HookType.AFTER_EACH]) await afterEach(log);
         },
         getScore () {
             const result = Object.assign({}, BASE_SCORE);

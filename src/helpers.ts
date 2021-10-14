@@ -20,6 +20,12 @@ export const BASE_SCORE = {
     catastrophic: 0
 };
 
+export const CHARS = {
+    container: '\u21E2',
+    success: '\u2713',
+    fail: '\u2717'
+};
+
 export enum HookType {
     BEFORE = 'before1',
     BEFORE_EACH = 'beforeEach1',

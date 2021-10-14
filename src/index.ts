@@ -1,6 +1,5 @@
 #!/usr/bin/env node
 import path from 'path';
-
 import kequtest from './main';
 
 import { AsyncFunc, Func, Mock, SpyFunc, SpyLogger } from '../types';

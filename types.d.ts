@@ -6,8 +6,10 @@ export type AbstractJob = {
 };
 
 export type ContainerJob = AbstractJob & {
+    addFile: (filename: string) => TestJob;
+    addContainer: (description: string, block?: AsyncFunc) => ContainerJob;
+    addTest: (description: string, block?: AsyncFunc) => TestJob;
     addHook: (hookType: HookType, block: AsyncFunc) => void;
-    addJob: (job: ContainerJob | TestJob) => void;
     addMock: (absolute: string) => void;
     addCache: (absolute: string) => void;
 };
@@ -18,7 +20,6 @@ export type TestJob = AbstractJob & {
 export type Administrative = {
     filename: string | null,
     container: ContainerJob | null
-    depth: number;
 };
 
 export type Logger = {

@@ -10,18 +10,6 @@ const FILES = [
     path.join(ABSOLUTE, '/index.fake-test.js')
 ];
 
-let originalKequtest;
-
-beforeEach(function () {
-    originalKequtest = Object.assign({}, administrative);
-    Object.assign(administrative, { filename: null, container: null, depth: -1 });
-});
-
-afterEach(function () {
-    // make sure we're unsetting this again
-    Object.assign(administrative, originalKequtest);
-});
-
 it('sets filename and displays output', async function () {
     const result = CreateSuiteJob(FILES);
     const log = util.log();

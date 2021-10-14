@@ -1,9 +1,10 @@
-import { BASE_SCORE, HookType, verifyBlock, verifyDescription } from '../helpers';
+import { BASE_SCORE, CHARS, HookType, verifyBlock, verifyDescription } from '../helpers';
 import { administrative } from '../main';
+import CreateTestJob from './test-job';
 
 import { AsyncFunc, ContainerJob, Hooks, Logger, TestJob, TreeHooks } from '../../types';
 
-function CreateContainerJob (description: string, block?: AsyncFunc): ContainerJob {
+function CreateContainerJob (description: string, block?: AsyncFunc, depth = 0): ContainerJob {
     if (block !== undefined) verifyBlock(block);
     verifyDescription(description);
 
@@ -20,8 +21,11 @@ function CreateContainerJob (description: string, block?: AsyncFunc): ContainerJ
     let _error: Error | null;
 
     async function runClientCode (log: Logger) {
-        const padding = description.length + (administrative.depth * 2);
-        const message = description.padStart(padding);
+        const padding = description.length + (depth * 2);
+        let message = description.padStart(padding);
+
+        if (depth > 0)
+            message += ' ' + CHARS.container;
 
         try {
             if (block !== undefined) await block(log);
@@ -59,12 +63,29 @@ function CreateContainerJob (description: string, block?: AsyncFunc): ContainerJ
     }
 
     return {
+        addFile (filename) {
+            const description = filename.replace(process.cwd(), '');
+            const result = CreateContainerJob(description, (log) => {
+                log.info('');
+                administrative.filename = filename;
+                require(filename);
+            });
+            _buffer.push(result);
+            return result;
+        },
+        addContainer (description, block) {
+            const result = CreateContainerJob(description, block, depth + 1);
+            _buffer.push(result);
+            return result;
+        },
+        addTest (description, block) {
+            const result = CreateTestJob(description, block, depth + 1);
+            _buffer.push(result);
+            return result;
+        },
         addHook (hookType, block) {
             verifyBlock(block);
             _hooks[hookType].push(block);
-        },
-        addJob (job) {
-            _buffer.push(job);
         },
         addMock (absolute) {
             _mocks.push(absolute);
@@ -88,9 +109,6 @@ function CreateContainerJob (description: string, block?: AsyncFunc): ContainerJ
             // include hooks from ancestors
             const treeHooks = getTreeHooks(parentHooks);
 
-            // increase loger depth
-            administrative.depth++;
-
             try {
                 // sequence
                 for (const before of _hooks[HookType.BEFORE]) await before(log);
@@ -105,9 +123,6 @@ function CreateContainerJob (description: string, block?: AsyncFunc): ContainerJ
                 log.error(error);
                 log.info('');
             }
-
-            // reduce logger depth
-            administrative.depth--;
 
             cleanup();
         },

@@ -1,14 +1,8 @@
 import assert from 'assert';
 import CreateTestJob from '../../src/factory/test-job';
-import { HookType } from '../../src/helpers';
+import { CHARS, HookType } from '../../src/helpers';
 
 const DESCRIPTION = 'fake test description';
-
-let parentHooks;
-
-beforeEach(function () {
-    parentHooks = { [HookType.BEFORE_EACH]: [], [HookType.AFTER_EACH]: [] };
-});
 
 it('allows block to be undefined', function () {
     CreateTestJob(DESCRIPTION);
@@ -29,10 +23,10 @@ it('displays output', async function () {
     const log = util.log();
     const result = CreateTestJob(DESCRIPTION, () => {});
 
-    await result.run(log, parentHooks);
+    await result.run(log);
 
     assert.deepStrictEqual(log.info.calls, [
-        ['\u00B7 ' + DESCRIPTION + '\x1b[32m \u2713\x1b[0m']
+        ['\u00B7 ' + DESCRIPTION + '\x1b[32m '+ CHARS.success + '\x1b[0m']
     ]);
 });
 
@@ -41,10 +35,10 @@ it('displays output when block fails', async function () {
     const log = util.log();
     const result = CreateTestJob(DESCRIPTION, () => { throw error; });
 
-    await result.run(log, parentHooks);
+    await result.run(log);
 
     assert.deepStrictEqual(log.info.calls, [
-        ['\u00B7 ' + DESCRIPTION + '\x1b[31m \u2717\x1b[0m'],
+        ['\u00B7 ' + DESCRIPTION + '\x1b[31m ' + CHARS.fail + '\x1b[0m'],
         [''],
         ['']
     ]);
@@ -57,7 +51,7 @@ it('displays output when block is undefined', async function () {
     const log = util.log();
     const result = CreateTestJob(DESCRIPTION, undefined);
 
-    await result.run(log, parentHooks);
+    await result.run(log);
 
     assert.strictEqual(log.error.calls.length, 0);
     assert.deepStrictEqual(log.info.calls, [
@@ -66,7 +60,10 @@ it('displays output when block is undefined', async function () {
 });
 
 it('runs beforeEach hooks', async function () {
-    parentHooks[HookType.BEFORE_EACH] = [util.spy(), util.spy()];
+    const parentHooks = {
+        [HookType.BEFORE_EACH]: [util.spy(), util.spy()],
+        [HookType.AFTER_EACH]: []
+    };
     const result = CreateTestJob(DESCRIPTION, () => {});
 
     await result.run(util.log(), parentHooks);
@@ -76,7 +73,10 @@ it('runs beforeEach hooks', async function () {
 });
 
 it('runs afterEach hooks', async function () {
-    parentHooks[HookType.AFTER_EACH] = [util.spy(), util.spy()];
+    const parentHooks = {
+        [HookType.BEFORE_EACH]: [],
+        [HookType.AFTER_EACH]: [util.spy(), util.spy()]
+    };
     const result = CreateTestJob(DESCRIPTION, () => {});
 
     await result.run(util.log(), parentHooks);

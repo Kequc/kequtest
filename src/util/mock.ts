@@ -1,6 +1,5 @@
 import Module from 'module';
 import path from 'path';
-
 import { administrative } from '../main';
 
 const _load = (Module as any)._load;
