@@ -14,12 +14,7 @@ function CreateSuiteJob (summary: Summary, logger: Logger, filenames: string[]):
         summary.filename = filename;
         logger.info('');
     
-        try {
-            await file.run(summary, logger);
-        } catch (error) {
-            // file thows an error
-            summary.addFailure(file, error as Error);
-        }
+        await file.run(summary, logger);
     }
 
     return {
