@@ -1,7 +1,8 @@
-import { BASE_SCORE, CHARS, HookType } from '../constants';
-import { green, red, renderError, verifyBlock, verifyDescription } from '../helpers';
+import { CHARS, HookType } from '../util/constants';
+import { green, red } from '../util/helpers';
 
-import { AsyncFunc, Logger, TestJob } from '../../types';
+import { AsyncFunc, TestJob } from '../../types';
+import { verifyBlock, verifyDescription } from '../util/verify';
 
 function CreateTestJob (description: string, block?: AsyncFunc, depth = 0): TestJob {
     if (block !== undefined) verifyBlock(block);
@@ -21,41 +22,34 @@ function CreateTestJob (description: string, block?: AsyncFunc, depth = 0): Test
         return ('\u00B7 ' + description).padStart(padding) + postfix();
     }
 
-    async function runClientCode (log: Logger) {
-        try {
-            if (block !== undefined) await block(log);
-        } catch (error) {
-            // test threw error
-            _error = error as Error;
-        }
-
-        log.info(message());
-        renderError(log, _error);
-    }
-
     return {
-        async run (log, parentHooks) {
-            // sequence
-            if (parentHooks)
-                for (const beforeEach of parentHooks[HookType.BEFORE_EACH]) await beforeEach(log);
-            // block
-            await runClientCode(log);
-            // sequence
-            if (parentHooks)
-                for (const afterEach of parentHooks[HookType.AFTER_EACH]) await afterEach(log);
-        },
-        getScore () {
-            const result = Object.assign({}, BASE_SCORE);
+        async run (summary, logger, parentHooks) {
+            // client console
+            summary.clearConsole();
 
-            if (_error) {
-                result.failed++;
-            } else if (block === undefined) {
-                result.missing++;
+            // sequence
+            if (parentHooks)
+                for (const beforeEach of parentHooks[HookType.BEFORE_EACH]) await beforeEach();
+
+            // client code
+            if (block !== undefined) {
+                try {
+                    await block();
+                    summary.successCount++;
+                } catch (error) {
+                    // test threw error
+                    _error = error as Error;
+                    summary.addFailure(description, _error);
+                }
             } else {
-                result.passed++;
+                summary.missingCount++;
             }
-    
-            return result;
+
+            logger.info(message());
+
+            // sequence
+            if (parentHooks)
+                for (const afterEach of parentHooks[HookType.AFTER_EACH]) await afterEach();
         }
     };
 }

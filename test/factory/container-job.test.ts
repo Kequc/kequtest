@@ -1,7 +1,8 @@
 import assert from 'assert';
 import CreateContainerJob from '../../src/factory/container-job';
-import { HookType } from '../../src/constants';
-import { administrative } from '../../src/main';
+import { HookType } from '../../src/util/constants';
+import { summary } from '../../src/main';
+import CreateTestJob from '../../src/factory/test-job';
 
 const DESCRIPTION = 'fake description';
 
@@ -22,36 +23,36 @@ it('throws an error when block is invalid', function () {
 
 it('displays an error when block fails', async function () {
     const error = new Error('fake failure');
-    const log = util.log();
+    const logger = util.logger();
     const result = CreateContainerJob(DESCRIPTION, () => { throw error; });
 
-    await result.run(log);
+    await result.run(logger);
 
-    assert.deepStrictEqual(log.info.calls, [
+    assert.deepStrictEqual(logger.info.calls, [
         [DESCRIPTION],
         [''],
         ['']
     ]);
-    assert.deepStrictEqual(log.error.calls, [
+    assert.deepStrictEqual(logger.error.calls, [
         [error]
     ]);
 });
 
 it('runs the block sets container and displays output', async function () {
     const block = util.spy();
-    const log = util.log();
+    const logger = util.logger();
 
     const result = CreateContainerJob(DESCRIPTION, block);
 
     assert.strictEqual(block.calls.length, 0);
-    await result.run(log);
+    await result.run(logger);
     assert.strictEqual(block.calls.length, 1);
 
-    assert.strictEqual(administrative.container, result);
-    assert.deepStrictEqual(log.info.calls, [
+    assert.strictEqual(summary.container, result);
+    assert.deepStrictEqual(logger.info.calls, [
         [DESCRIPTION]
     ]);
-    assert.strictEqual(log.error.calls.length, 0);
+    assert.strictEqual(logger.error.calls.length, 0);
 });
 
 it('runs before hooks', async function () {
@@ -61,7 +62,7 @@ it('runs before hooks', async function () {
     result.addHook(HookType.BEFORE, before[0]);
     result.addHook(HookType.BEFORE, before[1]);
 
-    await result.run(util.log());
+    await result.run(util.logger());
 
     assert.strictEqual(before[0].calls.length, 1);
     assert.strictEqual(before[1].calls.length, 1);
@@ -74,7 +75,7 @@ it('runs after hooks', async function () {
     result.addHook(HookType.AFTER, after[0]);
     result.addHook(HookType.AFTER, after[1]);
 
-    await result.run(util.log());
+    await result.run(util.logger());
 
     assert.strictEqual(after[0].calls.length, 1);
     assert.strictEqual(after[1].calls.length, 1);
@@ -91,7 +92,7 @@ it('runs buffer', async function () {
     result.addTest('test2', buffer[1]);
     result.addHook(HookType.AFTER, after[0]);
 
-    await result.run(util.log());
+    await result.run(util.logger());
 
     assert.strictEqual(before[0].calls.length, 1);
     assert.strictEqual(buffer[0].calls.length, 1);
@@ -120,19 +121,19 @@ describe('using mocks', function () {
         result.addTest('test1', buffer[0]);
         result.addTest('test2', buffer[1]);
     
-        await result.run(util.log());
+        await result.run(util.logger());
     
         assert.deepStrictEqual((global.util.mock.stop as any).calls, [['mock1'], ['mock2']]);
     });
     
     it('bails early if catastrophic error is encountered', async function () {
-        const log = util.log();
+        const logger = util.logger();
 
         const result = CreateContainerJob(DESCRIPTION, () => { throw new Error('error1'); });
         result.addMock('mock1');
         result.addMock('mock2');
     
-        await result.run(log);
+        await result.run(logger);
     
         assert.deepStrictEqual((global.util.mock.stop as any).calls, [['mock1'], ['mock2']]);
     });
@@ -160,7 +161,7 @@ it('sends hooks along to children', async function () {
     result.addHook(HookType.AFTER_EACH, afterEach[1]);
     result.addTest('test1', test);
 
-    await result.run(util.log(), parentHooks);
+    await result.run(util.logger(), parentHooks);
 
     assert.strictEqual(parentHooks[HookType.BEFORE_EACH][0].calls.length, 1);
     assert.strictEqual(parentHooks[HookType.AFTER_EACH][0].calls.length, 1);
@@ -186,12 +187,12 @@ describe('score', function () {
             result.addTest('test6')
         ];
 
-        jobs[0].getScore = () => ({ passed: 1, failed: 0, missing: 0, catastrophic: 0 });
-        jobs[1].getScore = () => ({ passed: 0, failed: 0, missing: 1, catastrophic: 0 });
-        jobs[2].getScore = () => ({ passed: 0, failed: 1, missing: 0, catastrophic: 0 });
-        jobs[3].getScore = () => ({ passed: 0, failed: 0, missing: 0, catastrophic: 1 });
-        jobs[4].getScore = () => ({ passed: 1, failed: 0, missing: 0, catastrophic: 0 });
-        jobs[5].getScore = () => ({ passed: 0, failed: 1, missing: 0, catastrophic: 0 });
+        jobs[0].getScore = () => ({ passed: [CreateTestJob('test1')], failed: [], missing: [], catastrophic: [] });
+        jobs[1].getScore = () => ({ passed: [], failed: [], missing: [CreateTestJob('test2')], catastrophic: [] });
+        jobs[2].getScore = () => ({ passed: [], failed: [CreateTestJob('test3')], missing: [], catastrophic: [] });
+        jobs[3].getScore = () => ({ passed: [], failed: [], missing: [], catastrophic: [CreateContainerJob('test4')] });
+        jobs[4].getScore = () => ({ passed: [CreateTestJob('test5')], failed: [], missing: [], catastrophic: [] });
+        jobs[5].getScore = () => ({ passed: [], failed: [CreateTestJob('test6')], missing: [], catastrophic: [] });
 
         assert.deepStrictEqual(result.getScore(), {
             passed: 2,
@@ -204,7 +205,7 @@ describe('score', function () {
     it('reports catastrophic error', async function () {
         const result = CreateContainerJob(DESCRIPTION, () => { throw new Error('error1'); });
 
-        await result.run(util.log());
+        await result.run(util.logger());
 
         assert.deepStrictEqual(result.getScore(), {
             passed: 0,

@@ -1,11 +1,11 @@
 import path from 'path';
 import fs from 'fs';
 
-import { Logger } from '../types';
+import { Logger } from '../../types';
 
 const IGNORE = ['node_modules'];
 
-function findFilenames (log: Logger, absolutes: string[], exts: string[]): string[] {
+function findFilenames (logger: Logger, absolutes: string[], exts: string[]): string[] {
     for (const absolute of absolutes) {
         try {
             if (!fs.existsSync(absolute)) {
@@ -15,9 +15,9 @@ function findFilenames (log: Logger, absolutes: string[], exts: string[]): strin
                 throw new Error(`Not a valid test file. ${absolute}`);
             }
         } catch (error) {
-            log.info('');
-            log.error(error);
-            log.info('');
+            logger.info('');
+            logger.error(error);
+            logger.info('');
             return [];
         }
     }

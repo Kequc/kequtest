@@ -42,12 +42,12 @@ describe('spy', function () {
     });
 });
 
-describe('log', function () {
+describe('logger', function () {
     it('returns a mock console', function () {
-        const result = util.log();
+        const result = util.logger();
         assert.strictEqual(typeof result.debug, 'function');
         assert.strictEqual(typeof result.info, 'function');
-        assert.strictEqual(typeof result.log, 'function');
+        assert.strictEqual(typeof result.logger, 'function');
         assert.strictEqual(typeof result.warn, 'function');
         assert.strictEqual(typeof result.error, 'function');
     });

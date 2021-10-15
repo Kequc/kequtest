@@ -1,7 +1,21 @@
-import { Func, ISpyFunc, SpyLogger } from '../../types';
+import { Func } from '../../types';
+
+export type SpyLogger = {
+    log: ISpyFunc;
+    error: ISpyFunc;
+    warn: ISpyFunc;
+    debug: ISpyFunc;
+    info: ISpyFunc;
+};
+
+export interface ISpyFunc {
+    (...params: any[]): any;
+    reset: () => void;
+    calls: any[];
+}
 
 // fake console
-export function log (): SpyLogger {
+export function logger (): SpyLogger {
     return {
         debug: spy(),
         info: spy(),

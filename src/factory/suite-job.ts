@@ -1,15 +1,22 @@
-import { pluralize } from '../helpers';
+import { pluralize } from '../util/helpers';
 import CreateContainerJob from './container-job';
+import { Summary } from '../env/summary';
 
-import { ContainerJob } from '../../types';
+import { ContainerJob, Logger } from '../../types';
 
-function CreateSuiteJob (filenames: string[]): ContainerJob {
+function CreateSuiteJob (summary: Summary, logger: Logger, filenames: string[]): ContainerJob {
     const description = `Found ${pluralize(filenames.length, 'test file')}...`;
     const suite = CreateContainerJob(description);
 
-    // populate job buffer here
+    // populate job buffer
     for (const filename of filenames) {
-        suite.addFile(filename);
+        const description = filename.replace(process.cwd(), '');
+        suite.addContainer(description, function () {
+            // open test file
+            logger.info('');
+            summary.filename = filename;
+            require(filename);
+        });
     }
 
     return suite;

@@ -1,6 +1,6 @@
 import assert from 'assert';
 import CreateTestJob from '../../src/factory/test-job';
-import { CHARS, HookType } from '../../src/constants';
+import { CHARS, HookType } from '../../src/util/constants';
 
 const DESCRIPTION = 'fake test description';
 
@@ -20,41 +20,41 @@ it('throws an error when block is invalid', function () {
 });
 
 it('displays output', async function () {
-    const log = util.log();
+    const logger = util.logger();
     const result = CreateTestJob(DESCRIPTION, () => {});
 
-    await result.run(log);
+    await result.run(logger);
 
-    assert.deepStrictEqual(log.info.calls, [
+    assert.deepStrictEqual(logger.info.calls, [
         ['\u00B7 ' + DESCRIPTION + '\x1b[32m '+ CHARS.success + '\x1b[0m']
     ]);
 });
 
 it('displays output when block fails', async function () {
     const error = new Error('fake test failure');
-    const log = util.log();
+    const logger = util.logger();
     const result = CreateTestJob(DESCRIPTION, () => { throw error; });
 
-    await result.run(log);
+    await result.run(logger);
 
-    assert.deepStrictEqual(log.info.calls, [
+    assert.deepStrictEqual(logger.info.calls, [
         ['\u00B7 ' + DESCRIPTION + '\x1b[31m ' + CHARS.fail + '\x1b[0m'],
         [''],
         ['']
     ]);
-    assert.deepStrictEqual(log.error.calls, [
+    assert.deepStrictEqual(logger.error.calls, [
         [error]
     ]);
 });
 
 it('displays output when block is undefined', async function () {
-    const log = util.log();
+    const logger = util.logger();
     const result = CreateTestJob(DESCRIPTION, undefined);
 
-    await result.run(log);
+    await result.run(logger);
 
-    assert.strictEqual(log.error.calls.length, 0);
-    assert.deepStrictEqual(log.info.calls, [
+    assert.strictEqual(logger.error.calls.length, 0);
+    assert.deepStrictEqual(logger.info.calls, [
         ['\u00B7 ' + DESCRIPTION + '\x1b[32m -- missing --\x1b[0m']
     ]);
 });
@@ -66,7 +66,7 @@ it('runs beforeEach hooks', async function () {
     };
     const result = CreateTestJob(DESCRIPTION, () => {});
 
-    await result.run(util.log(), parentHooks);
+    await result.run(util.logger(), parentHooks);
 
     assert.strictEqual(parentHooks[HookType.BEFORE_EACH][0].calls.length, 1);
     assert.strictEqual(parentHooks[HookType.BEFORE_EACH][1].calls.length, 1);
@@ -79,7 +79,7 @@ it('runs afterEach hooks', async function () {
     };
     const result = CreateTestJob(DESCRIPTION, () => {});
 
-    await result.run(util.log(), parentHooks);
+    await result.run(util.logger(), parentHooks);
 
     assert.strictEqual(parentHooks[HookType.AFTER_EACH][0].calls.length, 1);
     assert.strictEqual(parentHooks[HookType.AFTER_EACH][1].calls.length, 1);
@@ -89,26 +89,26 @@ describe('score', function () {
     it('reports passed test', async function () {
         const result = CreateTestJob(DESCRIPTION, () => {});
 
-        await result.run(util.log());
+        await result.run(util.logger());
 
         assert.deepStrictEqual(result.getScore(), {
-            passed: 1,
-            failed: 0,
-            missing: 0,
-            catastrophic: 0
+            passed: [result],
+            failed: [],
+            missing: [],
+            catastrophic: []
         });
     });
 
     it('reports failed test', async function () {
         const result = CreateTestJob(DESCRIPTION, () => { throw new Error('error1'); });
 
-        await result.run(util.log());
+        await result.run(util.logger());
 
         assert.deepStrictEqual(result.getScore(), {
-            passed: 0,
-            failed: 1,
-            missing: 0,
-            catastrophic: 0
+            passed: [],
+            failed: [result],
+            missing: [],
+            catastrophic: []
         });
     });
 
@@ -116,10 +116,10 @@ describe('score', function () {
         const result = CreateTestJob(DESCRIPTION);
 
         assert.deepStrictEqual(result.getScore(), {
-            passed: 0,
-            failed: 0,
-            missing: 1,
-            catastrophic: 0
+            passed: [],
+            failed: [],
+            missing: [result],
+            catastrophic: []
         });
     });
 });

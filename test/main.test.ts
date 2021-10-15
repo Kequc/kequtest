@@ -19,17 +19,17 @@ it('returns utility functions', function () {
     assert.strictEqual(typeof util.mock.stopAll, 'function');
     assert.strictEqual(typeof util.uncache, 'function');
     assert.strictEqual(typeof util.spy, 'function');
-    assert.strictEqual(typeof util.log, 'function');
+    assert.strictEqual(typeof util.logger, 'function');
 });
 
 it('runs test suite', async function () {
-    const log = util.log();
+    const logger = util.logger();
     const absolute = path.join(__dirname, '/fake-src');
     const exts = ['.fake-test.js'];
 
-    await main(log, [absolute], exts);
+    await main(logger, [absolute], exts);
 
-    assert.deepStrictEqual(log.info.calls.map(call => call[0]), [
+    assert.deepStrictEqual(logger.info.calls.map(call => call[0]), [
         'STARTING',
         '',
         '> ' + absolute,

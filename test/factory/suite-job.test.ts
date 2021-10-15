@@ -2,7 +2,7 @@ import assert from 'assert';
 import path from 'path';
 
 import CreateSuiteJob from '../../src/factory/suite-job';
-import { administrative } from '../../src/main';
+import { summary } from '../../src/main';
 
 const ABSOLUTE = path.join(__dirname, '../fake-src');
 const FILES = [
@@ -12,11 +12,11 @@ const FILES = [
 
 it('sets filename and displays output', async function () {
     const result = CreateSuiteJob(FILES);
-    const log = util.log();
+    const logger = util.logger();
 
-    await result.run(log);
+    await result.run(logger);
 
-    assert.strictEqual(administrative.filename, FILES[FILES.length - 1]);
-    assert.strictEqual(log.info.calls[0][0], 'Found 2 test files...');
-    assert.strictEqual(log.error.calls.length, 0);
+    assert.strictEqual(summary.filename, FILES[FILES.length - 1]);
+    assert.strictEqual(logger.info.calls[0][0], 'Found 2 test files...');
+    assert.strictEqual(logger.error.calls.length, 0);
 });

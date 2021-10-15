@@ -2,7 +2,9 @@
 import path from 'path';
 import kequtest from './main';
 
-import { AsyncFunc, Func, IMock, ISpyFunc, SpyLogger } from '../types';
+import { AsyncFunc, Func } from '../types';
+import { ISpyFunc, SpyLogger } from './util/spy';
+import { IMock } from './env/mocker';
 
 const args = process.argv.slice(2);
 
@@ -34,7 +36,7 @@ declare global {
     var util: {
         mock: IMock;
         uncache: (request: string) => void;
-        log: () => SpyLogger;
+        logger: () => SpyLogger;
         spy: (method?: Func) => ISpyFunc;
     };
 }

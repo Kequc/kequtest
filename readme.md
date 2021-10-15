@@ -106,7 +106,7 @@ it('uses hooks', function () {
 
 ## Spies
 
-`util.log`
+`util.logger`
 
 Generate a pseudo `console` object where each method `debug`, `info`, `log`, `warn`, and `error` is a spy.
 
