@@ -2,7 +2,7 @@ import { Summary } from './src/env/summary';
 import { Hooks } from './src/factory/container-job';
 import { HookType } from './src/util/constants';
 
-export type SuiteJob = {
+export type Suite = {
     run: () => Promise<void>;
 };
 

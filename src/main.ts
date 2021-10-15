@@ -1,6 +1,6 @@
 import CreateMocker from './env/mocker';
 import CreateSummary, { SummaryFailure } from './env/summary';
-import CreateSuiteJob from './factory/suite-job';
+import CreateSuite from './factory/suite';
 import { HookType } from './util/constants';
 import findFilenames from './util/find-filenames';
 import { logger, spy } from './util/spy';
@@ -63,7 +63,7 @@ async function main (logger: Logger, absolutes: string[], exts: string[]): Promi
     // take over console
     global.console = summary.getConsole();
 
-    const suite = CreateSuiteJob(summary, logger, filenames);
+    const suite = CreateSuite(summary, logger, filenames);
     await suite.run();
 
     if ((summary.problems.length) > 0) {
