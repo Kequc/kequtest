@@ -7,9 +7,9 @@ export type SuiteJob = {
 };
 
 export type AbstractJob = {
+    run: (summary: Summary, logger: Logger) => Promise<void>;
     getParent: () => ContainerJob | undefined;
     getDescription: () => string;
-    run: (summary: Summary, logger: Logger) => Promise<void>;
 };
 
 export type ContainerJob = AbstractJob & {

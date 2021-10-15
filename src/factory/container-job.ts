@@ -48,35 +48,6 @@ function CreateContainerJob (description: string, block?: AsyncFunc, parent?: Co
     }
 
     return {
-        addContainer (description, block) {
-            const result = CreateContainerJob(description, block, this);
-            buffer.push(result);
-            return result;
-        },
-        addTest (description, block) {
-            const result = CreateTestJob(description, block, this);
-            buffer.push(result);
-            return result;
-        },
-        addHook (hookType, block) {
-            verifyBlock(block);
-            hooks[hookType].push(block);
-        },
-        addMock (absolute) {
-            mocks.push(absolute);
-        },
-        addCache (absolute) {
-            caches.push(absolute);
-        },
-        getParent () {
-            return parent;
-        },
-        getDescription () {
-            return description;
-        },
-        getHooks () {
-            return hooks;
-        },
         async run (summary, logger) {
             // track active container
             summary.container = this;
@@ -102,6 +73,35 @@ function CreateContainerJob (description: string, block?: AsyncFunc, parent?: Co
             }
 
             cleanup();
+        },
+        getParent () {
+            return parent;
+        },
+        getDescription () {
+            return description;
+        },
+        addContainer (description, block) {
+            const result = CreateContainerJob(description, block, this);
+            buffer.push(result);
+            return result;
+        },
+        addTest (description, block) {
+            const result = CreateTestJob(description, block, this);
+            buffer.push(result);
+            return result;
+        },
+        addHook (hookType, block) {
+            verifyBlock(block);
+            hooks[hookType].push(block);
+        },
+        addMock (absolute) {
+            mocks.push(absolute);
+        },
+        addCache (absolute) {
+            caches.push(absolute);
+        },
+        getHooks () {
+            return hooks;
         }
     };
 }

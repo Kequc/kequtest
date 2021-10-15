@@ -25,12 +25,6 @@ function CreateTestJob (description: string, block?: AsyncFunc, parent?: Contain
     }
 
     return {
-        getParent () {
-            return parent;
-        },
-        getDescription () {
-            return description;
-        },
         async run (summary, logger) {
             // client console
             summary.clearConsole();
@@ -59,6 +53,12 @@ function CreateTestJob (description: string, block?: AsyncFunc, parent?: Contain
 
             // sequence
             for (const afterEach of treeHooks[HookType.AFTER_EACH]) await afterEach();
+        },
+        getParent () {
+            return parent;
+        },
+        getDescription () {
+            return description;
         }
     };
 }
