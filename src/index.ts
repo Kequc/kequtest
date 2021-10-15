@@ -1,10 +1,10 @@
 #!/usr/bin/env node
 import path from 'path';
+import { IMock } from './env/mocker';
+import { ISpyFunc, SpyLogger } from './util/spy';
 import kequtest from './main';
 
 import { AsyncFunc, Func } from '../types';
-import { ISpyFunc, SpyLogger } from './util/spy';
-import { IMock } from './env/mocker';
 
 const args = process.argv.slice(2);
 
