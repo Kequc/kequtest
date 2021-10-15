@@ -30,7 +30,7 @@ Add the following script to `package.json` for easier access:
 
 ## Use
 
-It finds all `.test.js` or `.test.ts` files in the current directory.
+It finds all `.test.js` files anywhere in the current directory.
 
 `describe`
 
@@ -46,7 +46,7 @@ Containers are defined using `describe` and tests are defined with `it`, a test 
 const assert = require('assert');
 const myLib = require('./my-lib.js');
 
-it('counts nearby offices', () => {
+it('counts nearby offices', function () {
   const result = myLib();
   assert.strictEqual(result, 42);
 });
@@ -95,11 +95,11 @@ They run in conjunction with the current container, using `beforeEach` will run 
 ```javascript
 let count = 0;
 
-beforeEach(() => {
+beforeEach(function () {
   count++;
 });
 
-it('uses hooks', () => {
+it('uses hooks', function () {
   // count ~= 1
 });
 ```
@@ -144,7 +144,7 @@ util.mock('../src/my-data.js', {
 
 const { id } = require('../src/main-lib.js');
 
-it('mocks', () => {
+it('mocks', function () {
   // id ~= 'fake-id'
 });
 ```
@@ -204,7 +204,7 @@ Tip if you aren't using TypeScript and want to avoid `no-undef` warnings add ove
 
 If you want to test a TypeScript project or your tests are written in TypeScript. Use `kequtest` with the `--ts` flag, this will automatically register `ts-node` and look for `.test.ts` files.
 
-Ensure you have both `typescript` and `ts-node` installed in your project.
+Ensure you have both [`typescript`](https://www.npmjs.com/package/typescript) and [`ts-node`](https://www.npmjs.com/package/ts-node) installed in your project.
 
 ```
 {

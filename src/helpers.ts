@@ -27,10 +27,10 @@ export const CHARS = {
 };
 
 export enum HookType {
-    BEFORE = 'before1',
-    BEFORE_EACH = 'beforeEach1',
-    AFTER_EACH = 'afterEach1',
-    AFTER = 'after1'
+    BEFORE,
+    BEFORE_EACH,
+    AFTER_EACH,
+    AFTER
 }
 
 export function verifyDescription (description?: string): void {
