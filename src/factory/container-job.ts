@@ -1,4 +1,5 @@
-import { BASE_SCORE, CHARS, HookType, verifyBlock, verifyDescription } from '../helpers';
+import { BASE_SCORE, CHARS, HookType } from '../constants';
+import { renderError, verifyBlock, verifyDescription } from '../helpers';
 import { administrative } from '../main';
 import CreateTestJob from './test-job';
 
@@ -20,23 +21,24 @@ function CreateContainerJob (description: string, block?: AsyncFunc, depth = 0):
 
     let _error: Error | null;
 
-    async function runClientCode (log: Logger) {
+    function message (): string {
         const padding = description.length + (depth * 2);
-        let message = description.padStart(padding);
+        const result = description.padStart(padding);
 
-        if (depth > 0)
-            message += ' ' + CHARS.container;
+        if (depth > 0) return result + ' ' + CHARS.container;
+        return result;
+    }
 
+    async function runClientCode (log: Logger) {
         try {
             if (block !== undefined) await block(log);
-            log.info(message);
         } catch (error) {
+            // initialization threw catastrophic error
             _error = error as Error;
-            log.info(message);
-            log.info('');
-            log.error(error);
-            log.info('');
         }
+
+        log.info(message());
+        renderError(log, _error);
     }
 
     // combine hooks
@@ -101,7 +103,6 @@ function CreateContainerJob (description: string, block?: AsyncFunc, depth = 0):
             await runClientCode(log);
         
             if (_error) {
-                // initialization threw catastrophic error
                 cleanup();
                 return;
             }
@@ -119,9 +120,7 @@ function CreateContainerJob (description: string, block?: AsyncFunc, depth = 0):
             } catch (error) {
                 // hook threw catastrophic error
                 _error = error as Error;
-                log.info('');
-                log.error(error);
-                log.info('');
+                renderError(log, _error);
             }
 
             cleanup();
@@ -135,9 +134,11 @@ function CreateContainerJob (description: string, block?: AsyncFunc, depth = 0):
             }
     
             for (const job of _buffer) {
-                for (const [key, value] of Object.entries(job.getScore())) {
-                    result[key] += value;
-                }
+                const score = job.getScore();
+                result.catastrophic += score.catastrophic;
+                result.failed += score.failed;
+                result.missing += score.missing;
+                result.passed += score.passed;
             }
     
             return result;

@@ -1,8 +1,8 @@
 import CreateSuiteJob from './factory/suite-job';
 import { mock, uncache } from './util/mock';
 import { log, spy } from './util/spy';
+import { HookType } from './constants';
 import findFilenames from './find-filenames';
-import { HookType } from './helpers';
 import summary from './summary';
 
 import { Administrative, AsyncFunc, Logger } from '../types';

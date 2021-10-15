@@ -1,6 +1,6 @@
 import assert from 'assert';
 import CreateTestJob from '../../src/factory/test-job';
-import { CHARS, HookType } from '../../src/helpers';
+import { CHARS, HookType } from '../../src/constants';
 
 const DESCRIPTION = 'fake test description';
 

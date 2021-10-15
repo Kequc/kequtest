@@ -1,4 +1,5 @@
-import { BASE_SCORE, CHARS, green, HookType, red, verifyBlock, verifyDescription } from '../helpers';
+import { BASE_SCORE, CHARS, HookType } from '../constants';
+import { green, red, renderError, verifyBlock, verifyDescription } from '../helpers';
 
 import { AsyncFunc, Logger, TestJob } from '../../types';
 
@@ -15,21 +16,21 @@ function CreateTestJob (description: string, block?: AsyncFunc, depth = 0): Test
         return green(' ' + CHARS.success);
     }
 
-    async function runClientCode (log: Logger) {
+    function message (): string {
         const padding = description.length + (depth * 2);
-        const message = ('\u00B7 ' + description).padStart(padding);
+        return ('\u00B7 ' + description).padStart(padding) + postfix();
+    }
 
+    async function runClientCode (log: Logger) {
         try {
             if (block !== undefined) await block(log);
-            log.info(message + postfix());
         } catch (error) {
             // test threw error
             _error = error as Error;
-            log.info(message + postfix());
-            log.info('');
-            log.error(error);
-            log.info('');
         }
+
+        log.info(message());
+        renderError(log, _error);
     }
 
     return {
