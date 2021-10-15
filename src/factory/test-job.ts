@@ -1,3 +1,4 @@
+import { Summary } from '../env/summary';
 import { CHARS, HookType } from '../util/constants';
 import { calcDepth, green, red } from '../util/helpers';
 import { verifyBlock, verifyDescription } from '../util/verify';
@@ -9,48 +10,24 @@ function CreateTestJob (description: string, block?: AsyncFunc, parent?: Contain
     if (block !== undefined) verifyBlock(block);
     verifyDescription(description);
 
-    let failed = false;
-
-    // red x missing tag or green checkmark
-    function postfix (): string {
-        if (failed) return red(' ' + CHARS.fail);
-        if (block === undefined) return green(' -- missing --');
-        return green(' ' + CHARS.success);
-    }
-
     function message (): string {
         const depth = calcDepth(parent);
         const padding = description.length + (depth * 2);
-        return ('\u00B7 ' + description).padStart(padding) + postfix();
+        return ('\u00B7 ' + description).padStart(padding);
     }
 
-    return {
+    const test: TestJob = {
         async run (summary, logger) {
             // client console
             summary.clearConsole();
-
             // combine hooks
             const treeHooks = getTreeHooks(parent);
-
             // sequence
             for (const beforeEach of treeHooks[HookType.BEFORE_EACH]) await beforeEach();
-
             // client code
-            if (block !== undefined) {
-                try {
-                    await block();
-                    summary.successCount++;
-                } catch (error) {
-                    // test threw error
-                    failed = true;
-                    summary.addFailure(this, error as Error);
-                }
-            } else {
-                summary.missingCount++;
-            }
-
-            logger.info(message());
-
+            const suffix = await runClientCode(summary);
+            // print
+            logger.log(message() + ' ' + suffix);
             // sequence
             for (const afterEach of treeHooks[HookType.AFTER_EACH]) await afterEach();
         },
@@ -61,6 +38,25 @@ function CreateTestJob (description: string, block?: AsyncFunc, parent?: Contain
             return description;
         }
     };
+
+    async function runClientCode (summary: Summary): Promise<string> {
+        try {
+            if (block !== undefined) {
+                await block();
+                summary.successCount++;
+                return green(CHARS.success);
+            } else {
+                summary.missingCount++;
+                return green('-- missing --');
+            }
+        } catch (error) {
+            // test throws an error
+            summary.addFailure(test, error as Error);
+            return red(CHARS.fail);
+        }
+    }
+
+    return test;
 }
 
 export default CreateTestJob;

@@ -51,10 +51,9 @@ function CreateContainerJob (description: string, block?: AsyncFunc, parent?: Co
         async run (summary, logger) {
             // track active container
             summary.container = this;
+            logger.info(message());
             // client console
             summary.clearConsole();
-
-            logger.info(message());
 
             if (block === undefined) return;
 
@@ -68,7 +67,7 @@ function CreateContainerJob (description: string, block?: AsyncFunc, parent?: Co
                 // sequence
                 for (const after of hooks[HookType.AFTER]) await after();
             } catch (error) {
-                // container threw error
+                // container throws an error
                 summary.addFailure(this, error as Error);
             }
 
