@@ -1,9 +1,15 @@
 import { Summary } from './src/env/summary';
-import { TreeHooks } from './src/factory/container-job';
+import { Hooks } from './src/factory/container-job';
 import { HookType } from './src/util/constants';
 
+export type SuiteJob = {
+    run: () => Promise<void>;
+};
+
 export type AbstractJob = {
-    run: (summary: Summary, logger: Logger, parentHooks?: TreeHooks) => Promise<void>;
+    getParent: () => ContainerJob | undefined;
+    getDescription: () => string;
+    run: (summary: Summary, logger: Logger) => Promise<void>;
 };
 
 export type ContainerJob = AbstractJob & {
@@ -12,6 +18,7 @@ export type ContainerJob = AbstractJob & {
     addHook: (hookType: HookType, block: AsyncFunc) => void;
     addMock: (absolute: string) => void;
     addCache: (absolute: string) => void;
+    getHooks: () => Hooks;
 };
 
 export type TestJob = AbstractJob & {

@@ -1,25 +1,33 @@
-import { pluralize } from '../util/helpers';
-import CreateContainerJob from './container-job';
 import { Summary } from '../env/summary';
+import CreateContainerJob from './container-job';
 
-import { ContainerJob, Logger } from '../../types';
+import { Logger, SuiteJob } from '../../types';
 
-function CreateSuiteJob (summary: Summary, logger: Logger, filenames: string[]): ContainerJob {
-    const description = `Found ${pluralize(filenames.length, 'test file')}...`;
-    const suite = CreateContainerJob(description);
-
-    // populate job buffer
-    for (const filename of filenames) {
+function CreateSuiteJob (summary: Summary, logger: Logger, filenames: string[]): SuiteJob {
+    async function openFile (filename: string) {
         const description = filename.replace(process.cwd(), '');
-        suite.addContainer(description, function () {
-            // open test file
-            logger.info('');
-            summary.filename = filename;
+        const file = CreateContainerJob(description, () => {
             require(filename);
         });
+    
+        // track active file
+        summary.filename = filename;
+        logger.info('');
+    
+        try {
+            await file.run(summary, logger);
+        } catch (error) {
+            // file threw an error
+            summary.addFailure(file, error as Error);
+        }
     }
 
-    return suite;
+    return {
+        async run () {
+            // sequence
+            for (const filename of filenames) await openFile(filename);
+        }
+    };
 }
 
 export default CreateSuiteJob;

@@ -1,7 +1,8 @@
+import { AbstractJob, ContainerJob } from '../../types';
+import { CHARS } from '../util/constants';
 import { pluralize, red } from '../util/helpers';
 
-import { FakeLogger, TestLog } from './fake-logger';
-import { ContainerJob } from '../../types';
+import CreateFakeLogger, { TestLog } from './fake-logger';
 
 export type SummaryFailure = {
     description: string;
@@ -20,12 +21,14 @@ export type Summary = {
     problems: SummaryProblem[];
     successCount: number;
     missingCount: number;
-    addFailure: (description: string, error: Error) => void;
+    getConsole: () => Console;
+    addFailure: (job: AbstractJob, error: Error) => void;
     clearConsole: () => void;
     info: () => string;
 };
 
-function CreateSummary (fakeLogger: FakeLogger): Summary {
+function CreateSummary (): Summary {
+    const _fakeLogger = CreateFakeLogger();
     const problems: SummaryProblem[] = [];
 
     function findProblem (filename: string): SummaryProblem {
@@ -42,15 +45,19 @@ function CreateSummary (fakeLogger: FakeLogger): Summary {
         problems,
         successCount: 0,
         missingCount: 0,
-        addFailure (description, error) {
+        getConsole () {
+            return _fakeLogger.console;
+        },
+        addFailure (job, error) {
             if (this.filename) {
                 const problem = findProblem(this.filename);
-                const logs = fakeLogger.logs;
+                const description = failureDescription(job);
+                const logs = _fakeLogger.logs;
                 problem.failures.push({ description, logs, error });
             }
         },
         clearConsole () {
-            fakeLogger.clear();
+            _fakeLogger.clear();
         },
         info () {
             const parts: string[] = [];
@@ -70,3 +77,12 @@ function CreateSummary (fakeLogger: FakeLogger): Summary {
 }
 
 export default CreateSummary;
+
+function failureDescription (job?: AbstractJob): string {
+    const parts: string[] = [];
+    while (job) {
+        parts.unshift(job.getDescription());
+        job = job.getParent();
+    }
+    return parts.join(` ${CHARS.container} `);
+}

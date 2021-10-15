@@ -1,4 +1,5 @@
 import { CHARS, HookType } from '../util/constants';
+import { calcDepth } from '../util/helpers';
 import { verifyBlock, verifyDescription } from '../util/verify';
 import CreateTestJob from './test-job';
 
@@ -16,21 +17,22 @@ export type Hooks = {
     [HookType.AFTER]: AsyncFunc[];
 };
 
-function CreateContainerJob (description: string, block?: AsyncFunc, depth = 0): ContainerJob {
+function CreateContainerJob (description: string, block?: AsyncFunc, parent?: ContainerJob): ContainerJob {
     if (block !== undefined) verifyBlock(block);
     verifyDescription(description);
 
-    const _hooks: Hooks = {
+    const hooks: Hooks = {
         [HookType.BEFORE]: [],
         [HookType.BEFORE_EACH]: [],
         [HookType.AFTER_EACH]: [],
         [HookType.AFTER]: []
     };
-    const _buffer: (ContainerJob | TestJob)[] = [];
-    const _mocks: string[] = [];
-    const _caches: string[] = [];
+    const buffer: (ContainerJob | TestJob)[] = [];
+    const mocks: string[] = [];
+    const caches: string[] = [];
 
     function message (): string {
+        const depth = calcDepth(parent);
         const padding = description.length + (depth * 2);
         const result = description.padStart(padding);
 
@@ -38,57 +40,50 @@ function CreateContainerJob (description: string, block?: AsyncFunc, depth = 0):
         return result;
     }
 
-    // combine hooks
-    function getTreeHooks (parentHooks?: TreeHooks): TreeHooks {
-        if (parentHooks) {
-            return {
-                [HookType.BEFORE_EACH]: parentHooks[HookType.BEFORE_EACH].concat(_hooks[HookType.BEFORE_EACH]),
-                [HookType.AFTER_EACH]: _hooks[HookType.AFTER_EACH].concat(parentHooks[HookType.AFTER_EACH])
-            };
-        }
-        return {
-            [HookType.BEFORE_EACH]: _hooks[HookType.BEFORE_EACH],
-            [HookType.AFTER_EACH]: _hooks[HookType.AFTER_EACH]
-        };
-    }
-
     function cleanup () {
-        for (const mock of _mocks) {
+        for (const mock of mocks) {
             global.util.mock.stop(mock);
         }
-        for (const cache of _caches) {
+        for (const cache of caches) {
             global.util.uncache(cache);
         }
     }
 
     return {
         addContainer (description, block) {
-            const result = CreateContainerJob(description, block, depth + 1);
-            _buffer.push(result);
+            const result = CreateContainerJob(description, block, this);
+            buffer.push(result);
             return result;
         },
         addTest (description, block) {
-            const result = CreateTestJob(description, block, depth + 1);
-            _buffer.push(result);
+            const result = CreateTestJob(description, block, this);
+            buffer.push(result);
             return result;
         },
         addHook (hookType, block) {
             verifyBlock(block);
-            _hooks[hookType].push(block);
+            hooks[hookType].push(block);
         },
         addMock (absolute) {
-            _mocks.push(absolute);
+            mocks.push(absolute);
         },
         addCache (absolute) {
-            _caches.push(absolute);
+            caches.push(absolute);
         },
-        async run (summary, logger, parentHooks) {
+        getParent () {
+            return parent;
+        },
+        getDescription () {
+            return description;
+        },
+        getHooks () {
+            return hooks;
+        },
+        async run (summary, logger) {
             // track active container
             summary.container = this;
             // client console
             summary.clearConsole();
-            // include hooks from ancestors
-            const treeHooks = getTreeHooks(parentHooks);
 
             logger.info(message());
 
@@ -98,14 +93,14 @@ function CreateContainerJob (description: string, block?: AsyncFunc, depth = 0):
                 // initialize
                 await block();
                 // sequence
-                for (const before of _hooks[HookType.BEFORE]) await before();
+                for (const before of hooks[HookType.BEFORE]) await before();
                 // sequence
-                for (const job of _buffer) await job.run(summary, logger, treeHooks);
+                for (const job of buffer) await job.run(summary, logger);
                 // sequence
-                for (const after of _hooks[HookType.AFTER]) await after();
+                for (const after of hooks[HookType.AFTER]) await after();
             } catch (error) {
                 // container threw error
-                summary.addFailure(description, error as Error);
+                summary.addFailure(this, error as Error);
             }
 
             cleanup();

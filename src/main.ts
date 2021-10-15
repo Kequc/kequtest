@@ -1,4 +1,3 @@
-import CreateFakeLogger from './env/fake-logger';
 import CreateMocker from './env/mocker';
 import CreateSummary, { SummaryFailure } from './env/summary';
 import CreateSuiteJob from './factory/suite-job';
@@ -7,12 +6,12 @@ import findFilenames from './util/find-filenames';
 import { logger, spy } from './util/spy';
 
 import { AsyncFunc, Logger } from '../types';
-
-process.env.NODE_ENV = process.env.NODE_ENV || 'test';
+import { pluralize } from './util/helpers';
 
 // env
-const fakeLogger = CreateFakeLogger();
-const summary = CreateSummary(fakeLogger);
+process.env.NODE_ENV = process.env.NODE_ENV || 'test';
+
+const summary = CreateSummary();
 const { mock, uncache } = CreateMocker(summary);
 
 // client
@@ -59,12 +58,13 @@ async function main (logger: Logger, absolutes: string[], exts: string[]): Promi
     }
 
     const filenames = findFilenames(logger, absolutes, exts);
-    const suite = CreateSuiteJob(summary, logger, filenames);
+    console.log(`Found ${pluralize(filenames.length, 'test file')}...`);
 
     // take over console
-    global.console = fakeLogger.console;
+    global.console = summary.getConsole();
 
-    await suite.run(summary, logger);
+    const suite = CreateSuiteJob(summary, logger, filenames);
+    await suite.run();
 
     if ((summary.problems.length) > 0) {
         logger.info('');

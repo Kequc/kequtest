@@ -1,35 +1,45 @@
 import { CHARS, HookType } from '../util/constants';
-import { green, red } from '../util/helpers';
-
-import { AsyncFunc, TestJob } from '../../types';
+import { calcDepth, green, red } from '../util/helpers';
 import { verifyBlock, verifyDescription } from '../util/verify';
+import { TreeHooks } from './container-job';
 
-function CreateTestJob (description: string, block?: AsyncFunc, depth = 0): TestJob {
+import { AsyncFunc, ContainerJob, TestJob } from '../../types';
+
+function CreateTestJob (description: string, block?: AsyncFunc, parent?: ContainerJob): TestJob {
     if (block !== undefined) verifyBlock(block);
     verifyDescription(description);
 
-    let _error: Error | null;
+    let failed = false;
 
     // red x missing tag or green checkmark
     function postfix (): string {
-        if (_error) return red(' ' + CHARS.fail);
+        if (failed) return red(' ' + CHARS.fail);
         if (block === undefined) return green(' -- missing --');
         return green(' ' + CHARS.success);
     }
 
     function message (): string {
+        const depth = calcDepth(parent);
         const padding = description.length + (depth * 2);
         return ('\u00B7 ' + description).padStart(padding) + postfix();
     }
 
     return {
-        async run (summary, logger, parentHooks) {
+        getParent () {
+            return parent;
+        },
+        getDescription () {
+            return description;
+        },
+        async run (summary, logger) {
             // client console
             summary.clearConsole();
 
+            // combine hooks
+            const treeHooks = getTreeHooks(parent);
+
             // sequence
-            if (parentHooks)
-                for (const beforeEach of parentHooks[HookType.BEFORE_EACH]) await beforeEach();
+            for (const beforeEach of treeHooks[HookType.BEFORE_EACH]) await beforeEach();
 
             // client code
             if (block !== undefined) {
@@ -38,8 +48,8 @@ function CreateTestJob (description: string, block?: AsyncFunc, depth = 0): Test
                     summary.successCount++;
                 } catch (error) {
                     // test threw error
-                    _error = error as Error;
-                    summary.addFailure(description, _error);
+                    failed = true;
+                    summary.addFailure(this, error as Error);
                 }
             } else {
                 summary.missingCount++;
@@ -48,10 +58,25 @@ function CreateTestJob (description: string, block?: AsyncFunc, depth = 0): Test
             logger.info(message());
 
             // sequence
-            if (parentHooks)
-                for (const afterEach of parentHooks[HookType.AFTER_EACH]) await afterEach();
+            for (const afterEach of treeHooks[HookType.AFTER_EACH]) await afterEach();
         }
     };
 }
 
 export default CreateTestJob;
+
+function getTreeHooks (container?: ContainerJob) {
+    const result: TreeHooks = {
+        [HookType.BEFORE_EACH]: [],
+        [HookType.AFTER_EACH]: []
+    };
+
+    while (container) {
+        const parent = container.getHooks();
+        result[HookType.BEFORE_EACH] = [...parent[HookType.BEFORE_EACH], ...result[HookType.BEFORE_EACH]];
+        result[HookType.BEFORE_EACH] = [...result[HookType.AFTER_EACH], ...parent[HookType.AFTER_EACH]];
+        container = container.getParent();
+    }
+
+    return result;
+}
