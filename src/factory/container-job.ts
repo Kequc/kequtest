@@ -10,10 +10,8 @@ export type TreeHooks = {
     [HookType.AFTER_EACH]: AsyncFunc[];
 };
 
-export type Hooks = {
+export type Hooks = TreeHooks & {
     [HookType.BEFORE]: AsyncFunc[];
-    [HookType.BEFORE_EACH]: AsyncFunc[];
-    [HookType.AFTER_EACH]: AsyncFunc[];
     [HookType.AFTER]: AsyncFunc[];
 };
 
