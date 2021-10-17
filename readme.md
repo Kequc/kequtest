@@ -26,17 +26,18 @@ Add the following script to `package.json` for easier access:
 * Use any mechanism for thowing errors
 * Supports Typescript
 * Runs all tests
+* Display logs on failed tests
 * Displays errors
 
 ## Use
 
 It finds all `.test.js` files anywhere in the current directory.
 
-`describe`
+`describe()`
 
-`it`
+`it()`
 
-Containers are defined using `describe` and tests are defined with `it`, a test will fail if an error is thrown. An easy way to throw errors is by using Node's [`assert`](https://nodejs.org/api/assert.html).
+Containers are defined using `describe()` and tests are defined with `it()`, a test will fail if an error is thrown. An easy way to throw errors is by using Node's [`assert`](https://nodejs.org/api/assert.html).
 
 ## Example
 
@@ -81,15 +82,15 @@ kequtest somewhere/my-lib.test.js
 
 ## Hooks
 
-`before`
+`before()`
 
-`beforeEach`
+`beforeEach()`
 
-`afterEach`
+`afterEach()`
 
-`after`
+`after()`
 
-They run in conjunction with the current container, using `beforeEach` will run once for each `it` inside.
+They run in conjunction with the current container, using `beforeEach()` will run once for each `it()` inside.
 
 
 ```javascript
@@ -106,11 +107,11 @@ it('uses hooks', function () {
 
 ## Spies
 
-`util.logger`
+`util.logger()`
 
-Generate a pseudo `console` object where each method `debug`, `info`, `log`, `warn`, and `error` is a spy.
+Generate a `console`-like object where each method `debug`, `info`, `log`, `warn`, and `error` is a spy.
 
-`util.spy`
+`util.spy()`
 
 Takes a function to spy on (or empty). Values that pass through are available as an array on the `calls` attribute.
 
@@ -126,7 +127,7 @@ mySpy.reset();
 
 ## Mocks
 
-`util.mock`
+`util.mock()`
 
 Called with a target and desired return value, mocks must be defined before their targets are imported. Targets are relative to your test.
 
@@ -149,17 +150,17 @@ it('mocks', function () {
 });
 ```
 
-`util.mock.stop`
+`util.mock.stop()`
 
 Stops mocking a specific target. Mocks are automatically stopped at the end of the current container.
 
-`util.mock.stopAll`
+`util.mock.stopAll()`
 
 Stops mocking all targets.
 
 ## Uncache
 
-`util.uncache`
+`util.uncache()`
 
 Clear a module from the cache, this will force the module to be loaded again the next time it is required.
 

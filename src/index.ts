@@ -1,10 +1,15 @@
 #!/usr/bin/env node
 import path from 'path';
-import { IMock } from './env/mocker';
-import { ISpyFunc, SpyLogger } from './util/spy';
-import kequtest from './main';
+import CreateMocker, { IMock } from './env/mocker';
+import CreateSummary from './env/summary';
+import { HookType } from './util/constants';
+import { logger, spy, ISpyFunc, SpyLogger } from './util/spy';
+import main from './main';
 
 import { AsyncFunc, Func } from '../types';
+
+// env
+process.env.NODE_ENV = process.env.NODE_ENV || 'test';
 
 const args = process.argv.slice(2);
 
@@ -12,7 +17,7 @@ const targets = extractTargets(args);
 const absolutes = targets.map(target => path.join(process.cwd(), target));
 const exts = ['.test.js'];
 
-if (isTs(args, targets)) {
+if (args.includes('--ts') || targets.some(target => target.endsWith('.test.ts'))) {
     // add typescript support
     exts.push('.test.ts');
     // eslint-disable-next-line @typescript-eslint/no-var-requires
@@ -21,8 +26,16 @@ if (isTs(args, targets)) {
     });
 }
 
-kequtest(console, absolutes, exts);
+function extractTargets (args: string[]) {
+    const result = args.filter(arg => arg[0] !== '-');
+    if (result.length < 1) result.push('.');
+    return result;
+}
 
+const summary = CreateSummary();
+const { mock, uncache } = CreateMocker(summary);
+
+// client
 declare global {
     function describe(description: string, block?: AsyncFunc): void;
     function it(description: string, block?: AsyncFunc): void;
@@ -41,12 +54,36 @@ declare global {
     };
 }
 
-function extractTargets (args: string[]) {
-    const result = args.filter(arg => arg[0] !== '-');
-    if (result.length < 1) result.push('.');
-    return result;
+function describe (description: string, block?: AsyncFunc) {
+    const { container } = summary;
+    if (container) container.addContainer(description, block);
+}
+function it (description: string, block?: AsyncFunc) {
+    const { container } = summary;
+    if (container) container.addTest(description, block);
 }
 
-function isTs (args: string[], targets: string[]) {
-    return args.includes('--ts') || targets.some(target => target.endsWith('.test.ts'));
+global.describe = describe;
+global.it = it;
+
+function createHook (hookType: HookType) {
+    return function (block: AsyncFunc) {
+        const { container } = summary;
+        if (container) container.addHook(hookType, block);
+    };
 }
+
+global.before = createHook(HookType.BEFORE);
+global.beforeEach = createHook(HookType.BEFORE_EACH);
+global.afterEach = createHook(HookType.AFTER_EACH);
+global.after = createHook(HookType.AFTER);
+
+global.util = {
+    mock,
+    uncache,
+    logger,
+    spy
+};
+
+// start tests
+main(summary, console, absolutes, exts);

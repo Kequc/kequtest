@@ -1,9 +1,9 @@
 import assert from 'assert';
 import fs from 'fs/promises';
 import path from 'path';
-import findFilenames from '../src/util/find-filenames';
+import findFilenames from '../../src/util/find-filenames';
 
-const ABSOLUTE = path.join(__dirname, '/fake-src');
+const ABSOLUTE = path.join(__dirname, '../fake-src');
 const EXTS = ['.fake-test.js'];
 
 it('finds files', function () {

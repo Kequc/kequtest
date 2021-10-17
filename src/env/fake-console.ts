@@ -3,14 +3,14 @@ export type TestLog = {
     params: any[];
 };
 
-export type FakeLogger = {
-    logs: TestLog[];
+export type FakeConsole = {
+    getLogs: () => TestLog[];
     clear: () => void;
     console: Console;
 };
 
-function CreateFakeLogger (): FakeLogger {
-    let logs: TestLog[] = [];
+function CreateFakeConsole (): FakeConsole {
+    const logs: TestLog[] = [];
 
     function capture (key: string) {
         return function (...params: any) {
@@ -19,9 +19,11 @@ function CreateFakeLogger (): FakeLogger {
     }
 
     return {
-        logs,
+        getLogs () {
+            return [...logs];
+        },
         clear () {
-            logs = [];
+            logs.length = 0;
         },
         console: Object.assign(Object.create(console), {
             logger: capture('logger'),
@@ -33,4 +35,4 @@ function CreateFakeLogger (): FakeLogger {
     };
 }
 
-export default CreateFakeLogger;
+export default CreateFakeConsole;

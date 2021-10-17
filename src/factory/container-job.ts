@@ -53,13 +53,11 @@ function CreateContainerJob (description: string, block?: AsyncFunc, parent?: Co
             summary.container = this;
             logger.info(message());
             // client console
-            summary.clearConsole();
-
-            if (block === undefined) return;
+            summary.clearFakeConsole();
 
             try {
                 // initialize
-                await block();
+                if (block) await block();
                 // sequence
                 for (const before of hooks[HookType.BEFORE]) await before();
                 // sequence

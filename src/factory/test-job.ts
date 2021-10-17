@@ -13,13 +13,13 @@ function CreateTestJob (description: string, block?: AsyncFunc, parent?: Contain
     function message (): string {
         const depth = calcDepth(parent);
         const padding = description.length + (depth * 2);
-        return ('\u00B7 ' + description).padStart(padding);
+        return (CHARS.test + ' ' + description).padStart(padding);
     }
 
     const test: TestJob = {
         async run (summary, logger) {
             // client console
-            summary.clearConsole();
+            summary.clearFakeConsole();
             // combine hooks
             const treeHooks = getTreeHooks(parent);
             // sequence
@@ -27,7 +27,7 @@ function CreateTestJob (description: string, block?: AsyncFunc, parent?: Contain
             // client code
             const suffix = await runClientCode(summary);
             // print
-            logger.log(message() + ' ' + suffix);
+            logger.info(message() + ' ' + suffix);
             // sequence
             for (const afterEach of treeHooks[HookType.AFTER_EACH]) await afterEach();
         },
@@ -51,6 +51,7 @@ function CreateTestJob (description: string, block?: AsyncFunc, parent?: Contain
             }
         } catch (error) {
             // test throws an error
+            summary.failCount++;
             summary.addFailure(test, error as Error);
             return red(CHARS.fail);
         }
@@ -70,7 +71,7 @@ function getTreeHooks (container?: ContainerJob) {
     while (container) {
         const parent = container.getHooks();
         result[HookType.BEFORE_EACH] = [...parent[HookType.BEFORE_EACH], ...result[HookType.BEFORE_EACH]];
-        result[HookType.BEFORE_EACH] = [...result[HookType.AFTER_EACH], ...parent[HookType.AFTER_EACH]];
+        result[HookType.AFTER_EACH] = [...result[HookType.AFTER_EACH], ...parent[HookType.AFTER_EACH]];
         container = container.getParent();
     }
 

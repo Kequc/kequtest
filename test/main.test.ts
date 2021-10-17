@@ -1,5 +1,6 @@
 import assert from 'assert';
 import path from 'path';
+import CreateSummary from '../src/env/summary';
 
 import main from '../src/main';
 
@@ -22,25 +23,28 @@ it('returns utility functions', function () {
     assert.strictEqual(typeof util.logger, 'function');
 });
 
-it('runs test suite', async function () {
-    const logger = util.logger();
-    const absolute = path.join(__dirname, '/fake-src');
-    const exts = ['.fake-test.js'];
-
-    await main(logger, [absolute], exts);
-
-    assert.deepStrictEqual(logger.info.calls.map(call => call[0]), [
-        'STARTING',
-        '',
-        '> ' + absolute,
-        'Found 2 test files...',
-        '',
-        '/test/fake-src/deep/other.fake-test.js',
-        '',
-        '/test/fake-src/index.fake-test.js',
-        '',
-        'FINISHED',
-        '0/0 passing, 0 failures',
-        ''
-    ]);
+describe('main', function () {
+    it('runs test suite', async function () {
+        const logger = util.logger();
+        const summary = CreateSummary();
+        const absolute = path.join(__dirname, '/fake-src');
+        const exts = ['.fake-test.js'];
+    
+        await main(summary, logger, [absolute], exts);
+    
+        assert.deepStrictEqual(logger.info.calls.map(call => call[0]), [
+            'STARTING',
+            '',
+            '> ' + absolute,
+            'Found 2 test files...',
+            '',
+            '/test/fake-src/deep/other.fake-test.js',
+            '',
+            '/test/fake-src/index.fake-test.js',
+            '',
+            'FINISHED',
+            '0/0 passing, 0 failures',
+            ''
+        ]);
+    });
 });

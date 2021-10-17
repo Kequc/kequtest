@@ -1,13 +1,10 @@
 import assert from 'assert';
 import CreateContainerJob from '../../src/factory/container-job';
 import { HookType } from '../../src/util/constants';
-import { summary } from '../../src/main';
-import CreateTestJob from '../../src/factory/test-job';
-
-const DESCRIPTION = 'fake description';
+import CreateSummary from '../../src/env/summary';
 
 it('allows block to be undefined', function () {
-    CreateContainerJob(DESCRIPTION);
+    CreateContainerJob('container1');
 });
 
 it('throws an error when description is invalid', function () {
@@ -17,24 +14,23 @@ it('throws an error when description is invalid', function () {
 });
 
 it('throws an error when block is invalid', function () {
-    assert.throws(() => { CreateContainerJob('testing', null); }, { message: /^Block must be a function/ });
-    assert.throws(() => { CreateContainerJob('testing', 100 as any); }, { message: /^Block must be a function/ });
+    assert.throws(() => { CreateContainerJob('container1', null); }, { message: /^Block must be a function/ });
+    assert.throws(() => { CreateContainerJob('container1', 100 as any); }, { message: /^Block must be a function/ });
 });
 
-it('displays an error when block fails', async function () {
-    const error = new Error('fake failure');
+it('logs an error when block fails', async function () {
+    const error = new Error('error1');
     const logger = util.logger();
-    const result = CreateContainerJob(DESCRIPTION, () => { throw error; });
+    const summary = CreateSummary();
+    const result = CreateContainerJob('container1', () => { throw error; });
 
-    await result.run(logger);
+    await result.run(summary, logger);
 
     assert.deepStrictEqual(logger.info.calls, [
-        [DESCRIPTION],
-        [''],
-        ['']
+        ['container1']
     ]);
-    assert.deepStrictEqual(logger.error.calls, [
-        [error]
+    assert.deepStrictEqual(summary.failures, [
+        { error, logs: [], tree: [result] }
     ]);
 });
 
@@ -42,47 +38,50 @@ it('runs the block sets container and displays output', async function () {
     const block = util.spy();
     const logger = util.logger();
 
-    const result = CreateContainerJob(DESCRIPTION, block);
+    const summary = CreateSummary();
+    const result = CreateContainerJob('container1', block);
 
     assert.strictEqual(block.calls.length, 0);
-    await result.run(logger);
+    await result.run(summary, logger);
     assert.strictEqual(block.calls.length, 1);
 
     assert.strictEqual(summary.container, result);
     assert.deepStrictEqual(logger.info.calls, [
-        [DESCRIPTION]
+        ['container1']
     ]);
-    assert.strictEqual(logger.error.calls.length, 0);
 });
 
 it('runs before hooks', async function () {
-    const result = CreateContainerJob(DESCRIPTION, () => {});
+    const summary = CreateSummary();
+    const result = CreateContainerJob('container1');
     const before = [util.spy(), util.spy()];
 
     result.addHook(HookType.BEFORE, before[0]);
     result.addHook(HookType.BEFORE, before[1]);
 
-    await result.run(util.logger());
+    await result.run(summary, util.logger());
 
     assert.strictEqual(before[0].calls.length, 1);
     assert.strictEqual(before[1].calls.length, 1);
 });
 
 it('runs after hooks', async function () {
-    const result = CreateContainerJob(DESCRIPTION, () => {});
+    const summary = CreateSummary();
+    const result = CreateContainerJob('container1');
     const after = [util.spy(), util.spy()];
 
     result.addHook(HookType.AFTER, after[0]);
     result.addHook(HookType.AFTER, after[1]);
 
-    await result.run(util.logger());
+    await result.run(summary, util.logger());
 
     assert.strictEqual(after[0].calls.length, 1);
     assert.strictEqual(after[1].calls.length, 1);
 });
 
 it('runs buffer', async function () {
-    const result = CreateContainerJob(DESCRIPTION, () => {});
+    const summary = CreateSummary();
+    const result = CreateContainerJob('container1');
     const before = [util.spy()];
     const buffer = [util.spy(), util.spy()];
     const after = [util.spy()];
@@ -92,7 +91,7 @@ it('runs buffer', async function () {
     result.addTest('test2', buffer[1]);
     result.addHook(HookType.AFTER, after[0]);
 
-    await result.run(util.logger());
+    await result.run(summary, util.logger());
 
     assert.strictEqual(before[0].calls.length, 1);
     assert.strictEqual(buffer[0].calls.length, 1);
@@ -101,10 +100,10 @@ it('runs buffer', async function () {
 });
 
 describe('using mocks', function () {
-    let originalMockStop;
+    let originalMockStop: (mock: string) => void;
 
     beforeEach(function () {
-        originalMockStop =  global.util.mock.stop;
+        originalMockStop = global.util.mock.stop;
         global.util.mock.stop = util.spy();
     });
 
@@ -113,28 +112,30 @@ describe('using mocks', function () {
     });
 
     it('stops mocks', async function () {
-        const result = CreateContainerJob(DESCRIPTION, () => {});
+        const summary = CreateSummary();
+        const result = CreateContainerJob('container1');
         const buffer = [util.spy(), util.spy()];
 
         result.addMock('mock1');
         result.addMock('mock2');
         result.addTest('test1', buffer[0]);
         result.addTest('test2', buffer[1]);
-    
-        await result.run(util.logger());
-    
+
+        await result.run(summary, util.logger());
+
         assert.deepStrictEqual((global.util.mock.stop as any).calls, [['mock1'], ['mock2']]);
     });
-    
-    it('bails early if catastrophic error is encountered', async function () {
+
+    it('stops mocks even if there is a container error', async function () {
         const logger = util.logger();
 
-        const result = CreateContainerJob(DESCRIPTION, () => { throw new Error('error1'); });
+        const summary = CreateSummary();
+        const result = CreateContainerJob('container1', () => { throw new Error('error1'); });
         result.addMock('mock1');
         result.addMock('mock2');
-    
-        await result.run(logger);
-    
+
+        await result.run(summary, logger);
+
         assert.deepStrictEqual((global.util.mock.stop as any).calls, [['mock1'], ['mock2']]);
     });
 });
@@ -145,73 +146,33 @@ it('sends hooks along to children', async function () {
         hookCalls.push(num);
     };
 
-    const result = CreateContainerJob(DESCRIPTION, () => {});
-    const beforeEach = [util.spy(add(0)), util.spy(add(1))];
-    const afterEach = [util.spy(add(2)), util.spy(add(3))];
+    const summary = CreateSummary();
+    const result = CreateContainerJob('container1');
+    const container = result.addContainer('container2');
+    const hooks = [
+        util.spy(add(0)),
+        util.spy(add(1)),
+        util.spy(add(2)),
+        util.spy(add(3)),
+        util.spy(add(4)),
+        util.spy(add(5))
+    ];
     const test = util.spy();
 
-    const parentHooks = {
-        [HookType.BEFORE_EACH]: [util.spy(add(4)), util.spy(add(5))],
-        [HookType.AFTER_EACH]: [util.spy(add(6)), util.spy(add(7))]
-    };
+    result.addHook(HookType.BEFORE_EACH, hooks[0]);
+    result.addHook(HookType.BEFORE_EACH, hooks[1]);
+    result.addHook(HookType.AFTER_EACH, hooks[2]);
+    result.addHook(HookType.AFTER_EACH, hooks[3]);
+    container.addHook(HookType.BEFORE_EACH, hooks[4]);
+    container.addHook(HookType.AFTER_EACH, hooks[5]);
+    container.addTest('test1', test);
 
-    result.addHook(HookType.BEFORE_EACH, beforeEach[0]);
-    result.addHook(HookType.BEFORE_EACH, beforeEach[1]);
-    result.addHook(HookType.AFTER_EACH, afterEach[0]);
-    result.addHook(HookType.AFTER_EACH, afterEach[1]);
-    result.addTest('test1', test);
+    await result.run(summary, util.logger());
 
-    await result.run(util.logger(), parentHooks);
-
-    assert.strictEqual(parentHooks[HookType.BEFORE_EACH][0].calls.length, 1);
-    assert.strictEqual(parentHooks[HookType.AFTER_EACH][0].calls.length, 1);
+    assert.strictEqual(hooks[0].calls.length, 1);
+    assert.strictEqual(hooks[1].calls.length, 1);
+    assert.strictEqual(hooks[0].calls.length, 1);
+    assert.strictEqual(hooks[1].calls.length, 1);
     assert.strictEqual(test.calls.length, 1);
-    assert.deepStrictEqual(hookCalls, [4, 5, 0, 1, 2, 3, 6, 7]);
-});
-
-describe('score', function () {
-    it('produces test results', function () {
-        const result = CreateContainerJob(DESCRIPTION);
-
-        const containers = [
-            result.addContainer(DESCRIPTION),
-            result.addContainer(DESCRIPTION)
-        ];
-
-        const jobs = [
-            containers[0].addTest('test1'),
-            containers[0].addTest('test2'),
-            containers[1].addTest('test3'),
-            containers[1].addTest('test4'),
-            result.addTest('test5'),
-            result.addTest('test6')
-        ];
-
-        jobs[0].getScore = () => ({ passed: [CreateTestJob('test1')], failed: [], missing: [], catastrophic: [] });
-        jobs[1].getScore = () => ({ passed: [], failed: [], missing: [CreateTestJob('test2')], catastrophic: [] });
-        jobs[2].getScore = () => ({ passed: [], failed: [CreateTestJob('test3')], missing: [], catastrophic: [] });
-        jobs[3].getScore = () => ({ passed: [], failed: [], missing: [], catastrophic: [CreateContainerJob('test4')] });
-        jobs[4].getScore = () => ({ passed: [CreateTestJob('test5')], failed: [], missing: [], catastrophic: [] });
-        jobs[5].getScore = () => ({ passed: [], failed: [CreateTestJob('test6')], missing: [], catastrophic: [] });
-
-        assert.deepStrictEqual(result.getScore(), {
-            passed: 2,
-            failed: 2,
-            missing: 1,
-            catastrophic: 1
-        });
-    });
-
-    it('reports catastrophic error', async function () {
-        const result = CreateContainerJob(DESCRIPTION, () => { throw new Error('error1'); });
-
-        await result.run(util.logger());
-
-        assert.deepStrictEqual(result.getScore(), {
-            passed: 0,
-            failed: 0,
-            missing: 0,
-            catastrophic: 1
-        });
-    });
+    assert.deepStrictEqual(hookCalls, [0, 1, 4, 5, 2, 3]);
 });

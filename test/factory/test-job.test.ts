@@ -1,11 +1,11 @@
 import assert from 'assert';
+import CreateSummary from '../../src/env/summary';
 import CreateTestJob from '../../src/factory/test-job';
-import { CHARS, HookType } from '../../src/util/constants';
-
-const DESCRIPTION = 'fake test description';
+import { CHARS } from '../../src/util/constants';
+import { green, red } from '../../src/util/helpers';
 
 it('allows block to be undefined', function () {
-    CreateTestJob(DESCRIPTION);
+    CreateTestJob('test1');
 });
 
 it('throws an error when description is invalid', function () {
@@ -15,111 +15,57 @@ it('throws an error when description is invalid', function () {
 });
 
 it('throws an error when block is invalid', function () {
-    assert.throws(() => { CreateTestJob('testing', null); }, { message: /^Block must be a function/ });
-    assert.throws(() => { CreateTestJob('testing', 100 as any); }, { message: /^Block must be a function/ });
+    assert.throws(() => { CreateTestJob('test1', null); }, { message: /^Block must be a function/ });
+    assert.throws(() => { CreateTestJob('test1', 100 as any); }, { message: /^Block must be a function/ });
 });
 
 it('displays output', async function () {
     const logger = util.logger();
-    const result = CreateTestJob(DESCRIPTION, () => {});
+    const summary = CreateSummary();
+    const result = CreateTestJob('test1', () => {});
 
-    await result.run(logger);
+    await result.run(summary, logger);
 
     assert.deepStrictEqual(logger.info.calls, [
-        ['\u00B7 ' + DESCRIPTION + '\x1b[32m '+ CHARS.success + '\x1b[0m']
+        [CHARS.test + ' test1 '+ green(CHARS.success)]
     ]);
+    assert.strictEqual(summary.failCount, 0);
+    assert.strictEqual(summary.successCount, 1);
+    assert.strictEqual(summary.missingCount, 0);
+    assert.deepStrictEqual(summary.failures, []);
 });
 
 it('displays output when block fails', async function () {
-    const error = new Error('fake test failure');
+    const error = new Error('error1');
     const logger = util.logger();
-    const result = CreateTestJob(DESCRIPTION, () => { throw error; });
+    const summary = CreateSummary();
+    const result = CreateTestJob('test1', () => { throw error; });
 
-    await result.run(logger);
+    await result.run(summary, logger);
 
     assert.deepStrictEqual(logger.info.calls, [
-        ['\u00B7 ' + DESCRIPTION + '\x1b[31m ' + CHARS.fail + '\x1b[0m'],
-        [''],
-        ['']
+        [CHARS.test + ' test1 ' + red(CHARS.fail)]
     ]);
-    assert.deepStrictEqual(logger.error.calls, [
-        [error]
+    assert.strictEqual(summary.failCount, 1);
+    assert.strictEqual(summary.successCount, 0);
+    assert.strictEqual(summary.missingCount, 0);
+    assert.deepStrictEqual(summary.failures, [
+        { error, logs: [], tree: [result] }
     ]);
 });
 
 it('displays output when block is undefined', async function () {
     const logger = util.logger();
-    const result = CreateTestJob(DESCRIPTION, undefined);
+    const summary = CreateSummary();
+    const result = CreateTestJob('test1');
 
-    await result.run(logger);
+    await result.run(summary, logger);
 
-    assert.strictEqual(logger.error.calls.length, 0);
     assert.deepStrictEqual(logger.info.calls, [
-        ['\u00B7 ' + DESCRIPTION + '\x1b[32m -- missing --\x1b[0m']
+        [CHARS.test + ' test1 ' + green('-- missing --')]
     ]);
-});
-
-it('runs beforeEach hooks', async function () {
-    const parentHooks = {
-        [HookType.BEFORE_EACH]: [util.spy(), util.spy()],
-        [HookType.AFTER_EACH]: []
-    };
-    const result = CreateTestJob(DESCRIPTION, () => {});
-
-    await result.run(util.logger(), parentHooks);
-
-    assert.strictEqual(parentHooks[HookType.BEFORE_EACH][0].calls.length, 1);
-    assert.strictEqual(parentHooks[HookType.BEFORE_EACH][1].calls.length, 1);
-});
-
-it('runs afterEach hooks', async function () {
-    const parentHooks = {
-        [HookType.BEFORE_EACH]: [],
-        [HookType.AFTER_EACH]: [util.spy(), util.spy()]
-    };
-    const result = CreateTestJob(DESCRIPTION, () => {});
-
-    await result.run(util.logger(), parentHooks);
-
-    assert.strictEqual(parentHooks[HookType.AFTER_EACH][0].calls.length, 1);
-    assert.strictEqual(parentHooks[HookType.AFTER_EACH][1].calls.length, 1);
-});
-
-describe('score', function () {
-    it('reports passed test', async function () {
-        const result = CreateTestJob(DESCRIPTION, () => {});
-
-        await result.run(util.logger());
-
-        assert.deepStrictEqual(result.getScore(), {
-            passed: [result],
-            failed: [],
-            missing: [],
-            catastrophic: []
-        });
-    });
-
-    it('reports failed test', async function () {
-        const result = CreateTestJob(DESCRIPTION, () => { throw new Error('error1'); });
-
-        await result.run(util.logger());
-
-        assert.deepStrictEqual(result.getScore(), {
-            passed: [],
-            failed: [result],
-            missing: [],
-            catastrophic: []
-        });
-    });
-
-    it('reports missing test', function () {
-        const result = CreateTestJob(DESCRIPTION);
-
-        assert.deepStrictEqual(result.getScore(), {
-            passed: [],
-            failed: [],
-            missing: [result],
-            catastrophic: []
-        });
-    });
+    assert.strictEqual(summary.failCount, 0);
+    assert.strictEqual(summary.successCount, 0);
+    assert.strictEqual(summary.missingCount, 1);
+    assert.deepStrictEqual(summary.failures, []);
 });

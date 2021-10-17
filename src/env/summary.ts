@@ -1,73 +1,57 @@
 import { AbstractJob, ContainerJob } from '../../types';
-import { CHARS } from '../util/constants';
 import { pluralize, red } from '../util/helpers';
 
-import CreateFakeLogger, { TestLog } from './fake-logger';
+import CreateFakeConsole, { TestLog } from './fake-console';
 
 export type SummaryFailure = {
-    description: string;
-    logs: TestLog[]
+    tree: AbstractJob[];
+    logs: TestLog[];
     error: Error;
-};
-
-export type SummaryProblem = {
-    filename: string;
-    failures: SummaryFailure[];
 };
 
 export type Summary = {
     filename: string | null,
     container: ContainerJob | null,
-    problems: SummaryProblem[];
+    failures: SummaryFailure[];
+    failCount: number;
     successCount: number;
     missingCount: number;
-    getConsole: () => Console;
+    getFakeConsole: () => Console;
     addFailure: (job: AbstractJob, error: Error) => void;
-    clearConsole: () => void;
+    clearFakeConsole: () => void;
     info: () => string;
 };
 
 function CreateSummary (): Summary {
-    const _fakeLogger = CreateFakeLogger();
-    const problems: SummaryProblem[] = [];
-
-    function findProblem (filename: string): SummaryProblem {
-        const existing = problems.find(problem => problem.filename === filename);
-        if (existing) return existing;
-        const problem: SummaryProblem = { filename, failures: [] };
-        problems.push(problem);
-        return problem;
-    }
+    const fakeConsole = CreateFakeConsole();
+    const failures: SummaryFailure[] = [];
 
     return {
         filename: null,
         container: null,
-        problems,
+        failures,
+        failCount: 0,
         successCount: 0,
         missingCount: 0,
-        getConsole () {
-            return _fakeLogger.console;
+        getFakeConsole () {
+            return fakeConsole.console;
         },
         addFailure (job, error) {
-            if (this.filename) {
-                const problem = findProblem(this.filename);
-                const description = failureDescription(job);
-                const logs = _fakeLogger.logs;
-                problem.failures.push({ description, logs, error });
-            }
+            const tree = failureTree(job);
+            const logs = fakeConsole.getLogs();
+            failures.push({ tree, logs, error });
         },
-        clearConsole () {
-            _fakeLogger.clear();
+        clearFakeConsole () {
+            fakeConsole.clear();
         },
         info () {
             const parts: string[] = [];
-            const failedCount = problems.reduce((acc, problem) => acc + problem.failures.length, 0);
 
-            parts.push(`${this.successCount}/${this.successCount + failedCount} passing`);
+            parts.push(`${this.successCount}/${this.successCount + this.failCount} passing`);
             if (this.missingCount > 0) parts.push(`${this.missingCount} missing`);
-            parts.push(pluralize(failedCount, 'failure'));
+            parts.push(pluralize(this.failures.length, 'failure'));
 
-            if (failedCount > 0) {
+            if (this.failures.length > 0) {
                 return red(parts.join(', '));
             } else {
                 return parts.join(', ');
@@ -78,11 +62,11 @@ function CreateSummary (): Summary {
 
 export default CreateSummary;
 
-function failureDescription (job?: AbstractJob): string {
-    const parts: string[] = [];
+function failureTree (job?: AbstractJob): AbstractJob[] {
+    const parts: AbstractJob[] = [];
     while (job) {
-        parts.unshift(job.getDescription());
+        parts.unshift(job);
         job = job.getParent();
     }
-    return parts.join(` ${CHARS.container} `);
+    return parts;
 }

@@ -1,8 +1,7 @@
 import assert from 'assert';
 import path from 'path';
-
-import CreateSuiteJob from '../../src/factory/suite-job';
-import { summary } from '../../src/main';
+import CreateSummary from '../../src/env/summary';
+import CreateSuite from '../../src/factory/suite';
 
 const ABSOLUTE = path.join(__dirname, '../fake-src');
 const FILES = [
@@ -11,12 +10,18 @@ const FILES = [
 ];
 
 it('sets filename and displays output', async function () {
-    const result = CreateSuiteJob(FILES);
     const logger = util.logger();
+    const summary = CreateSummary();
+    const result = CreateSuite(summary, logger, FILES);
 
-    await result.run(logger);
+    await result.run();
 
     assert.strictEqual(summary.filename, FILES[FILES.length - 1]);
-    assert.strictEqual(logger.info.calls[0][0], 'Found 2 test files...');
+    assert.deepStrictEqual(logger.info.calls, [
+        [''],
+        ['/test/fake-src/deep/other.fake-test.js'],
+        [''],
+        ['/test/fake-src/index.fake-test.js'],
+    ]);
     assert.strictEqual(logger.error.calls.length, 0);
 });

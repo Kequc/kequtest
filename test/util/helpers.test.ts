@@ -1,5 +1,5 @@
 import assert from 'assert';
-import { pluralize, red, green } from '../src/helpers';
+import { pluralize, red, green } from '../../src/util/helpers';
 
 describe('pluralize', function () {
     it('pluralises a word', function () {
