@@ -26,7 +26,7 @@ Add the following script to `package.json` for easier access:
 * Use any mechanism for thowing errors
 * Supports Typescript
 * Runs all tests
-* Display logs on failed tests
+* Displays logs on failed tests
 * Displays errors
 
 ## Use
