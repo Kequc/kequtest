@@ -1,11 +1,9 @@
-import { Summary } from '../env/summary';
 import { CHARS, HookType } from '../util/constants';
 import { calcDepth } from '../util/helpers';
 import { verifyBlock, verifyDescription } from '../util/verify';
 import CreateTestJob from './test-job';
 
-import { AsyncFunc, ContainerJob, Logger, TestJob } from '../../types';
-import { TestLog } from '../env/fake-console';
+import { AsyncFunc, ContainerJob, TestJob } from '../../types';
 
 export type TreeHooks = {
     [HookType.BEFORE_EACH]: AsyncFunc[];

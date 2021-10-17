@@ -1,4 +1,3 @@
-import { Summary } from '../env/summary';
 import { CHARS, HookType } from '../util/constants';
 import { calcDepth, green, red } from '../util/helpers';
 import { verifyBlock, verifyDescription } from '../util/verify';
