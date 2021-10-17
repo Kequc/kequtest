@@ -21,15 +21,8 @@ async function main (summary: Summary, logger: Logger, absolutes: string[], exts
     const filenames = findFilenames(logger, absolutes, exts);
     logger.info(`Found ${pluralize(filenames.length, 'test file')}...`);
 
-    // take over console
-    const originalConsole = global.console;
-    global.console = summary.getFakeConsole();
-
     const suite = CreateSuite(summary, logger, filenames);
     await suite.run();
-
-    // restore console
-    global.console = originalConsole;
 
     for (const failure of summary.failures) {
         renderFailure(failure, logger);
