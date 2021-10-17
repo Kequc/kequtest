@@ -18,18 +18,36 @@ function CreateTestJob (description: string, block?: AsyncFunc, parent?: Contain
 
     const test: TestJob = {
         async run (summary, logger) {
-            // client console
-            summary.clearFakeConsole();
             // combine hooks
             const treeHooks = getTreeHooks(parent);
-            // sequence
-            for (const beforeEach of treeHooks[HookType.BEFORE_EACH]) await beforeEach();
-            // client code
-            const suffix = await runClientCode(summary);
-            // print
-            logger.info(message() + ' ' + suffix);
-            // sequence
-            for (const afterEach of treeHooks[HookType.AFTER_EACH]) await afterEach();
+
+            await summary.captureConsole(async function ({ getLogs }) {
+                let suffix: string;
+
+                try {
+                    // sequence
+                    for (const beforeEach of treeHooks[HookType.BEFORE_EACH]) await beforeEach();
+                    // client code
+                    if (block !== undefined) {
+                        await block();
+                        summary.successCount++;
+                        suffix = green(CHARS.success);
+                    } else {
+                        summary.missingCount++;
+                        suffix = green('-- missing --');
+                    }
+                    // sequence
+                    for (const afterEach of treeHooks[HookType.AFTER_EACH]) await afterEach();
+                } catch (error) {
+                    // test throws an error
+                    summary.failCount++;
+                    summary.addFailure(test, getLogs(), error as Error);
+                    suffix = red(CHARS.fail);
+                }
+
+                // print
+                logger.info(message() + ' ' + suffix);
+            });
         },
         getParent () {
             return parent;
@@ -38,24 +56,6 @@ function CreateTestJob (description: string, block?: AsyncFunc, parent?: Contain
             return description;
         }
     };
-
-    async function runClientCode (summary: Summary): Promise<string> {
-        try {
-            if (block !== undefined) {
-                await block();
-                summary.successCount++;
-                return green(CHARS.success);
-            } else {
-                summary.missingCount++;
-                return green('-- missing --');
-            }
-        } catch (error) {
-            // test throws an error
-            summary.failCount++;
-            summary.addFailure(test, error as Error);
-            return red(CHARS.fail);
-        }
-    }
 
     return test;
 }

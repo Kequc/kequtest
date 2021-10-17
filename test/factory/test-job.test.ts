@@ -69,3 +69,37 @@ it('displays output when block is undefined', async function () {
     assert.strictEqual(summary.missingCount, 1);
     assert.deepStrictEqual(summary.failures, []);
 });
+
+it('captures console information when block fails', async function () {
+    const error = new Error('error1');
+    const logger = util.logger();
+    const summary = CreateSummary();
+    const result = CreateTestJob('test1', () => {
+        console.log('fake log');
+        console.warn('fake warn');
+        console.error('fake error');
+        console.info('fake info');
+        console.debug('fake debug');
+        throw error;
+    });
+
+    await result.run(summary, logger);
+
+    assert.deepStrictEqual(logger.info.calls, [
+        [CHARS.test + ' test1 ' + red(CHARS.fail)]
+    ]);
+    assert.strictEqual(summary.failCount, 1);
+    assert.strictEqual(summary.successCount, 0);
+    assert.strictEqual(summary.missingCount, 0);
+    assert.deepStrictEqual(summary.failures, [{
+        error,
+        logs: [
+            { key: 'log', params: ['fake log'] },
+            { key: 'warn', params: ['fake warn'] },
+            { key: 'error', params: ['fake error'] },
+            { key: 'info', params: ['fake info'] },
+            { key: 'debug', params: ['fake debug'] },
+        ],
+        tree: [result]
+    }]);
+});

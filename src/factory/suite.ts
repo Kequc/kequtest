@@ -19,15 +19,8 @@ function CreateSuite (summary: Summary, logger: Logger, filenames: string[]): Su
 
     return {
         async run () {
-            // take over console
-            const originalConsole = global.console;
-            global.console = summary.getFakeConsole();
-
             // sequence
             for (const filename of filenames) await openFile(filename);
-
-            // restore console
-            global.console = originalConsole;
         }
     };
 }

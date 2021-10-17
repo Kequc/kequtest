@@ -29,6 +29,9 @@ it('logs an error when block fails', async function () {
     assert.deepStrictEqual(logger.info.calls, [
         ['container1']
     ]);
+    assert.strictEqual(summary.failCount, 0);
+    assert.strictEqual(summary.successCount, 0);
+    assert.strictEqual(summary.missingCount, 0);
     assert.deepStrictEqual(summary.failures, [
         { error, logs: [], tree: [result] }
     ]);
@@ -175,4 +178,38 @@ it('sends hooks along to children', async function () {
     assert.strictEqual(hooks[1].calls.length, 1);
     assert.strictEqual(test.calls.length, 1);
     assert.deepStrictEqual(hookCalls, [0, 1, 4, 5, 2, 3]);
+});
+
+it('captures console information when block fails', async function () {
+    const error = new Error('error1');
+    const logger = util.logger();
+    const summary = CreateSummary();
+    const result = CreateContainerJob('container1', () => {
+        console.log('fake log');
+        console.warn('fake warn');
+        console.error('fake error');
+        console.info('fake info');
+        console.debug('fake debug');
+        throw error;
+    });
+
+    await result.run(summary, logger);
+
+    assert.deepStrictEqual(logger.info.calls, [
+        ['container1']
+    ]);
+    assert.strictEqual(summary.failCount, 0);
+    assert.strictEqual(summary.successCount, 0);
+    assert.strictEqual(summary.missingCount, 0);
+    assert.deepStrictEqual(summary.failures, [{
+        error,
+        logs: [
+            { key: 'log', params: ['fake log'] },
+            { key: 'warn', params: ['fake warn'] },
+            { key: 'error', params: ['fake error'] },
+            { key: 'info', params: ['fake info'] },
+            { key: 'debug', params: ['fake debug'] },
+        ],
+        tree: [result]
+    }]);
 });

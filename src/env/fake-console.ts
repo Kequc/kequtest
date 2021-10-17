@@ -5,7 +5,6 @@ export type TestLog = {
 
 export type FakeConsole = {
     getLogs: () => TestLog[];
-    clear: () => void;
     console: Console;
 };
 
@@ -22,11 +21,8 @@ function CreateFakeConsole (): FakeConsole {
         getLogs () {
             return [...logs];
         },
-        clear () {
-            logs.length = 0;
-        },
         console: Object.assign(Object.create(console), {
-            logger: capture('logger'),
+            log: capture('log'),
             error: capture('error'),
             warn: capture('warn'),
             debug: capture('debug'),

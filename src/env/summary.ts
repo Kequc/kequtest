@@ -1,7 +1,7 @@
 import { AbstractJob, ContainerJob } from '../../types';
 import { pluralize, red } from '../util/helpers';
 
-import CreateFakeConsole, { TestLog } from './fake-console';
+import CreateFakeConsole, { FakeConsole, TestLog } from './fake-console';
 
 export type SummaryFailure = {
     tree: AbstractJob[];
@@ -16,14 +16,12 @@ export type Summary = {
     failCount: number;
     successCount: number;
     missingCount: number;
-    getFakeConsole: () => Console;
-    addFailure: (job: AbstractJob, error: Error) => void;
-    clearFakeConsole: () => void;
+    captureConsole: (block: (fakeConsole: FakeConsole) => void) => Promise<void>;
+    addFailure: (job: AbstractJob, logs: TestLog[], error: Error) => void;
     info: () => string;
 };
 
 function CreateSummary (): Summary {
-    const fakeConsole = CreateFakeConsole();
     const failures: SummaryFailure[] = [];
 
     return {
@@ -33,16 +31,20 @@ function CreateSummary (): Summary {
         failCount: 0,
         successCount: 0,
         missingCount: 0,
-        getFakeConsole () {
-            return fakeConsole.console;
+        async captureConsole (block) {
+            // take over console
+            const fakeConsole = CreateFakeConsole();
+            const originalConsole = global.console;
+            global.console = fakeConsole.console;
+
+            await block(fakeConsole);
+
+            // restore console
+            global.console = originalConsole;
         },
-        addFailure (job, error) {
+        addFailure (job, logs, error) {
             const tree = failureTree(job);
-            const logs = fakeConsole.getLogs();
             failures.push({ tree, logs, error });
-        },
-        clearFakeConsole () {
-            fakeConsole.clear();
         },
         info () {
             const parts: string[] = [];

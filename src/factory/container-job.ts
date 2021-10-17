@@ -1,9 +1,11 @@
+import { Summary } from '../env/summary';
 import { CHARS, HookType } from '../util/constants';
 import { calcDepth } from '../util/helpers';
 import { verifyBlock, verifyDescription } from '../util/verify';
 import CreateTestJob from './test-job';
 
-import { AsyncFunc, ContainerJob, TestJob } from '../../types';
+import { AsyncFunc, ContainerJob, Logger, TestJob } from '../../types';
+import { TestLog } from '../env/fake-console';
 
 export type TreeHooks = {
     [HookType.BEFORE_EACH]: AsyncFunc[];
@@ -47,27 +49,27 @@ function CreateContainerJob (description: string, block?: AsyncFunc, parent?: Co
         }
     }
 
-    return {
+    const container: ContainerJob = {
         async run (summary, logger) {
             // track active container
             summary.container = this;
             logger.info(message());
-            // client console
-            summary.clearFakeConsole();
 
-            try {
-                // initialize
-                if (block) await block();
-                // sequence
-                for (const before of hooks[HookType.BEFORE]) await before();
-                // sequence
-                for (const job of buffer) await job.run(summary, logger);
-                // sequence
-                for (const after of hooks[HookType.AFTER]) await after();
-            } catch (error) {
-                // container throws an error
-                summary.addFailure(this, error as Error);
-            }
+            await summary.captureConsole(async function ({ getLogs }) {
+                try {
+                    // initialize
+                    if (block) await block();
+                    // sequence
+                    for (const before of hooks[HookType.BEFORE]) await before();
+                    // sequence
+                    for (const job of buffer) await job.run(summary, logger);
+                    // sequence
+                    for (const after of hooks[HookType.AFTER]) await after();
+                } catch (error) {
+                    // container throws an error
+                    summary.addFailure(container, getLogs(), error as Error);
+                }
+            });
 
             cleanup();
         },
@@ -101,6 +103,8 @@ function CreateContainerJob (description: string, block?: AsyncFunc, parent?: Co
             return hooks;
         }
     };
+
+    return container;
 }
 
 export default CreateContainerJob;
