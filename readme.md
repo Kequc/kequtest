@@ -63,7 +63,7 @@ STARTING
 > /home/kequc/my-project
 Found 1 test file...
 
-somewhere/my-lib.test.js
+/somewhere/my-lib.test.js
 · counts nearby offices ✓
 
 FINISHED
@@ -215,14 +215,14 @@ Ensure you have both [`typescript`](https://www.npmjs.com/package/typescript) an
 }
 ```
 
-To enjoy types you should create a `kequtest.d.ts` file or similar in the root of your project with the following added to it.
+To enjoy types you should import side effects of kequtest at the top of your test files.
 
-```
-/// <reference types="kequtest" />
+```javascript
+import 'kequtest';
 ```
 
 ## Contribute
 
-If you know how to better implement TypeScript so globals like `beforeEach` can be used via intellisense in tests I'd love to hear from you. I feel the current implementation requiring an additional type definition file is not the best. It's also confusing as it causes methods exposed by kequtest to appear via intellisense in every file of the project, not just test files.
+If you know how to better implement TypeScript so globals like `beforeEach` can be used via intellisense in tests I'd love to hear from you. I feel the current implementation requiring an additional import statement is not the best.
 
-A better TypeScript implementation is warmly welcomed.
+A better TypeScript implementation is warmly welcomed. Especially one which can be localized to only adds globals to `.test.ts` files throughout the app.
