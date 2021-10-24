@@ -1,3 +1,4 @@
+import '../../src'; // 'kequtest'
 import assert from 'assert';
 import CreateSummary from '../../src/env/summary';
 import CreateContainerJob from '../../src/factory/container-job';

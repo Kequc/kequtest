@@ -1,3 +1,4 @@
+import '../../src'; // 'kequtest'
 import assert from 'assert';
 import { pluralize, red, green } from '../../src/util/helpers';
 

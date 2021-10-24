@@ -1,16 +1,16 @@
-/* eslint-disable @typescript-eslint/no-var-requires */
+import '../../src'; // 'kequtest'
 import assert from 'assert';
 
 describe('mock', function () {
     util.mock('../fake-src/deep/other.js', {
         getData: () => ({ id: 'fake-id', name: 'Paul' })
     });
-    util.mock('http', { ok: true });
+    util.mock('http', { fakeProperty: true });
 
-    it('mocks a module', function () {
-        const result = require('http');
+    it('mocks a module', async function () {
+        const result = await import('http');
 
-        assert.deepStrictEqual(result, { ok: true });
+        assert.strictEqual((result as any).fakeProperty, true);
     });
 
     it('throws an error when request is not a string', function () {
@@ -18,14 +18,14 @@ describe('mock', function () {
         assert.throws(() => { util.mock.stop(null); }, { message: /^Target must be a string/ });
     });
 
-    it('mocks a relative path', function () {
-        const result = require('../fake-src/index.js');
+    it('mocks a relative path', async function () {
+        const result = await import('../fake-src/index.js');
 
         assert.strictEqual(result.getData().id, 'fake-id');
     });
 
-    it('mocks a relative path without an extension', function () {
-        const result = require('../fake-src/index');
+    it('mocks a relative path without an extension', async function () {
+        const result = await import('../fake-src/index');
 
         assert.strictEqual(result.getData().id, 'fake-id');
     });
@@ -35,15 +35,15 @@ describe('mock', function () {
             getData: () => ({ id: 'fake-id', name: 'paul' })
         });
         
-        it('mocks', function () {
-            const result = require('../fake-src/deep/other.js');
+        it('mocks', async function () {
+            const result = await import('../fake-src/deep/other.js');
         
             assert.strictEqual(result.getData().id, 'fake-id');
         });
     });
 
-    it('stops mocking at end of blocks', function () {
-        const result = require('../fake-src/deep/other.js');
+    it('stops mocking at end of blocks', async function () {
+        const result = await import('../fake-src/deep/other.js');
 
         assert.strictEqual(result.getData().id, 'real-id');
     });
@@ -53,8 +53,8 @@ describe('mock', function () {
             getData: () => ({ id: 'fake-id', name: 'paul' })
         });
         
-        it('mocks without an extension', function () {
-            const result = require('../fake-src/deep/other.js');
+        it('mocks without an extension', async function () {
+            const result = await import('../fake-src/deep/other.js');
         
             assert.strictEqual(result.getData().id, 'fake-id');
         });

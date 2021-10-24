@@ -1,3 +1,4 @@
+import '../src'; // 'kequtest'
 import assert from 'assert';
 import path from 'path';
 import CreateSummary from '../src/env/summary';

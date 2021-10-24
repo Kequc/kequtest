@@ -1,3 +1,4 @@
+import '../../src'; // 'kequtest'
 import assert from 'assert';
 
 describe('spy', function () {

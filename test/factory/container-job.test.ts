@@ -1,3 +1,4 @@
+import '../../src'; // 'kequtest'
 import assert from 'assert';
 import CreateContainerJob from '../../src/factory/container-job';
 import { HookType } from '../../src/util/constants';
