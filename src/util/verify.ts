@@ -1,4 +1,4 @@
-import { AsyncFunc } from '../../types';
+import { AsyncFunc } from '../types';
 
 export function verifyDescription (description?: string): void {
     if (typeof description !== 'string') {

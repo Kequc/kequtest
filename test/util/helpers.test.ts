@@ -1,6 +1,6 @@
 import '../../src'; // 'kequtest'
 import assert from 'assert';
-import { pluralize, red, green } from '../../src/util/helpers';
+import { pluralize, red, green, withTimeout } from '../../src/util/helpers';
 
 describe('pluralize', function () {
     it('pluralises a word', function () {
@@ -33,5 +33,25 @@ describe('red', function () {
 describe('green', function () {
     it('adds green around text', function () {
         assert.strictEqual(green('test 1'), '\x1b[32mtest 1\x1b[0m');
+    });
+});
+
+describe('withTimeout', function () {
+    it('succeeds with test', async function () {
+        await withTimeout((() => {})(), 10);
+    });
+
+    it('succeeds with async test', async function () {
+        await withTimeout(new Promise(resolve => { resolve(); }), 10);
+    });
+
+    it('fails when too much time is taken', async function () {
+        try {
+            console.log('running');
+            await withTimeout(new Promise(() => {}), 10);
+        } catch (error) {
+            console.log('error');
+            assert.ok(error.message.startsWith('Timeout'));
+        }
     });
 });

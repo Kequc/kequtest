@@ -1,7 +1,6 @@
-import path from 'path';
 import fs from 'fs';
-
-import { Logger } from '../../types';
+import path from 'path';
+import { Logger } from '../types';
 
 const IGNORE = ['node_modules'];
 

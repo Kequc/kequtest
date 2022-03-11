@@ -1,6 +1,5 @@
 import Module from 'module';
 import path from 'path';
-
 import { Summary } from './summary';
 
 export type Mocker = {

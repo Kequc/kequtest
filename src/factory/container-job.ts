@@ -1,9 +1,8 @@
-import { CHARS, HookType } from '../util/constants';
-import { calcDepth } from '../util/helpers';
-import { verifyBlock, verifyDescription } from '../util/verify';
 import CreateTestJob from './test-job';
-
-import { AsyncFunc, ContainerJob, TestJob } from '../../types';
+import { AsyncFunc, ContainerJob, TestJob } from '../types';
+import { BLOCK_TIMEOUT, CHARS, HookType } from '../util/constants';
+import { calcDepth, withTimeout } from '../util/helpers';
+import { verifyBlock, verifyDescription } from '../util/verify';
 
 export type TreeHooks = {
     [HookType.BEFORE_EACH]: AsyncFunc[];
@@ -58,11 +57,11 @@ function CreateContainerJob (description: string, block?: AsyncFunc, parent?: Co
                     // initialize
                     if (block) await block();
                     // sequence
-                    for (const before of hooks[HookType.BEFORE]) await before();
+                    for (const before of hooks[HookType.BEFORE]) await withTimeout(before(), BLOCK_TIMEOUT);
                     // sequence
                     for (const job of buffer) await job.run(summary, logger);
                     // sequence
-                    for (const after of hooks[HookType.AFTER]) await after();
+                    for (const after of hooks[HookType.AFTER]) await withTimeout(after(), BLOCK_TIMEOUT);
                 } catch (error) {
                     // container throws an error
                     summary.addFailure(container, getLogs(), error as Error);

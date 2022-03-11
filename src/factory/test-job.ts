@@ -1,9 +1,13 @@
-import { CHARS, HookType } from '../util/constants';
-import { calcDepth, green, red } from '../util/helpers';
-import { verifyBlock, verifyDescription } from '../util/verify';
 import { TreeHooks } from './container-job';
-
-import { AsyncFunc, ContainerJob, TestJob } from '../../types';
+import { AsyncFunc, ContainerJob, TestJob } from '../types';
+import { BLOCK_TIMEOUT, CHARS, HookType } from '../util/constants';
+import {
+    calcDepth,
+    green,
+    red,
+    withTimeout
+} from '../util/helpers';
+import { verifyBlock, verifyDescription } from '../util/verify';
 
 function CreateTestJob (description: string, block?: AsyncFunc, parent?: ContainerJob): TestJob {
     if (block !== undefined) verifyBlock(block);
@@ -25,10 +29,10 @@ function CreateTestJob (description: string, block?: AsyncFunc, parent?: Contain
 
                 try {
                     // sequence
-                    for (const beforeEach of treeHooks[HookType.BEFORE_EACH]) await beforeEach();
+                    for (const beforeEach of treeHooks[HookType.BEFORE_EACH]) await withTimeout(beforeEach(), BLOCK_TIMEOUT);
                     // client code
                     if (block !== undefined) {
-                        await block();
+                        await withTimeout(block(), BLOCK_TIMEOUT);
                         summary.successCount++;
                         suffix = green(CHARS.success);
                     } else {
@@ -36,7 +40,7 @@ function CreateTestJob (description: string, block?: AsyncFunc, parent?: Contain
                         suffix = green('-- missing --');
                     }
                     // sequence
-                    for (const afterEach of treeHooks[HookType.AFTER_EACH]) await afterEach();
+                    for (const afterEach of treeHooks[HookType.AFTER_EACH]) await withTimeout(afterEach(), BLOCK_TIMEOUT);
                 } catch (error) {
                     // test throws an error
                     summary.failCount++;

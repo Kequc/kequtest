@@ -1,4 +1,4 @@
-import { Func } from '../../types';
+import { Func } from '../types';
 
 export type SpyLogger = {
     log: ISpyFunc;

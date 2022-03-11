@@ -11,3 +11,5 @@ export enum HookType {
     AFTER_EACH,
     AFTER
 }
+
+export const BLOCK_TIMEOUT = 7000;

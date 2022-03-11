@@ -1,7 +1,6 @@
-import { Summary } from '../env/summary';
 import CreateContainerJob from './container-job';
-
-import { Logger, Suite } from '../../types';
+import { Summary } from '../env/summary';
+import { Logger, Suite } from '../types';
 
 function CreateSuite (summary: Summary, logger: Logger, filenames: string[]): Suite {
     async function openFile (filename: string) {

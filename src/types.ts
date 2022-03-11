@@ -1,6 +1,6 @@
-import { Summary } from './src/env/summary';
-import { Hooks } from './src/factory/container-job';
-import { HookType } from './src/util/constants';
+import { Summary } from './env/summary';
+import { Hooks } from './factory/container-job';
+import { HookType } from './util/constants';
 
 export type Suite = {
     run: () => Promise<void>;

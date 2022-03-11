@@ -1,7 +1,6 @@
-import { AbstractJob, ContainerJob } from '../../types';
-import { pluralize, red } from '../util/helpers';
-
 import CreateFakeConsole, { FakeConsole, TestLog } from './fake-console';
+import { AbstractJob, ContainerJob } from '../types';
+import { pluralize, red } from '../util/helpers';
 
 export type SummaryFailure = {
     tree: AbstractJob[];
@@ -16,7 +15,7 @@ export type Summary = {
     failCount: number;
     successCount: number;
     missingCount: number;
-    captureConsole: (block: (fakeConsole: FakeConsole) => void) => Promise<void>;
+    captureConsole: (block: (fakeConsole: FakeConsole) => void | Promise<void>) => Promise<void>;
     addFailure: (job: AbstractJob, logs: TestLog[], error: Error) => void;
     info: () => string;
 };

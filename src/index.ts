@@ -2,17 +2,20 @@
 import path from 'path';
 import CreateMocker, { IMock } from './env/mocker';
 import CreateSummary from './env/summary';
-import { HookType } from './util/constants';
-import { logger, spy, ISpyFunc, SpyLogger } from './util/spy';
 import main from './main';
-
-import { AsyncFunc, Func } from '../types';
+import { AsyncFunc, Func } from './types';
+import { HookType } from './util/constants';
+import {
+    ISpyFunc,
+    logger,
+    spy,
+    SpyLogger
+} from './util/spy';
 
 // env
 process.env.NODE_ENV = process.env.NODE_ENV || 'test';
 
 const args = process.argv.slice(2);
-
 const targets = extractTargets(args);
 const absolutes = targets.map(target => path.join(process.cwd(), target));
 const exts = ['.test.js'];

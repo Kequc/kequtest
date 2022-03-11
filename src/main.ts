@@ -1,10 +1,9 @@
 import { Summary, SummaryFailure } from './env/summary';
 import CreateSuite from './factory/suite';
+import { Logger } from './types';
 import { CHARS } from './util/constants';
 import findFilenames from './util/find-filenames';
 import { pluralize, red } from './util/helpers';
-
-import { Logger } from '../types';
 
 // kequtest
 async function main (summary: Summary, logger: Logger, absolutes: string[], exts: string[]): Promise<void> {

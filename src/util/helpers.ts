@@ -1,4 +1,4 @@
-import { ContainerJob } from '../../types';
+import { ContainerJob } from '../types';
 
 export function pluralize (count: number, singular: string, plural = `${singular}s`): string {
     const text = (count === 1 ? singular : plural);
@@ -20,4 +20,16 @@ export function calcDepth (container?: ContainerJob): number {
         container = container.getParent();
     }
     return count;
+}
+
+export async function withTimeout (promise: void | Promise<void>, ms: number): Promise<void> {
+    let timeout: NodeJS.Timeout;
+
+    await Promise.race([promise, new Promise((_, reject) => {
+        timeout = setTimeout(() => {
+            reject(new Error(`Timeout: ${ms}ms`));
+        }, ms);
+    })]).finally(() => {
+        clearTimeout(timeout);
+    });
 }
