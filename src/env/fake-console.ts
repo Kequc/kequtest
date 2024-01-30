@@ -26,7 +26,11 @@ function CreateFakeConsole (): FakeConsole {
             error: capture('error'),
             warn: capture('warn'),
             debug: capture('debug'),
-            info: capture('info')
+            info: capture('info'),
+            dir: capture('dir'),
+            dirxml: capture('dirxml'),
+            table: capture('table'),
+            trace: capture('trace')
         })
     };
 }
