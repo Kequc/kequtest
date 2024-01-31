@@ -1,11 +1,14 @@
 import { Func } from '../types';
 
 export type SpyLogger = {
-    log: ISpyFunc;
-    error: ISpyFunc;
-    warn: ISpyFunc;
-    debug: ISpyFunc;
-    info: ISpyFunc;
+    error: ISpyFunc,
+    warn: ISpyFunc,
+    info: ISpyFunc,
+    http: ISpyFunc,
+    verbose: ISpyFunc,
+    debug: ISpyFunc,
+    silly: ISpyFunc,
+    log: ISpyFunc
 };
 
 export interface ISpyFunc {
@@ -17,11 +20,14 @@ export interface ISpyFunc {
 // fake console
 export function logger (): SpyLogger {
     return {
-        debug: spy(),
-        info: spy(),
-        log: spy(),
+        error: spy(),
         warn: spy(),
-        error: spy()
+        info: spy(),
+        http: spy(),
+        verbose: spy(),
+        debug: spy(),
+        silly: spy(),
+        log: spy()
     };
 }
 

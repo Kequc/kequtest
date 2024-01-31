@@ -31,7 +31,7 @@ Add the following script to `package.json` for easier access:
 
 ## Use
 
-It finds all `.test.js` files anywhere in the current directory.
+It finds all `.test.js`/`.test.ts` files anywhere in the current directory.
 
 `describe()`
 
@@ -109,7 +109,7 @@ it('uses hooks', function () {
 
 `util.logger()`
 
-Generate a `console`-like object where each method `debug`, `info`, `log`, `warn`, and `error` is a spy.
+Generate a `console`-like object where each method `error`, `warn`, `info`, `http`, `verbose`, `debug`, `silly`, and `log` is a spy.
 
 `util.spy()`
 
