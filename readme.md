@@ -4,6 +4,9 @@ A lightweight unit test runner using no dependencies. It's meant to run fast and
 
 You don't need to configure anything to begin testing just run kequtest.
 
+> [!NOTE]
+> As of v20.0 node includes it's own `'node:test'` library, which accomplishes everything this package was trying to do. I recommend give it a try. It has `'node:assert'` and `'node:mock'` libraries too.
+
 ## Install
 
 ```
